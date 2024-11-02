@@ -1,7 +1,7 @@
 +++
 title       = "Reading SICP"
 showSummary = true
-lastmod     = 2024-07-28T12:16:00+08:00
+lastmod     = 2024-11-02T20:46:00+08:00
 date        = 2024-07-22
 weight      = 1000
 +++

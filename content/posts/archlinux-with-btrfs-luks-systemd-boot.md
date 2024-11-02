@@ -1,6 +1,6 @@
 +++
 title       = "Arch Linux with LUKS, Btrfs, Systemd-boot"
-lastmod     = 2024-11-01T22:40:00+08:00
+lastmod     = 2024-11-02T20:47:00+08:00
 date        = 2024-10-28
 showSummary = true
 showTOC     = true
