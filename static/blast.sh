@@ -28,7 +28,7 @@ print_variables() {
     echo "_rootpass=${_rootpass}"
 }
 
-check_disk_var() {
+is_disk_set() {
     if [[ -z ${_archdisk} ]]; then
         echo "'_archdisk' is empty, run \`$(basename $0) help\` to get help."
         exit 1
@@ -49,7 +49,7 @@ genmirror() {
 }
 
 reset_disk() {
-    check_disk_var
+    is_disk_set
     is_superuser
     umount -AR /mnt &>/dev/null
     cryptsetup close /dev/mapper/luksroot &>/dev/null

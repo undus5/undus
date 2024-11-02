@@ -362,5 +362,5 @@ Ref: [dm-crypt/Drive preparation#Wipe LUKS header](https://wiki.archlinux.org/ti
 ## Automated Script
 
 The whole process in this post is gathered into an automated script [blast.sh](/blast.sh),
-feel free to take, but use it at your own risk. 
+feel free to take, but use it at your own risk, run `"blast.sh help"` for help.
 
