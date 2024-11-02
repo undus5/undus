@@ -10,8 +10,8 @@ print_help() {
     _pfmt1="%2s%-10s%s\n"
     printf "${_pfmt1}" "" "check" "check target disk and passwords"
     printf "${_pfmt1}" "" "install" "run installation"
-    printf "${_pfmt1}" "" "genmirror" "change mirrorlist china servers"
     printf "${_pfmt1}" "" "reset" "reset disk state to start over"
+    printf "${_pfmt1}" "" "genmirror" "print prefered mirror servers"
     printf "${_pfmt1}" "" "help" "print this help"
     printf "\n"
     printf "How to set target disk and passwords:\n"
@@ -43,23 +43,16 @@ is_superuser() {
 }
 
 genmirror() {
-    is_superuser
-    echo "Server = https://mirrors.aliyun.com/archlinux/$repo/os/$arch" > /etc/pacman.d/mirrorlist
-    echo "Server = https://mirrors.tuna.tsinghua.edu.cn/archlinux/$repo/os/$arch" >> /etc/pacman.d/mirrorlist
-    echo "Server = https://mirrors.ustc.edu.cn/archlinux/$repo/os/$arch" >> /etc/pacman.d/mirrorlist
+    printf "Server = https://mirrors.aliyun.com/archlinux/$repo/os/$arch\n"
+    printf "Server = https://mirrors.tuna.tsinghua.edu.cn/archlinux/$repo/os/$arch\n"
+    printf "Server = https://mirrors.ustc.edu.cn/archlinux/$repo/os/$arch\n"
 }
 
 reset_disk() {
     check_disk_var
     is_superuser
-    umount /mnt/efi &>/dev/null
-    umount /mnt/data &>/dev/null
-    umount /mnt/home &>/dev/null
-    umount /mnt/var &>/dev/null
-    umount /mnt &>/dev/null
-    if [[ -f /dev/mapper/luksroot ]]; then
-        cryptsetup close /dev/mapper/luksroot
-    fi
+    umount -AR /mnt &>/dev/null
+    cryptsetup close /dev/mapper/luksroot &>/dev/null
     cryptsetup erase ${_archdisk}
     wipefs -a ${_archdisk}
 }
