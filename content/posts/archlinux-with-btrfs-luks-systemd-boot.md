@@ -353,8 +353,8 @@ some commands that can help you reset disk state, then you can retry installatio
 Ref: [dm-crypt/Drive preparation#Wipe LUKS header](https://wiki.archlinux.org/title/Dm-crypt/Drive_preparation#Wipe_LUKS_header)
 
 ```
-# umount -AR /mnt &>/dev/null
-# cryptsetup close /dev/mapper/luksroot &>/dev/null
+# umount -AR /mnt
+# cryptsetup close /dev/mapper/luksroot
 # cryptsetup erase /dev/vda
 # wipefs -a /dev/vda
 ```
