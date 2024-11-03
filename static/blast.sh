@@ -11,7 +11,7 @@ print_help() {
     printf "${_pfmt1}" "" "check" "check target disk and passwords"
     printf "${_pfmt1}" "" "install" "run installation"
     printf "${_pfmt1}" "" "reset" "reset disk state to start over"
-    printf "${_pfmt1}" "" "genmirror" "print prefered mirror servers"
+    printf "${_pfmt1}" "" "cnmirror" "print china mirror servers"
     printf "${_pfmt1}" "" "help" "print this help"
     printf "\n"
     printf "How to set target disk and passwords:\n"
@@ -42,7 +42,7 @@ is_superuser() {
     fi
 }
 
-genmirror() {
+cnmirror() {
     printf "Server = https://mirrors.aliyun.com/archlinux/$repo/os/$arch\n"
     printf "Server = https://mirrors.tuna.tsinghua.edu.cn/archlinux/$repo/os/$arch\n"
     printf "Server = https://mirrors.ustc.edu.cn/archlinux/$repo/os/$arch\n"
@@ -75,8 +75,8 @@ case ${1} in
         print_variables
         exit 0
         ;;
-    genmirror)
-        genmirror
+    cnmirror)
+        cnmirror
         exit 0
         ;;
     reset)
@@ -149,8 +149,9 @@ else
 fi
 
 ### Essential packages
-pacstrap -K /mnt base linux ${_microcode} linux-firmware btrfs-progs zram-generator \
-    neovim networkmanager terminus-font
+pacstrap -K /mnt base linux ${_microcode} linux-firmware btrfs-progs neovim \
+    zram-generator networkmanager plymouth terminus-font \
+    man-db man-pages texinfo
 
 ### Set swap on zram
 cat > /mnt/etc/systemd/zram-generator.conf << EOB
@@ -164,6 +165,9 @@ systemctl enable NetworkManager --root=/mnt
 
 ### Console font
 echo "FONT=ter-132b" >> /mnt/etc/vconsole.conf
+
+### Set splash screen (plymouth)
+printf "[Daemon]\nTheme=spinner\n" >> /etc/plymouth/plymouthd.conf
 
 ## Fstab
 genfstab -U /mnt >> /mnt/etc/fstab
@@ -246,14 +250,14 @@ cat > /mnt/efi/loader/entries/arch.conf << EOB
 title Arch Linux
 linux /EFI/arch/vmlinuz-linux
 initrd /EFI/arch/initramfs-linux.img
-options rootflags=subvol=@
+options rootflags=subvol=@ quiet splash
 EOB
 
 cat > /mnt/efi/loader/entries/arch-fallback.conf << EOB
 title Arch Linux (fallback initramfs)
 linux /EFI/arch/vmlinuz-linux
 initrd /EFI/arch/initramfs-linux-fallback.img
-options rootflags=subvol=@
+options rootflags=subvol=@ quiet splash
 EOB
 
 ################################################################################

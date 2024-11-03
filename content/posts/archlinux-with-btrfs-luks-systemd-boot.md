@@ -120,8 +120,8 @@ Create Btrfs filesystem:
 # umount /mnt
 ```
 
-There's a bit extra work needed to let @var subvolume work without issue, described
-at the end of this post: [Move PacmanDB](#move-pacmandb).
+There's a bit extra work needed to let @var subvolume work without issue, demonstrated
+at section [Move PacmanDB](#move-pacmandb) of this post.
 
 ## Mount Filesystem
 
@@ -148,8 +148,9 @@ Essential packages:
 CPU microcode updates `"amd-ucode"` or `"intel-ucode"` for hardware bug and security fixes:
 
 ```
-# pacstrap -K /mnt base linux amd-ucode linux-firmware btrfs-progs zram-generator \
-    neovim networkmanager terminus-font
+# pacstrap -K /mnt base linux amd-ucode linux-firmware btrfs-progs neovim \
+    zram-generator networkmanager terminus-font plymouth \
+    man-db man-pages texinfo
 ```
 
 Swap on zram.\
@@ -174,6 +175,17 @@ Console font:
 ```
 # echo "FONT=ter-132b" >> /mnt/etc/vconsole.conf
 ```
+
+Splash screen (plymouth):
+
+```
+printf "[Daemon]\nTheme=spinner\n" >> /etc/plymouth/plymouthd.conf
+```
+
+Users of plymouth must use both the `"quiet"` and `"splash"` kernel parameter, demonstrated
+at section [Boot Loader](#boot-loader) of this post.
+Ref: [Silent boot](https://wiki.archlinux.org/title/Silent_boot)
+
 
 ## Fstab
 
@@ -302,7 +314,7 @@ Create `"/efi/loader/entries/arch.conf"`.
 title Arch Linux
 linux /EFI/arch/vmlinuz-linux
 initrd /EFI/arch/initramfs-linux.img
-options rootflags=subvol=@
+options rootflags=subvol=@ quiet splash
 ```
 
 To use a subvolume as the root mountpoint, specify the subvolume via a kernel parameter
@@ -315,7 +327,7 @@ Create `"/efi/loader/entries/arch-fallback.conf"`.
 title Arch Linux (fallback initramfs)
 linux /EFI/arch/vmlinuz-linux
 initrd /EFI/arch/initramfs-linux-fallback.img
-options rootflags=subvol=@
+options rootflags=subvol=@ quiet splash
 ```
 
 Note: If disk partitions were not following
@@ -326,7 +338,7 @@ Ref: [dm-crypt/Encrypting an entire system#Configuring the boot loader](https://
 [dm-crypt/System configuration#rd.luks.name](https://wiki.archlinux.org/title/Dm-crypt/System_configuration#rd.luks.name)
 
 ```
-options rd.luks.name=<UUID>=luskroot root=/dev/mapper/luksroot rootflags=subvol=@
+options rd.luks.name=<UUID>=luskroot root=/dev/mapper/luksroot rootflags=subvol=@ quiet splash
 ```
 
 ## Move PacmanDB
