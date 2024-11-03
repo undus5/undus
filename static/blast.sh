@@ -237,7 +237,7 @@ systemctl enable efistub-update.{path,service} --root=/mnt
 
 cat >> /mnt/efi/loader/loader.conf << EOB
 default arch.conf
-timeout 4
+timeout 0
 console-mode max
 editor no
 EOB

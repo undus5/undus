@@ -289,10 +289,12 @@ Edit `"/efi/loader/loader.conf"`:
 
 ```
 default arch.conf
-timeout 4
+timeout 0
 console-mode max
 editor no
 ```
+
+`"timeout 0"` means not showing menu and boot immediately.
 
 Create `"/efi/loader/entries/arch.conf"`.
 
