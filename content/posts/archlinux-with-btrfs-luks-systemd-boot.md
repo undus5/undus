@@ -223,7 +223,10 @@ Users of plymouth must use both the `"quiet"` and `"splash"` kernel parameter, d
 at section [Boot Loader](#boot-loader) of this post.
 Ref: [Silent boot](https://wiki.archlinux.org/title/Silent_boot)
 
-Sudo, edit `"/mnt/etc/sudoers.d/sudoers"` with:
+Sudo. Ref: [Sudo#Environment variables](https://wiki.archlinux.org/title/Sudo#Environment_variables)
+, [Sudo#Example entries](https://wiki.archlinux.org/title/Sudo#Example_entries)
+
+Create `"/mnt/etc/sudoers.d/sudoers"` with:
 
 ```
 Defaults env_keep += "http_proxy https_proxy no_proxy"
