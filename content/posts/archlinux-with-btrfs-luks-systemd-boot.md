@@ -1,5 +1,5 @@
 +++
-title       = "Arch Linux with LUKS, Btrfs, Systemd-boot"
+title       = "Arch Linux with LUKS Btrfs and Systemd-boot"
 lastmod     = 2024-11-02T20:47:00+08:00
 date        = 2024-10-28
 showSummary = true
@@ -27,9 +27,9 @@ The reflector didn't work well for me, I had to pick mirror servers manually
 then wrote to the mirrorlist:
 
 ```
-# echo "Server = https://mirrors.aliyun.com/archlinux/$repo/os/$arch" > /etc/pacman.d/mirrorlist
-# echo "Server = https://mirrors.tuna.tsinghua.edu.cn/archlinux/$repo/os/$arch" >> /etc/pacman.d/mirrorlist
-# echo "Server = https://mirrors.ustc.edu.cn/archlinux/$repo/os/$arch" >> /etc/pacman.d/mirrorlist
+# echo "Server = https://mirrors.aliyun.com/archlinux/\$repo/os/\$arch" > /etc/pacman.d/mirrorlist
+# echo "Server = https://mirrors.tuna.tsinghua.edu.cn/archlinux/\$repo/os/\$arch" >> /etc/pacman.d/mirrorlist
+# echo "Server = https://mirrors.ustc.edu.cn/archlinux/\$repo/os/\$arch" >> /etc/pacman.d/mirrorlist
 ```
 
 ## Partition Disk
@@ -130,10 +130,10 @@ Ref:
 , [EFI system partition#Typical mount points](https://wiki.archlinux.org/title/EFI_system_partition#Typical_mount_points)
 
 ```
-# mount -o compress=zstd,subvol=@ /dev/mapper/luksroot /mnt
-# mount -o compress=zstd,subvol=@home --mkdir /dev/mapper/luksroot /mnt/home
-# mount -o compress=zstd,subvol=@var --mkdir /dev/mapper/luksroot /mnt/var
-# mount -o compress=zstd,subvol=@data --mkdir /dev/mapper/luksroot /mnt/data
+# mount -o subvol=@ /dev/mapper/luksroot /mnt
+# mount -o subvol=@home --mkdir /dev/mapper/luksroot /mnt/home
+# mount -o subvol=@var --mkdir /dev/mapper/luksroot /mnt/var
+# mount -o subvol=@data --mkdir /dev/mapper/luksroot /mnt/data
 
 # mount --mkdir /dev/disk/by-partlabel/efip /mnt/efi
 ```
@@ -149,9 +149,46 @@ CPU microcode updates `"amd-ucode"` or `"intel-ucode"` for hardware bug and secu
 
 ```
 # pacstrap -K /mnt base linux amd-ucode linux-firmware btrfs-progs neovim \
-    zram-generator networkmanager terminus-font plymouth \
+    zram-generator networkmanager terminus-font plymouth sudo\
     man-db man-pages texinfo
 ```
+
+## Fstab
+
+When using encrypted containers with dm-crypt, the labels of filesystems inside of
+containers are not available while the container is locked/encrypted.\
+Ref: [Persistent block device naming#by-label](https://wiki.archlinux.org/title/Persistent_block_device_naming#by-label)
+
+The advantage of using the UUID method is that it is much less likely that name collisions occur than with labels.
+Further, it is generated automatically on creation of the filesystem.
+It will, for example, stay unique even if the device is plugged into another system
+(which may perhaps have a device with the same label).\
+Ref: [Persistent block device naming#by-uuid](https://wiki.archlinux.org/title/Persistent_block_device_naming#by-uuid)
+
+It is preferable to mount using subvol=/path/to/subvolume, rather than the subvolid,
+as the subvolid may change when restoring snapshots, requiring a change of mount configuration.\
+Ref: [Btrfs#Mounting subvolumes](https://wiki.archlinux.org/title/Btrfs#Mounting_subvolumes)
+
+Since `"genfstab"` would generate subvolid and other redundant options, I choose to write fstab manually.
+
+Save partitions UUID to temp files for later use:
+
+```
+# blkid -s UUID -o value /dev/vda1 > /tmp/efiuuid
+# blkid -s UUID -o value /dev/mapper/luksroot > /tmp/luksuuid
+```
+
+Edit `"/mnt/etc/fstab"` with:
+
+```
+UUID=XXXX-XXXX /efi vfat defaults 0 2
+UUID=xxxxxxxx-...-xxxxxxxxxxxx / btrfs compress=zstd,subvol=/@ 0 0
+UUID=xxxxxxxx-...-xxxxxxxxxxxx /home btrfs compress=zstd,subvol=/@home 0 0
+UUID=xxxxxxxx-...-xxxxxxxxxxxx /var btrfs compress=zstd,subvol=/@var 0 0
+UUID=xxxxxxxx-...-xxxxxxxxxxxx /data btrfs compress=zstd,subvol=/@data 0 0
+```
+
+## Configure Pkgs
 
 Swap on zram.\
 Ref: [Zram#Using zram-generator](https://wiki.archlinux.org/title/Zram#Using_zram-generator)
@@ -179,18 +216,18 @@ Console font:
 Splash screen (plymouth):
 
 ```
-printf "[Daemon]\nTheme=spinner\n" >> /etc/plymouth/plymouthd.conf
+# printf "[Daemon]\nTheme=spinner\n" >> /mnt/etc/plymouth/plymouthd.conf
 ```
 
 Users of plymouth must use both the `"quiet"` and `"splash"` kernel parameter, demonstrated
 at section [Boot Loader](#boot-loader) of this post.
 Ref: [Silent boot](https://wiki.archlinux.org/title/Silent_boot)
 
-
-## Fstab
+Sudo, edit `"/mnt/etc/sudoers.d/sudoers"` with:
 
 ```
-# genfstab -U /mnt >> /mnt/etc/fstab
+Defaults env_keep += "http_proxy https_proxy no_proxy"
+%wheel ALL=(ALL:ALL) ALL
 ```
 
 ## Chroot
@@ -202,7 +239,7 @@ Ref: [Silent boot](https://wiki.archlinux.org/title/Silent_boot)
 ## Miscellaneous
 
 ```
-### Time
+### time
 # ln -sf /usr/share/zoneinfo/Asia/Shanghai /etc/localtime
 # hwclock --systohc
 
@@ -213,11 +250,15 @@ Ref: [Silent boot](https://wiki.archlinux.org/title/Silent_boot)
 # locale-gen
 # echo "LANG=en_US.UTF-8" >> /etc/locale.conf
 
-### Hostname
-# echo "archlinux" >> /etc/hostname
+### hostname
+# echo "arch" >> /etc/hostname
 
-### Root password (syntax: chpasswd "username:password")
-# chpasswd "root:root"
+### root password
+# echo "root:pass" | chpasswd
+
+### create user
+# useradd -m -G wheel -s /bin/bash "uuu"
+# echo "uuu:pass" | chpasswd
 ```
 
 ## Initramfs
@@ -227,7 +268,7 @@ Ref: [dm-crypt/System configuration#mkinitcpio](https://wiki.archlinux.org/title
 Edit `"/etc/mkinitcpio.conf"`:
 
 ```
-HOOKS=(base systemd autodetect microcode modconf kms keyboard sd-vconsole sd-encrypt block filesystems fsck)
+HOOKS=(base systemd plymouth autodetect microcode modconf kms keyboard sd-vconsole sd-encrypt block filesystems fsck)
 ```
 
 Recreate initramfs image:
@@ -369,7 +410,7 @@ Ref: [dm-crypt/Drive preparation#Wipe LUKS header](https://wiki.archlinux.org/ti
 ```
 # umount -AR /mnt
 # cryptsetup close /dev/mapper/luksroot
-# cryptsetup erase /dev/vda
+# cryptsetup erase /dev/vda2
 # wipefs -a /dev/vda
 ```
 
