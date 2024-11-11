@@ -138,19 +138,87 @@ Ref:
 # mount --mkdir /dev/disk/by-partlabel/efip /mnt/efi
 ```
 
-## Install Packages
+## Install Base Pkgs
 
 Ref:
 [Installation guide#Install essential packages](https://wiki.archlinux.org/title/Installation_guide#Install_essential_packages)
 
-Essential packages:
-
 CPU microcode updates `"amd-ucode"` or `"intel-ucode"` for hardware bug and security fixes:
 
 ```
-# pacstrap -K /mnt base linux amd-ucode linux-firmware btrfs-progs neovim \
-    zram-generator networkmanager terminus-font plymouth sudo\
-    man-db man-pages texinfo
+# pacstrap -K /mnt base linux linux-firmware btrfs-progs amd-ucode
+```
+
+`"-K"` means to initialize an empty pacman keyring in the target, so only adding it at first running.\
+Ref: [pacstrap(8)](https://man.archlinux.org/man/pacstrap.8)
+
+Swap on Zram:
+
+Ref: [Zram#Using zram-generator](https://wiki.archlinux.org/title/Zram#Using_zram-generator)
+
+```
+# pacstrap /mnt zram-generator
+```
+
+Create `"/mnt/etc/systemd/zram-generator.conf"` with:
+
+```
+[zram0]
+zram-size = min(ram, 8192)
+compression-algorithm = zstd
+```
+
+NetworkManager:
+
+```
+# pacstrap /mnt networkmanager
+# systemctl enable NetworkManager --root=/mnt
+```
+
+Console Font:
+
+```
+# pacstrap /mnt terminus-font
+# echo "FONT=ter-132b" >> /mnt/etc/vconsole.conf
+```
+
+Man Page:
+
+```
+# pacstrap /mnt man-db man-pages texinfo
+```
+
+Sudo:
+
+Ref: [Sudo#Environment variables](https://wiki.archlinux.org/title/Sudo#Environment_variables)
+, [Sudo#Example entries](https://wiki.archlinux.org/title/Sudo#Example_entries)
+, [Sudo#Tips_and_tricks](https://wiki.archlinux.org/title/Sudo#Tips_and_tricks)
+
+```
+# pacstrap /mnt sudo bash-completion
+```
+
+Create `"/mnt/etc/sudoers.d/sudoers"` with:
+
+```
+%wheel ALL=(ALL:ALL) ALL
+Defaults passwd_timeout = 0
+Defaults timestamp_type = global
+Defaults timestamp_timeout = 15
+Defaults env_keep += "http_proxy https_proxy no_proxy"
+```
+
+Ref: [Sudo#Passing aliases](https://wiki.archlinux.org/title/Sudo#Passing_aliases)
+
+```
+# echo "alias sudo='sudo '" >> /mnt/etc/profile.d/bashrc
+```
+
+Neovim:
+
+```
+# pacstrap /mnt neovim
+# echo "EDITOR=/usr/bin/nvim" >> /mnt/etc/profile.d/bashrc
 ```
 
 ## Fstab
@@ -188,80 +256,61 @@ UUID=xxxxxxxx-...-xxxxxxxxxxxx /var btrfs compress=zstd,subvol=/@var 0 0
 UUID=xxxxxxxx-...-xxxxxxxxxxxx /data btrfs compress=zstd,subvol=/@data 0 0
 ```
 
-## Configure Pkgs
-
-Swap on zram.\
-Ref: [Zram#Using zram-generator](https://wiki.archlinux.org/title/Zram#Using_zram-generator)
-
-Create `"/mnt/etc/systemd/zram-generator.conf"` with:
-
-```
-[zram0]
-zram-size = min(ram, 8192)
-compression-algorithm = zstd
-```
-
-NetworkManager:
-
-```
-# systemctl enable NetworkManager --root=/mnt
-```
-
-Console font:
-
-```
-# echo "FONT=ter-132b" >> /mnt/etc/vconsole.conf
-```
-
-Splash screen (plymouth):
-
-```
-# printf "[Daemon]\nTheme=spinner\n" >> /mnt/etc/plymouth/plymouthd.conf
-```
-
-Users of plymouth must use both the `"quiet"` and `"splash"` kernel parameter, demonstrated
-at section [Boot Loader](#boot-loader) of this post.
-Ref: [Silent boot](https://wiki.archlinux.org/title/Silent_boot)
-
-Sudo. Ref: [Sudo#Environment variables](https://wiki.archlinux.org/title/Sudo#Environment_variables)
-, [Sudo#Example entries](https://wiki.archlinux.org/title/Sudo#Example_entries)
-
-Create `"/mnt/etc/sudoers.d/sudoers"` with:
-
-```
-Defaults env_keep += "http_proxy https_proxy no_proxy"
-%wheel ALL=(ALL:ALL) ALL
-```
-
 ## Chroot
 
 ```
 # arch-chroot /mnt
 ```
 
-## Miscellaneous
+Time:
 
 ```
-### time
 # ln -sf /usr/share/zoneinfo/Asia/Shanghai /etc/localtime
 # hwclock --systohc
+```
 
-### Localization
+Localization:
+
+```
 # echo "en_US.UTF-8 UTF-8" >> /etc/locale.gen
 # echo "zh_CN.UTF-8 UTF-8" >> /etc/locale.gen
-### ... and other languages you want
 # locale-gen
 # echo "LANG=en_US.UTF-8" >> /etc/locale.conf
+```
 
-### hostname
-# echo "arch" >> /etc/hostname
+Hostname:
 
-### root password
-# echo "root:pass" | chpasswd
+```
+# echo "archlinux" >> /etc/hostname
+```
 
-### create user
-# useradd -m -G wheel -s /bin/bash "uuu"
-# echo "uuu:pass" | chpasswd
+Remap CapsLock to Control for console.\
+Ref: [Linux console/Keyboard configuration#Creating a custom keymap](https://wiki.archlinux.org/title/Linux_console/Keyboard_configuration#Creating_a_custom_keymap)
+
+```
+# _kmapdir=/mnt/usr/share/kbd/keymaps/i386/qwerty
+# gzip -dc < ${_kmapdir}/us.map.gz > ${_kmapdir}/usa.map
+# sed -i '/^keycode[[:space:]]58/c\keycode 58 = Control' ${_kmapdir}/usa.map
+# echo "KEYMAP=usa" >> /mnt/etc/vconsole.conf
+```
+
+Enable multilib repo.
+Ref: [General_recommendations#Repositories](https://wiki.archlinux.org/title/General_recommendations#Repositories)
+
+```
+# printf "[multilib]\nInclude = /etc/pacman.d/mirrorlist\n" >> /mnt/etc/pacman.conf
+```
+
+Root Password:
+
+```
+# passwd
+```
+
+Create User:
+```
+# useradd -m -G wheel -s /bin/bash user1
+# passwd user1
 ```
 
 ## Initramfs
@@ -271,7 +320,7 @@ Ref: [dm-crypt/System configuration#mkinitcpio](https://wiki.archlinux.org/title
 Edit `"/etc/mkinitcpio.conf"`:
 
 ```
-HOOKS=(base systemd plymouth autodetect microcode modconf kms keyboard sd-vconsole sd-encrypt block filesystems fsck)
+HOOKS=(base systemd autodetect microcode modconf kms keyboard sd-vconsole sd-encrypt block filesystems fsck)
 ```
 
 Recreate initramfs image:
@@ -358,7 +407,7 @@ Create `"/efi/loader/entries/arch.conf"`.
 title Arch Linux
 linux /EFI/arch/vmlinuz-linux
 initrd /EFI/arch/initramfs-linux.img
-options rootflags=subvol=@ quiet splash
+options rootflags=subvol=@ quiet
 ```
 
 To use a subvolume as the root mountpoint, specify the subvolume via a kernel parameter
@@ -371,7 +420,7 @@ Create `"/efi/loader/entries/arch-fallback.conf"`.
 title Arch Linux (fallback initramfs)
 linux /EFI/arch/vmlinuz-linux
 initrd /EFI/arch/initramfs-linux-fallback.img
-options rootflags=subvol=@ quiet splash
+options rootflags=subvol=@ quiet
 ```
 
 Note: If disk partitions were not following
@@ -382,7 +431,7 @@ Ref: [dm-crypt/Encrypting an entire system#Configuring the boot loader](https://
 [dm-crypt/System configuration#rd.luks.name](https://wiki.archlinux.org/title/Dm-crypt/System_configuration#rd.luks.name)
 
 ```
-options rd.luks.name=<UUID>=luskroot root=/dev/mapper/luksroot rootflags=subvol=@ quiet splash
+options rd.luks.name=<UUID>=luskroot root=/dev/mapper/luksroot rootflags=subvol=@ quiet
 ```
 
 ## Move PacmanDB
@@ -404,13 +453,12 @@ So, to keep /var as a separate btrfs subvolume, we need to move pacman database 
 # reboot
 ```
 
-## Start Over
-
 In case you've lost track of the installation process and want to start over, here's
 some commands that can help you reset disk state, then you can retry installation.\
 Ref: [dm-crypt/Drive preparation#Wipe LUKS header](https://wiki.archlinux.org/title/Dm-crypt/Drive_preparation#Wipe_LUKS_header)
 
 ```
+# umount /mnt/efi
 # umount -AR /mnt
 # cryptsetup close /dev/mapper/luksroot
 # cryptsetup erase /dev/vda2

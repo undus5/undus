@@ -12,10 +12,6 @@ Gathering infomation.
 
 [Programming Music Editions - FilFar](https://www.youtube.com/watch?v=AF8LSurfct4&list=PLEM4vOSCprSvlS4kKEEBX1ubMDWRuES3c)
 
-## Podcasts
-
-[Lunduke Journal Podcast](https://lunduke.locals.com/post/4619051/lunduke-journal-link-central-tm)
-
 ## Tech Industry
 
 [Hacker News](https://news.ycombinator.com/)

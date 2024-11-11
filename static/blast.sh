@@ -40,13 +40,16 @@ init_variables() {
         _lukspass=pass
     fi
     if [[ -z ${_rootpass} ]]; then
-        _rootpass=pass
+        _rootpass=${_lukspass}
     fi
     if [[ -z ${_username} ]]; then
-        _username=uuu
+        _username=user1
     fi
     if [[ -z ${_userpass} ]]; then
-        _userpass=pass
+        _userpass=${_lukspass}
+    fi
+    if [[ -z ${_hostname} ]]; then
+        _hostname=archlinux
     fi
     _efipart=/dev/disk/by-partlabel/efip
     _rootpart=/dev/disk/by-partlabel/rootp
@@ -61,6 +64,7 @@ check_variables() {
     echo "_rootpass=${_rootpass}"
     echo "_username=${_username}"
     echo "_userpass=${_userpass}"
+    echo "_hostname=${_hostname}"
 }
 
 is_disk_set() {
@@ -141,19 +145,56 @@ mountfs() {
     mount --mkdir /dev/disk/by-partlabel/efip /mnt/efi
 }
 
-install_packages() {
+install_base_pkgs() {
     # microcode
     _cpu=$(grep vendor_id /proc/cpuinfo)
     if [[ "${_cpu}" == *"AuthenticAMD"* ]]; then
         _microcode="amd-ucode"
-    else
+    elif [[ "${_cpu}" == *"GenuineIntel"* ]]
         _microcode="intel-ucode"
     fi
+    pacstrap -K /mnt base linux linux-firmware btrfs-progs ${_microcode}
+}
 
-    # essential packages
-    pacstrap -K /mnt base linux ${_microcode} linux-firmware btrfs-progs neovim \
-        zram-generator networkmanager terminus-font plymouth sudo\
-        man-db man-pages texinfo
+install_zram() {
+    pacstrap /mnt zram-generator
+cat > /mnt/etc/systemd/zram-generator.conf << EOB
+[zram0]
+zram-size = min(ram, 8192)
+compression-algorithm = zstd
+EOB
+}
+
+install_networkmanager() {
+    pacstrap /mnt networkmanager
+    systemctl enable NetworkManager --root=/mnt
+}
+
+install_console_font() {
+    pacstrap /mnt terminus-font
+    echo "FONT=ter-132b" >> /mnt/etc/vconsole.conf
+}
+
+install_man_page() {
+    pacstrap /mnt man-db man-pages texinfo
+}
+
+install_sudo() {
+    pacstrap /mnt sudo bash-completion
+cat > /mnt/etc/sudoers.d/sudoers << EOB
+%wheel ALL=(ALL:ALL) ALL
+Defaults passwd_timeout = 0
+Defaults timestamp_type = global
+Defaults timestamp_timeout = 15
+Defaults env_keep += "http_proxy https_proxy no_proxy"
+EOB
+    # fix tab completion
+    echo "alias sudo='sudo '" >> /mnt/etc/profile.d/bashrc
+}
+
+install_neovim() {
+    pacstrap /mnt neovim
+    echo "EDITOR=/usr/bin/nvim" >> /mnt/etc/profile.d/bashrc
 }
 
 write_fstab() {
@@ -168,61 +209,54 @@ UUID=${_luksuuid} /data btrfs compress=zstd,subvol=/@data 0 0
 EOB
 }
 
-configure_packages() {
-    # swap on zram
-cat > /mnt/etc/systemd/zram-generator.conf << EOB
-[zram0]
-zram-size = min(ram, 8192)
-compression-algorithm = zstd
-EOB
-    # NetworkManager
-    systemctl enable NetworkManager --root=/mnt
-
-    # console font
-    echo "FONT=ter-132b" >> /mnt/etc/vconsole.conf
-
-    # splash screen (plymouth)
-    printf "[Daemon]\nTheme=spinner\n" >> /mnt/etc/plymouth/plymouthd.conf
-
-    # sudo
-    echo 'Defaults env_keep += "http_proxy https_proxy no_proxy"' > /mnt/etc/sudoers.d/sudoers
-    echo "%wheel ALL=(ALL:ALL) ALL" >> /mnt/etc/sudoers.d/sudoers
-}
-
-run_chroot() {
+set_timezone() {
 arch-chroot /mnt /usr/bin/bash -e << EOB
-# -e exit immediately on any error
-
-# time
+# (-e exit immediately on any error)
 ln -sf /usr/share/zoneinfo/Asia/Shanghai /etc/localtime
 hwclock --systohc
-
-# localization
-echo "en_US.UTF-8 UTF-8" >> /etc/locale.gen
-echo "zh_CN.UTF-8 UTF-8" >> /etc/locale.gen
-locale-gen
-echo "LANG=en_US.UTF-8" > /etc/locale.conf
-
-# hostname
-echo "arch" > /etc/hostname
-
-# initramfs
-sed -i \
-    '/^HOOKS=/c\HOOKS=(base systemd plymouth autodetect microcode modconf kms keyboard sd-vconsole sd-encrypt block filesystems fsck)' \
-    /etc/mkinitcpio.conf
-mkinitcpio -P
-
-# systemd-boot
-bootctl install
-systemctl enable systemd-boot-update.service
-
-# boot files
-mkdir -p /efi/EFI/arch
-cp -a /boot/vmlinuz-linux /efi/EFI/arch/
-cp -a /boot/initramfs-linux.img /efi/EFI/arch/
-cp -a /boot/initramfs-linux-fallback.img /efi/EFI/arch/
-
 EOB
+}
+
+set_localization() {
+    echo "en_US.UTF-8 UTF-8" >> /mnt/etc/locale.gen
+    echo "zh_CN.UTF-8 UTF-8" >> /mnt/etc/locale.gen
+    arch-chroot /mnt locale-gen
+    echo "LANG=en_US.UTF-8" > /mnt/etc/locale.conf
+}
+
+set_hostname() {
+    echo ${_hostname} > /mnt/etc/hostname
+}
+
+set_keymap() {
+    # remap capslock to control
+    _kmapdir=/mnt/usr/share/kbd/keymaps/i386/qwerty
+    gzip -dc < ${_kmapdir}/us.map.gz > ${_kmapdir}/usa.map
+    sed -i '/^keycode[[:space:]]58/c\keycode 58 = Control' ${_kmapdir}/usa.map
+    echo "KEYMAP=usa" >> /mnt/etc/vconsole.conf
+}
+
+enable_multilib() {
+    printf "[multilib]\nInclude = /etc/pacman.d/mirrorlist\n" >> /mnt/etc/pacman.conf
+}
+
+recreate_initramfs() {
+    sed -i \
+        '/^HOOKS=/c\HOOKS=(base systemd autodetect microcode modconf kms keyboard sd-vconsole sd-encrypt block filesystems fsck)' \
+        /mnt/etc/mkinitcpio.conf
+    arch-chroot /mnt mkinitcpio -P
+}
+
+install_systemd_boot() {
+    arch-chroot /mnt bootctl install
+    systemctl enable systemd-boot-update.service --root=/mnt
+}
+
+copy_boot_files() {
+    mkdir -p /mnt/efi/EFI/arch
+    cp -a /mnt/boot/vmlinuz-linux /mnt/efi/EFI/arch/
+    cp -a /mnt/boot/initramfs-linux.img /mnt/efi/EFI/arch/
+    cp -a /mnt/boot/initramfs-linux-fallback.img /mnt/efi/EFI/arch/
 }
 
 boot_files_auto_update() {
@@ -235,7 +269,6 @@ PathChanged=/boot/initramfs-linux-fallback.img
 WantedBy=multi-user.target
 WantedBy=system-update.target
 EOB
-
 cat > /mnt/etc/systemd/system/efistub-update.service << EOB
 [Unit]
 Description=Copy EFISTUB Kernel to EFI system partition
@@ -245,7 +278,6 @@ ExecStart=/usr/bin/cp -af /boot/vmlinuz-linux /efi/EFI/arch/
 ExecStart=/usr/bin/cp -af /boot/initramfs-linux.img /efi/EFI/arch/
 ExecStart=/usr/bin/cp -af /boot/initramfs-linux-fallback.img /efi/EFI/arch/
 EOB
-
 systemctl enable efistub-update.{path,service} --root=/mnt
 }
 
@@ -256,19 +288,17 @@ timeout 0
 console-mode max
 editor no
 EOB
-
 cat > /mnt/efi/loader/entries/arch.conf << EOB
 title Arch Linux
 linux /EFI/arch/vmlinuz-linux
 initrd /EFI/arch/initramfs-linux.img
-options rootflags=subvol=@ quiet splash
+options rootflags=subvol=@ quiet
 EOB
-
 cat > /mnt/efi/loader/entries/arch-fallback.conf << EOB
 title Arch Linux (fallback initramfs)
 linux /EFI/arch/vmlinuz-linux
 initrd /EFI/arch/initramfs-linux-fallback.img
-options rootflags=subvol=@ quiet splash
+options rootflags=subvol=@ quiet
 EOB
 }
 
@@ -289,17 +319,28 @@ create_user() {
 run_install() {
     is_disk_set
     is_superuser
-
     clear_mounts
     if [[ ! -e ${_efipart} ]]; then
         partition_disk
     fi
     clear_root_subvol
     mountfs
-    install_packages
+    install_base_pkgs
+    install_zram
+    install_networkmanager
+    install_console_font
+    install_man_page
+    install_sudo
+    install_neovim
     write_fstab
-    configure_packages
-    run_chroot
+    set_timezone
+    set_localization
+    set_hostname
+    set_keymap
+    enable_multilib
+    recreate_initramfs
+    install_systemd_boot
+    copy_boot_files
     boot_files_auto_update
     boot_loader_config
     move_pacmandb
