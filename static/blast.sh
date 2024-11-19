@@ -150,7 +150,7 @@ install_base_pkgs() {
     _cpu=$(grep vendor_id /proc/cpuinfo)
     if [[ "${_cpu}" == *"AuthenticAMD"* ]]; then
         _microcode="amd-ucode"
-    elif [[ "${_cpu}" == *"GenuineIntel"* ]]
+    elif [[ "${_cpu}" == *"GenuineIntel"* ]]; then
         _microcode="intel-ucode"
     fi
     pacstrap -K /mnt base linux linux-firmware btrfs-progs ${_microcode}
