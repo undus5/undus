@@ -182,10 +182,56 @@ Console Font:
 # echo "FONT=ter-132b" >> /mnt/etc/vconsole.conf
 ```
 
-Man Page:
+Desktop Font:
 
 ```
-# pacstrap /mnt man-db man-pages texinfo
+# pacstrap /mnt noto-fonts noto-fonts-cjk noto-fonts-emoji
+```
+
+Adjust fallback fonts order, this is for fixing wierd looking of some Chinese characters,
+such as "复制".\
+Ref: [Font_configuration#Alias](https://wiki.archlinux.org/title/Font_configuration#Alias)
+
+Create `"/etc/fonts/local.conf"` with:
+
+```
+<?xml version="1.0"?>
+<!DOCTYPE fontconfig SYSTEM "urn:fontconfig:fonts.dtd">
+<fontconfig>
+<alias>
+    <family>sans-serif</family>
+    <prefer>
+        <family>Noto Sans</family>
+        <family>Noto Sans CJK SC</family>
+        <family>Noto Sans CJK TC</family>
+        <family>Noto Sans CJK HK</family>
+        <family>Noto Sans CJK JP</family>
+        <family>Noto Sans CJK KR</family>
+    </prefer>
+</alias>
+<alias>
+    <family>serif</family>
+    <prefer>
+        <family>Noto Serif</family>
+        <family>Noto Serif CJK SC</family>
+        <family>Noto Serif CJK TC</family>
+        <family>Noto Serif CJK HK</family>
+        <family>Noto Serif CJK JP</family>
+        <family>Noto Serif CJK KR</family>
+    </prefer>
+</alias>
+<alias>
+    <family>monospace</family>
+    <prefer>
+        <family>Noto Sans Mono</family>
+        <family>Noto Sans Mono CJK SC</family>
+        <family>Noto Sans Mono CJK TC</family>
+        <family>Noto Sans Mono CJK HK</family>
+        <family>Noto Sans Mono CJK JP</family>
+        <family>Noto Sans Mono CJK KR</family>
+    </prefer>
+</alias>
+</fontconfig>
 ```
 
 Sudo:
@@ -212,6 +258,27 @@ Ref: [Sudo#Passing aliases](https://wiki.archlinux.org/title/Sudo#Passing_aliase
 
 ```
 # echo "alias sudo='sudo '" >> /mnt/etc/profile.d/bashrc
+```
+
+Plymouth:
+
+Ref: [Plymouth](https://wiki.archlinux.org/title/Plymouth)
+
+```
+# pacstrap /mnt plymouth
+# printf "[Daemon]\nTheme=spinner\n" >> /mnt/etc/plymouth/plymouth.conf
+```
+
+Add plymouth to the HOOKS array,
+demonstrated at section [Initramfs](#initramfs) of this post.
+
+Add `"quiet"` `"splash"` kernel parameters,
+demonstrated at section [Boot Loader](#boot-loader) of this post.
+
+Man Page:
+
+```
+# pacstrap /mnt man-db man-pages texinfo
 ```
 
 Neovim:
@@ -320,7 +387,7 @@ Ref: [dm-crypt/System configuration#mkinitcpio](https://wiki.archlinux.org/title
 Edit `"/etc/mkinitcpio.conf"`:
 
 ```
-HOOKS=(base systemd autodetect microcode modconf kms keyboard sd-vconsole sd-encrypt block filesystems fsck)
+HOOKS=(base systemd plymouth autodetect microcode modconf kms keyboard sd-vconsole sd-encrypt block filesystems fsck)
 ```
 
 Recreate initramfs image:
@@ -407,7 +474,7 @@ Create `"/efi/loader/entries/arch.conf"`.
 title Arch Linux
 linux /EFI/arch/vmlinuz-linux
 initrd /EFI/arch/initramfs-linux.img
-options rootflags=subvol=@ quiet
+options rootflags=subvol=@ quiet splash
 ```
 
 To use a subvolume as the root mountpoint, specify the subvolume via a kernel parameter
@@ -420,7 +487,7 @@ Create `"/efi/loader/entries/arch-fallback.conf"`.
 title Arch Linux (fallback initramfs)
 linux /EFI/arch/vmlinuz-linux
 initrd /EFI/arch/initramfs-linux-fallback.img
-options rootflags=subvol=@ quiet
+options rootflags=subvol=@
 ```
 
 Note: If disk partitions were not following

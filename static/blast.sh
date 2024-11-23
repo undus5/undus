@@ -170,13 +170,52 @@ install_networkmanager() {
     systemctl enable NetworkManager --root=/mnt
 }
 
-install_console_font() {
+install_console_fonts() {
     pacstrap /mnt terminus-font
     echo "FONT=ter-132b" >> /mnt/etc/vconsole.conf
 }
 
-install_man_page() {
-    pacstrap /mnt man-db man-pages texinfo
+install_desktop_fonts() {
+    pacstrap /mnt noto-fonts noto-fonts-cjk noto-fonts-emoji
+cat > /etc/fonts/local.conf << EOB
+<?xml version="1.0"?>
+<!DOCTYPE fontconfig SYSTEM "urn:fontconfig:fonts.dtd">
+<fontconfig>
+<alias>
+    <family>sans-serif</family>
+    <prefer>
+        <family>Noto Sans</family>
+        <family>Noto Sans CJK SC</family>
+        <family>Noto Sans CJK TC</family>
+        <family>Noto Sans CJK HK</family>
+        <family>Noto Sans CJK JP</family>
+        <family>Noto Sans CJK KR</family>
+    </prefer>
+</alias>
+<alias>
+    <family>serif</family>
+    <prefer>
+        <family>Noto Serif</family>
+        <family>Noto Serif CJK SC</family>
+        <family>Noto Serif CJK TC</family>
+        <family>Noto Serif CJK HK</family>
+        <family>Noto Serif CJK JP</family>
+        <family>Noto Serif CJK KR</family>
+    </prefer>
+</alias>
+<alias>
+    <family>monospace</family>
+    <prefer>
+        <family>Noto Sans Mono</family>
+        <family>Noto Sans Mono CJK SC</family>
+        <family>Noto Sans Mono CJK TC</family>
+        <family>Noto Sans Mono CJK HK</family>
+        <family>Noto Sans Mono CJK JP</family>
+        <family>Noto Sans Mono CJK KR</family>
+    </prefer>
+</alias>
+</fontconfig>
+EOB
 }
 
 install_sudo() {
@@ -190,6 +229,15 @@ Defaults env_keep += "http_proxy https_proxy no_proxy"
 EOB
     # fix tab completion
     echo "alias sudo='sudo '" >> /mnt/etc/profile.d/bashrc
+}
+
+install_plymouth() {
+    pacstrap /mnt plymouth
+    printf "[Daemon]\nTheme=spinner\n" >> /mnt/etc/plymouth/plymouth.conf
+}
+
+install_man_page() {
+    pacstrap /mnt man-db man-pages texinfo
 }
 
 install_neovim() {
@@ -242,7 +290,7 @@ enable_multilib() {
 
 recreate_initramfs() {
     sed -i \
-        '/^HOOKS=/c\HOOKS=(base systemd autodetect microcode modconf kms keyboard sd-vconsole sd-encrypt block filesystems fsck)' \
+        '/^HOOKS=/c\HOOKS=(base systemd plymouth autodetect microcode modconf kms keyboard sd-vconsole sd-encrypt block filesystems fsck)' \
         /mnt/etc/mkinitcpio.conf
     arch-chroot /mnt mkinitcpio -P
 }
@@ -292,13 +340,13 @@ cat > /mnt/efi/loader/entries/arch.conf << EOB
 title Arch Linux
 linux /EFI/arch/vmlinuz-linux
 initrd /EFI/arch/initramfs-linux.img
-options rootflags=subvol=@ quiet
+options rootflags=subvol=@ quiet splash
 EOB
 cat > /mnt/efi/loader/entries/arch-fallback.conf << EOB
 title Arch Linux (fallback initramfs)
 linux /EFI/arch/vmlinuz-linux
 initrd /EFI/arch/initramfs-linux-fallback.img
-options rootflags=subvol=@ quiet
+options rootflags=subvol=@
 EOB
 }
 
@@ -328,9 +376,11 @@ run_install() {
     install_base_pkgs
     install_zram
     install_networkmanager
-    install_console_font
-    install_man_page
+    install_console_fonts
+    install_desktop_fonts
     install_sudo
+    install_plymouth
+    install_man_page
     install_neovim
     write_fstab
     set_timezone
