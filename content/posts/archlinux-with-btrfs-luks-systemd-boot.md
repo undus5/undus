@@ -175,6 +175,47 @@ NetworkManager:
 # systemctl enable NetworkManager --root=/mnt
 ```
 
+Sudo:
+
+Ref: [Sudo#Environment variables](https://wiki.archlinux.org/title/Sudo#Environment_variables)
+, [Sudo#Example entries](https://wiki.archlinux.org/title/Sudo#Example_entries)
+, [Sudo#Tips_and_tricks](https://wiki.archlinux.org/title/Sudo#Tips_and_tricks)
+
+```
+# pacstrap /mnt sudo bash-completion
+```
+
+Create `"/mnt/etc/sudoers.d/sudoers"` with:
+
+```
+%wheel ALL=(ALL:ALL) ALL
+Defaults passwd_timeout = 0
+Defaults timestamp_type = global
+Defaults timestamp_timeout = 15
+Defaults env_keep += "http_proxy https_proxy no_proxy"
+```
+
+Ref: [Sudo#Passing aliases](https://wiki.archlinux.org/title/Sudo#Passing_aliases)
+
+```
+# echo "alias sudo='sudo '" >> /mnt/etc/profile.d/bashrc
+```
+
+Plymouth:
+
+Ref: [Plymouth](https://wiki.archlinux.org/title/Plymouth)
+
+```
+# pacstrap /mnt plymouth
+# printf "[Daemon]\nTheme=spinner\n" >> /mnt/etc/plymouth/plymouth.conf
+```
+
+Add plymouth to the HOOKS array,
+demonstrated at section [Initramfs](#initramfs) of this post.
+
+Add `"quiet"` `"splash"` kernel parameters,
+demonstrated at section [Boot Loader](#boot-loader) of this post.
+
 Console Font:
 
 ```
@@ -234,51 +275,20 @@ Create `"/etc/fonts/local.conf"` with:
 </fontconfig>
 ```
 
-Sudo:
-
-Ref: [Sudo#Environment variables](https://wiki.archlinux.org/title/Sudo#Environment_variables)
-, [Sudo#Example entries](https://wiki.archlinux.org/title/Sudo#Example_entries)
-, [Sudo#Tips_and_tricks](https://wiki.archlinux.org/title/Sudo#Tips_and_tricks)
+Pipewire:
 
 ```
-# pacstrap /mnt sudo bash-completion
+# pacstrap /mnt alsa-utils \
+    pipewire wireplumber \
+    pipewire-alsa pipewire-pulse pipewire-jack lib32-pipewire
 ```
 
-Create `"/mnt/etc/sudoers.d/sudoers"` with:
+Utilities:
 
 ```
-%wheel ALL=(ALL:ALL) ALL
-Defaults passwd_timeout = 0
-Defaults timestamp_type = global
-Defaults timestamp_timeout = 15
-Defaults env_keep += "http_proxy https_proxy no_proxy"
-```
-
-Ref: [Sudo#Passing aliases](https://wiki.archlinux.org/title/Sudo#Passing_aliases)
-
-```
-# echo "alias sudo='sudo '" >> /mnt/etc/profile.d/bashrc
-```
-
-Plymouth:
-
-Ref: [Plymouth](https://wiki.archlinux.org/title/Plymouth)
-
-```
-# pacstrap /mnt plymouth
-# printf "[Daemon]\nTheme=spinner\n" >> /mnt/etc/plymouth/plymouth.conf
-```
-
-Add plymouth to the HOOKS array,
-demonstrated at section [Initramfs](#initramfs) of this post.
-
-Add `"quiet"` `"splash"` kernel parameters,
-demonstrated at section [Boot Loader](#boot-loader) of this post.
-
-Man Page:
-
-```
-# pacstrap /mnt man-db man-pages texinfo
+# pacstrap /mnt \
+    man-db man-pages texinfo \
+    base-devel git rsync
 ```
 
 Neovim:

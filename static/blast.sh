@@ -170,6 +170,24 @@ install_networkmanager() {
     systemctl enable NetworkManager --root=/mnt
 }
 
+install_sudo() {
+    pacstrap /mnt sudo bash-completion
+cat > /mnt/etc/sudoers.d/sudoers << EOB
+%wheel ALL=(ALL:ALL) ALL
+Defaults passwd_timeout = 0
+Defaults timestamp_type = global
+Defaults timestamp_timeout = 15
+Defaults env_keep += "http_proxy https_proxy no_proxy"
+EOB
+    # fix tab completion
+    echo "alias sudo='sudo '" >> /mnt/etc/profile.d/bashrc
+}
+
+install_plymouth() {
+    pacstrap /mnt plymouth
+    printf "[Daemon]\nTheme=spinner\n" >> /mnt/etc/plymouth/plymouth.conf
+}
+
 install_console_fonts() {
     pacstrap /mnt terminus-font
     echo "FONT=ter-132b" >> /mnt/etc/vconsole.conf
@@ -218,30 +236,18 @@ cat > /etc/fonts/local.conf << EOB
 EOB
 }
 
-install_sudo() {
-    pacstrap /mnt sudo bash-completion
-cat > /mnt/etc/sudoers.d/sudoers << EOB
-%wheel ALL=(ALL:ALL) ALL
-Defaults passwd_timeout = 0
-Defaults timestamp_type = global
-Defaults timestamp_timeout = 15
-Defaults env_keep += "http_proxy https_proxy no_proxy"
-EOB
-    # fix tab completion
-    echo "alias sudo='sudo '" >> /mnt/etc/profile.d/bashrc
+install_pipewire() {
+    pacstrap /mnt alsa-utils \
+        pipewire wireplumber \
+        pipewire-alsa pipewire-pulse pipewire-jack lib32-pipewire
 }
 
-install_plymouth() {
-    pacstrap /mnt plymouth
-    printf "[Daemon]\nTheme=spinner\n" >> /mnt/etc/plymouth/plymouth.conf
-}
+install_utilities() {
+    pacstrap /mnt \
+        man-db man-pages texinfo \
+        base-devel git rsync \
+        neovim
 
-install_man_page() {
-    pacstrap /mnt man-db man-pages texinfo
-}
-
-install_neovim() {
-    pacstrap /mnt neovim
     echo "EDITOR=/usr/bin/nvim" >> /mnt/etc/profile.d/bashrc
 }
 
@@ -376,12 +382,12 @@ run_install() {
     install_base_pkgs
     install_zram
     install_networkmanager
-    install_console_fonts
-    install_desktop_fonts
     install_sudo
     install_plymouth
-    install_man_page
-    install_neovim
+    install_console_fonts
+    install_desktop_fonts
+    install_pipewire
+    install_utilities
     write_fstab
     set_timezone
     set_localization
