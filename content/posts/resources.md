@@ -4,7 +4,7 @@ showSummary = true
 weight      = 9000
 +++
 
-Gathering infomation.
+good stuff.
 
 <!--more-->
 
@@ -30,3 +30,4 @@ Gathering infomation.
 
 [HackSpace](https://hackspace.raspberrypi.com/)
 , [Free Magazines Online](https://freemagazines.top/)
+

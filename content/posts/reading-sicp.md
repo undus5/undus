@@ -6,7 +6,7 @@ date        = 2024-07-22
 weight      = 1000
 +++
 
-Computer science no longer imtimidate me.
+computer science no longer imtimidate me.
 
 <!--more-->
 

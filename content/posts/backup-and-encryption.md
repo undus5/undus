@@ -7,7 +7,7 @@ showTOC     = true
 weight      = 1000
 +++
 
-Data is priceless, pay more attention.
+data is priceless, pay more attention.
 
 <!--more-->
 

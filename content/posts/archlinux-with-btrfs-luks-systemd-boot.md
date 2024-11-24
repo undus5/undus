@@ -7,7 +7,7 @@ showTOC     = true
 weight      = 1000
 +++
 
-Finally. By the way `~`
+joining in the "by the way" club, finally.
 
 <!--more-->
 

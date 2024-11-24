@@ -4,7 +4,7 @@ showSummary = true
 weight      = 9900
 +++
 
-Useful commands.
+useful commands.
 
 <!--more-->
 
@@ -97,10 +97,3 @@ git config --global core.autocrlf input
 git config --global core.eol lf
 ```
 
-Remove Large Directory
-
-```shell
-mkdir tmp
-rsync -a --delete tmp large_dir
-rm -rf tmp
-```
