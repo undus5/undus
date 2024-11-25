@@ -23,6 +23,7 @@ Refer to my prev post:
 ## Upgrade System
 
 Upgrade first.
+Ref: [System maintenance#Avoid certain pacman commands](https://wiki.archlinux.org/title/System_maintenance#Avoid_certain_pacman_commands)
 
 ```
 $ sudo pacman -Syu
@@ -30,16 +31,17 @@ $ sudo pacman -Syu
 
 ## Sway WM
 
+Ref: [Sway](https://wiki.archlinux.org/title/Sway)
+, [sway](https://archlinux.org/packages/?name=sway)
+, [XDG Desktop Portal](https://wiki.archlinux.org/title/XDG_Desktop_Portal)
+, [XDG user directories](https://wiki.archlinux.org/title/XDG_user_directories)
+
 ```
 $ sudo pacman -S \
     sway foot wmenu swaylock swayidle swaybg xorg-xwayland mako \
     xdg-desktop-portal-gtk xdg-desktop-portal-wlr xdg-user-dirs \
     hicolor-icon-theme sway-contrib brightnessctl
 ```
-
-Ref: [sway](https://archlinux.org/packages/?name=sway)
-, [XDG Desktop Portal](https://wiki.archlinux.org/title/XDG_Desktop_Portal)
-, [XDG user directories](https://wiki.archlinux.org/title/XDG_user_directories)
 
 Initialize sway config file:
 
@@ -49,20 +51,21 @@ $ sudo cp /etc/sway/config ~/.config/sway/
 $ sudo chown $USER:$USER ~/.config/sway/config
 ```
 
-Ref: [Sway](https://wiki.archlinux.org/title/Sway)
 
 ## Polkit
 
-Tools like [ventoy](https://www.ventoy.net/) need polkit to evaluate privilege.
+Tools like [ventoy](https://www.ventoy.net/) need polkit to evaluate privilege.\
+Ref: [polkit](https://wiki.archlinux.org/title/Polkit)
 
 ```
 $ sudo pacman -S \
     polkit lxqt-policykit
 ```
 
-Ref: [polkit](https://wiki.archlinux.org/title/Polkit)
-
 ## File Manager & Viewer
+
+Ref: [PCManFM](https://wiki.archlinux.org/title/PCManFM)
+, [PCManFM#Adding custom items to the context menu](https://wiki.archlinux.org/title/PCManFM#Adding_custom_items_to_the_context_menu)
 
 ```
 $ sudo pacman -S \
@@ -71,9 +74,6 @@ $ sudo pacman -S \
     imv zathura foliate mpv \
     chromium
 ```
-
-Ref: [PCManFM](https://wiki.archlinux.org/title/PCManFM)
-, [PCManFM#Adding custom items to the context menu](https://wiki.archlinux.org/title/PCManFM#Adding_custom_items_to_the_context_menu)
 
 [lxqt-archiver](https://archlinux.org/packages/?name=lxqt-archiver)
 compressing and uncompressing\
@@ -89,21 +89,23 @@ Default applications: [XDG MIME Applications](https://wiki.archlinux.org/title/X
 
 ## Volume Control
 
+Ref: [No sound in mpv vlc but works in web browser](https://wiki.archlinux.org/title/PipeWire#No_sound_in_mpv,_vlc,_totem,_but_sound_works_in_web_browser_and_GNOME_speaker_test)
+
 ```
 $ sudo pacman -S \
     pavucontrol-qt
 ```
 
-Ref: [No sound in mpv vlc but works in web browser](https://wiki.archlinux.org/title/PipeWire#No_sound_in_mpv,_vlc,_totem,_but_sound_works_in_web_browser_and_GNOME_speaker_test)
-
 ## Input Method
+
+Ref: [Fcitx5](https://wiki.archlinux.org/title/Fcitx5)
+, [Using Fcitx 5 on Wayland](https://fcitx-im.org/wiki/Using_Fcitx_5_on_Wayland)
+, [sway(5)](https://man.archlinux.org/man/sway.5.en)
 
 ```
 $ sudo pacman -S \
     fcitx5-im fcitx5-rime
 ```
-
-Ref: [Fcitx5](https://wiki.archlinux.org/title/Fcitx5)
 
 Edit `".bashrc"` with:
 
@@ -112,15 +114,11 @@ export QT_IM_MODULE=fcitx
 export XMODIFIERS=@im=fcitx
 ```
 
-Ref: [Using Fcitx 5 on Wayland](https://fcitx-im.org/wiki/Using_Fcitx_5_on_Wayland)
-
 Sway autostart, edit `"~/.config/sway/config"` with:
 
 ```
 exec_always fcitx5 -d -r
 ```
-
-Ref: [sway(5)](https://man.archlinux.org/man/sway.5.en)
 
 Fix fcitx5 not working for chromium on wayland,
 enter `"chrome://flags"` from chromium address bar, search for `"wayland"`, edit:
@@ -131,6 +129,8 @@ Wayland text-input-v3: Enabled
 ```
 
 ## Keymap
+
+Ref: [Sway#Keymap](https://wiki.archlinux.org/title/Sway#Keymap)
 
 Remap CapsLock to Ctrl, swap Alt with Win, and enable NumLock.\
 Edit `"~/.config/sway/config"` with:
@@ -147,13 +147,15 @@ but some applications have useful default shortcuts combined with Alt key,
 such as `Alt+b` `Alt+f` in bash for jumping backward and forward word by word.
 So I swap Alt with Win then set Win as the main modifier key.
 
-Ref: [Sway#Keymap](https://wiki.archlinux.org/title/Sway#Keymap)
-
 ## Appearance
 
 Tweaking some eye candy stuff.
 
 ### Fonts
+
+Ref: [Font configuration](https://wiki.archlinux.org/title/Font_configuration)
+, [Font configuration#Alias](https://wiki.archlinux.org/title/Font_configuration#Alias)
+, [Pango.FontDescription](https://docs.gtk.org/Pango/type_func.FontDescription.from_string.html#description)
 
 Programming font:
 
@@ -172,10 +174,6 @@ bar {
 }
 ```
 
-Ref: [Font configuration](https://wiki.archlinux.org/title/Font_configuration)
-, [Font configuration#Alias](https://wiki.archlinux.org/title/Font_configuration#Alias)
-, [Pango.FontDescription](https://docs.gtk.org/Pango/type_func.FontDescription.from_string.html#description)
-
 Custom fonts path: `"~/.local/share/fonts/"`
 
 Prefered system UI fonts:
@@ -183,6 +181,10 @@ Prefered system UI fonts:
 , [PingFang for Windows](https://github.com/ACT-02/PingFang-for-Windows)
 
 ### Icon Theme
+
+Ref: [Icons](https://wiki.archlinux.org/title/Icons)
+, [Sway#Change cursor theme and size](https://wiki.archlinux.org/title/Sway#Change_cursor_theme_and_size)
+, [sway-bar(5)](https://man.archlinux.org/man/sway-bar.5.en)
 
 ```
 $ sudo pacman -S \
@@ -199,10 +201,6 @@ bar {
     icon_theme Papirus-Dark
 }
 ```
-
-Ref: [Icons](https://wiki.archlinux.org/title/Icons)
-, [Sway#Change cursor theme and size](https://wiki.archlinux.org/title/Sway#Change_cursor_theme_and_size)
-, [sway-bar(5)](https://man.archlinux.org/man/sway-bar.5.en)
 
 ### Plymouth Theme
 
