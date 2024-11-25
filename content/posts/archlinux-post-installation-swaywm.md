@@ -1,6 +1,6 @@
 +++
 title       = "Arch Linux Post Installation: Sway WM"
-#lastmod     = 2024-11-25T16:38:00+08:00
+lastmod     = 2024-11-25T16:38:00+08:00
 date        = 2024-11-24
 showSummary = true
 showTOC     = true
@@ -173,12 +173,6 @@ bar {
     font [pango:]<font>
 }
 ```
-
-Custom fonts path: `"~/.local/share/fonts/"`
-
-Prefered system UI fonts:
-[SF Pro](https://developer.apple.com/fonts/)
-, [PingFang for Windows](https://github.com/ACT-02/PingFang-for-Windows)
 
 ### Icon Theme
 
