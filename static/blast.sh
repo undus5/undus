@@ -245,7 +245,7 @@ install_pipewire() {
 install_utilities() {
     pacstrap /mnt \
         man-db man-pages texinfo \
-        base-devel git rsync \
+        pacman-contrib base-devel git rsync \
         neovim
 
     echo "EDITOR=/usr/bin/nvim" >> /mnt/etc/profile.d/bashrc

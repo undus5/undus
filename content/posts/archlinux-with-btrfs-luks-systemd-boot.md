@@ -1,6 +1,6 @@
 +++
 title       = "Arch Linux with LUKS Btrfs and Systemd-boot"
-lastmod     = 2024-11-02T20:47:00+08:00
+lastmod     = 2024-11-25T16:28:00+08:00
 date        = 2024-10-28
 showSummary = true
 showTOC     = true
@@ -231,7 +231,8 @@ Desktop Font:
 
 Adjust fallback fonts order, this is for fixing wierd looking of some Chinese characters,
 such as "复制".\
-Ref: [Font_configuration#Alias](https://wiki.archlinux.org/title/Font_configuration#Alias)
+Ref: [Font_configuration#Fontconfig configuration](https://wiki.archlinux.org/title/Font_configuration#Fontconfig_configuration)
+, [Font_configuration#Alias](https://wiki.archlinux.org/title/Font_configuration#Alias)
 
 Create `"/etc/fonts/local.conf"` with:
 
@@ -275,7 +276,10 @@ Create `"/etc/fonts/local.conf"` with:
 </fontconfig>
 ```
 
-Pipewire:
+PipeWire:
+
+Ref: [Advanced Linux Sound Architecture](https://wiki.archlinux.org/title/Advanced_Linux_Sound_Architecture)
+, [PipeWire](https://wiki.archlinux.org/title/PipeWire)
 
 ```
 # pacstrap /mnt alsa-utils \
@@ -288,7 +292,7 @@ Utilities:
 ```
 # pacstrap /mnt \
     man-db man-pages texinfo \
-    base-devel git rsync
+    pacman-contrib base-devel git rsync
 ```
 
 Neovim:
