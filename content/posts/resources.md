@@ -4,7 +4,7 @@ showSummary = true
 weight      = 9000
 +++
 
-good stuff.
+Good stuff.
 
 <!--more-->
 

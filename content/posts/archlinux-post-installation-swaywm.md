@@ -1,5 +1,5 @@
 +++
-title       = "Arch Linux Post Installation: Sway WM"
+title       = "Arch Linux Post Installation: SwayWM"
 lastmod     = 2024-11-25T16:38:00+08:00
 date        = 2024-11-24
 showSummary = true
@@ -7,7 +7,7 @@ showTOC     = true
 weight      = 1000
 +++
 
-build the exact system that fit my need, finally.
+Build the exact system that fit my need.
 
 <!--more-->
 
@@ -29,7 +29,7 @@ Ref: [System maintenance#Avoid certain pacman commands](https://wiki.archlinux.o
 $ sudo pacman -Syu
 ```
 
-## Sway WM
+## Sway
 
 Ref: [Sway](https://wiki.archlinux.org/title/Sway)
 , [sway](https://archlinux.org/packages/?name=sway)
@@ -50,6 +50,8 @@ $ mkdir -p ~/.config/sway
 $ sudo cp /etc/sway/config ~/.config/sway/
 $ sudo chown $USER:$USER ~/.config/sway/config
 ```
+
+There are elaborate comments in the default config, it's a good start point.
 
 ## Polkit
 
@@ -83,7 +85,7 @@ compressing and uncompressing\
 also image viewer via configuration
 [mpv-image-viewer](https://github.com/occivink/mpv-image-viewer)
 
-Default applications: [XDG MIME Applications](https://wiki.archlinux.org/title/XDG_MIME_Applications)
+Default applications: [XDG MIME Applications#mimeapps.list](https://wiki.archlinux.org/title/XDG_MIME_Applications#mimeapps.list)
 , [Zathura#Make zathura the default pdf viewer](https://wiki.archlinux.org/title/Zathura#Make_zathura_the_default_pdf_viewer)
 
 ## Volume Control
@@ -145,6 +147,49 @@ The position of left Alt key is the best for modifier key,
 but some applications have useful default shortcuts combined with Alt key,
 such as `Alt+b` `Alt+f` in bash for jumping backward and forward word by word.
 So I swap Alt with Win then set Win as the main modifier key.
+
+## Inhibit Idle
+
+Implement function like gnome-shell-extension-caffeine.
+
+Create `"~/.config/sway/inhibit-idle.sh"` with:
+
+```
+#!/usr/bin/env bash
+
+_label="CAFFEINE"
+
+status() {
+    swaymsg -t get_tree -r | grep -q "inhibit_idle.*true" && \
+        echo "${_label}" || echo ""
+}
+
+toggle() {
+    if [[ "$(status)" != "${_label}" ]]; then
+        swaymsg [all] inhibit_idle open
+    else
+        swaymsg [all] inhibit_idle none
+    fi
+}
+
+case "$1" in
+    "status"|"toggle")
+        $1
+        ;;
+    *)
+        echo "Usage: $(basename $0) [status|toggle]"
+        ;;
+esac
+```
+
+Make it executable, then bind key combo to it in `"~/.config/sway/config"` like this:
+
+```
+bindsym $mod+z exec ~/.config/sway/inhibit-idle.sh toggle
+```
+
+Use `"~/.config/sway/inhibit-idle.sh status"` to get caffeine status,
+add it to sway-bar script as an indicator.
 
 ## Appearance
 
