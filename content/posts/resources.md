@@ -23,7 +23,6 @@ good stuff.
 , [LinuxLinks](https://www.linuxlinks.com/)
 
 [Hackaday](https://hackaday.com/)
-, [GuidedHacking](https://guidedhacking.com/)
 , [CNX Software](https://www.cnx-software.com/)
 
 ## Magazines
