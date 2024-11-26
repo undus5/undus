@@ -51,7 +51,6 @@ $ sudo cp /etc/sway/config ~/.config/sway/
 $ sudo chown $USER:$USER ~/.config/sway/config
 ```
 
-
 ## Polkit
 
 Tools like [ventoy](https://www.ventoy.net/) need polkit to evaluate privilege.\
