@@ -1,4 +1,6 @@
 +++
-title = "Hidden List"
+title = "Hidden Posts"
 type  = "hidden"
 +++
+
+[Snippets](/snippets/)

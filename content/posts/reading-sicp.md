@@ -14,8 +14,7 @@ I just finished reading the book, Structure and Interpretation of Computer Progr
 not the original one, but the JavaScript Edition, took me about 4 months.
 I started from the original version, but kept feeling frustrated about the syntax of Scheme
 and those outdated jargons, so I switched to the JS Edition since the middle part of chapter two,
-it's much easier to read, although I don't kinda like JavaScript either as
-many others on the internet.
+it's much easier to read, although I don't kinda like JavaScript.
 
 So what did I learn? Can't say there's a lot tbh, because I didn't remember much
 about the examples from the book, but truly get something. I'm being more familiar

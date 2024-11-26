@@ -38,9 +38,9 @@ Ref: [Sway](https://wiki.archlinux.org/title/Sway)
 
 ```
 $ sudo pacman -S \
-    sway foot wmenu swaylock swayidle swaybg xorg-xwayland mako \
+    sway foot wmenu swaylock swayidle swaybg sway-contrib mako xorg-xwayland \
     xdg-desktop-portal-gtk xdg-desktop-portal-wlr xdg-user-dirs \
-    hicolor-icon-theme sway-contrib brightnessctl
+    hicolor-icon-theme brightnessctl
 ```
 
 Initialize sway config file:
