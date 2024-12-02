@@ -175,32 +175,6 @@ NetworkManager:
 # systemctl enable NetworkManager --root=/mnt
 ```
 
-Sudo:
-
-Ref: [Sudo#Environment variables](https://wiki.archlinux.org/title/Sudo#Environment_variables)
-, [Sudo#Example entries](https://wiki.archlinux.org/title/Sudo#Example_entries)
-, [Sudo#Tips_and_tricks](https://wiki.archlinux.org/title/Sudo#Tips_and_tricks)
-
-```
-# pacstrap /mnt sudo bash-completion
-```
-
-Create `"/mnt/etc/sudoers.d/sudoers"` with:
-
-```
-%wheel ALL=(ALL:ALL) ALL
-Defaults passwd_timeout = 0
-Defaults timestamp_type = global
-Defaults timestamp_timeout = 15
-Defaults env_keep += "http_proxy https_proxy no_proxy"
-```
-
-Ref: [Sudo#Passing aliases](https://wiki.archlinux.org/title/Sudo#Passing_aliases)
-
-```
-# echo "alias sudo='sudo '" >> /mnt/etc/profile.d/bashrc
-```
-
 Plymouth:
 
 Ref: [Plymouth](https://wiki.archlinux.org/title/Plymouth)
@@ -302,6 +276,33 @@ Neovim:
 # echo "EDITOR=/usr/bin/nvim" >> /mnt/etc/profile.d/bashrc
 ```
 
+Sudo:
+
+Ref: [Sudo#Environment variables](https://wiki.archlinux.org/title/Sudo#Environment_variables)
+, [Sudo#Example entries](https://wiki.archlinux.org/title/Sudo#Example_entries)
+, [Sudo#Tips_and_tricks](https://wiki.archlinux.org/title/Sudo#Tips_and_tricks)
+
+```
+# pacstrap /mnt sudo bash-completion
+```
+
+Create `"/mnt/etc/sudoers.d/sudoers"` with:
+
+```
+%wheel ALL=(ALL:ALL) ALL
+Defaults passwd_timeout = 0
+Defaults timestamp_type = global
+Defaults timestamp_timeout = 15
+Defaults env_keep += "http_proxy https_proxy no_proxy"
+Defaults editor = /usr/bin/nvim
+```
+
+Ref: [Sudo#Passing aliases](https://wiki.archlinux.org/title/Sudo#Passing_aliases)
+
+```
+# echo "alias sudo='sudo '" >> /mnt/etc/profile.d/bashrc
+```
+
 ## Fstab
 
 When using encrypted containers with dm-crypt, the labels of filesystems inside of
@@ -380,6 +381,14 @@ Ref: [General_recommendations#Repositories](https://wiki.archlinux.org/title/Gen
 
 ```
 # printf "[multilib]\nInclude = /etc/pacman.d/mirrorlist\n" >> /mnt/etc/pacman.conf
+```
+
+Enable BBR.
+Ref: [Sysctl#Enable BBR](https://wiki.archlinux.org/title/Sysctl#Enable_BBR)
+
+```
+# echo "net.core.default_qdisc = cake" >> /mnt/etc/sysctl.d/99-bbr.conf
+# echo "net.ipv4.tcp_congestion_control = bbr" >> /mnt/etc/sysctl.d/99-bbr.conf
 ```
 
 Root Password:

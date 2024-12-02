@@ -170,19 +170,6 @@ install_networkmanager() {
     systemctl enable NetworkManager --root=/mnt
 }
 
-install_sudo() {
-    pacstrap /mnt sudo bash-completion
-cat > /mnt/etc/sudoers.d/sudoers << EOB
-%wheel ALL=(ALL:ALL) ALL
-Defaults passwd_timeout = 0
-Defaults timestamp_type = global
-Defaults timestamp_timeout = 15
-Defaults env_keep += "http_proxy https_proxy no_proxy"
-EOB
-    # fix tab completion
-    echo "alias sudo='sudo '" >> /mnt/etc/profile.d/bashrc
-}
-
 install_plymouth() {
     pacstrap /mnt plymouth
     printf "[Daemon]\nTheme=spinner\n" >> /mnt/etc/plymouth/plymouth.conf
@@ -248,7 +235,21 @@ install_utilities() {
         pacman-contrib base-devel git rsync \
         neovim
 
-    echo "EDITOR=/usr/bin/nvim" >> /mnt/etc/profile.d/bashrc
+    echo "EDITOR=/usr/bin/nvim" >> /mnt/etc/profile.d/profile.sh
+}
+
+install_sudo() {
+    pacstrap /mnt sudo bash-completion
+cat > /mnt/etc/sudoers.d/sudoers << EOB
+%wheel ALL=(ALL:ALL) ALL
+Defaults passwd_timeout = 0
+Defaults timestamp_type = global
+Defaults timestamp_timeout = 15
+Defaults env_keep += "http_proxy https_proxy no_proxy"
+Defaults editor = /usr/bin/nvim
+EOB
+    # fix tab completion
+    echo "alias sudo='sudo '" >> /mnt/etc/profile.d/profile.sh
 }
 
 write_fstab() {
@@ -292,6 +293,11 @@ set_keymap() {
 
 enable_multilib() {
     printf "[multilib]\nInclude = /etc/pacman.d/mirrorlist\n" >> /mnt/etc/pacman.conf
+}
+
+enable_bbr() {
+    echo "net.core.default_qdisc = cake" >> /mnt/etc/sysctl.d/99-bbr.conf
+    echo "net.ipv4.tcp_congestion_control = bbr" >> /mnt/etc/sysctl.d/99-bbr.conf
 }
 
 recreate_initramfs() {
@@ -382,18 +388,19 @@ run_install() {
     install_base_pkgs
     install_zram
     install_networkmanager
-    install_sudo
     install_plymouth
     install_console_fonts
     install_desktop_fonts
     install_pipewire
     install_utilities
+    install_sudo
     write_fstab
     set_timezone
     set_localization
     set_hostname
     set_keymap
     enable_multilib
+    enable_bbr
     recreate_initramfs
     install_systemd_boot
     copy_boot_files
