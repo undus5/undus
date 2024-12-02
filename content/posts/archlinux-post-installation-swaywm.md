@@ -40,7 +40,7 @@ Ref: [Sway](https://wiki.archlinux.org/title/Sway)
 $ sudo pacman -S \
     sway foot wmenu swaylock swayidle swaybg sway-contrib mako xorg-xwayland \
     xdg-desktop-portal-gtk xdg-desktop-portal-wlr xdg-user-dirs \
-    hicolor-icon-theme brightnessctl
+    hicolor-icon-theme
 ```
 
 Initialize sway config file:
@@ -61,6 +61,12 @@ Ref: [polkit](https://wiki.archlinux.org/title/Polkit)
 ```
 $ sudo pacman -S \
     polkit lxqt-policykit
+```
+
+Autostart with sway, edit `"~/.config/sway/config"` with:
+
+```
+exec lxqt-policykit-agent
 ```
 
 ## File Manager & Viewer
@@ -115,10 +121,10 @@ export QT_IM_MODULE=fcitx
 export XMODIFIERS=@im=fcitx
 ```
 
-Sway autostart, edit `"~/.config/sway/config"` with:
+Autostart with sway, edit `"~/.config/sway/config"` with:
 
 ```
-exec_always fcitx5 -d -r
+exec fcitx5 -d -r
 ```
 
 Fix fcitx5 not working for chromium on wayland,
@@ -253,3 +259,6 @@ $ sudo plymouth-set-default-theme -R spinner_alt
 
 Ref: [Plymouth#Install new themes](https://wiki.archlinux.org/title/Plymouth#Install_new_themes)
 
+## Printer
+
+[CUPS](https://wiki.archlinux.org/title/CUPS)
