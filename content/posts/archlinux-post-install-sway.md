@@ -1,5 +1,5 @@
 +++
-title       = "Arch Linux Post Installation: SwayWM"
+title       = "Arch Linux Post Install: Sway"
 lastmod     = 2024-11-25T16:38:00+08:00
 date        = 2024-11-24
 showSummary = true

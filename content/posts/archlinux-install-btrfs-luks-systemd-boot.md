@@ -1,5 +1,5 @@
 +++
-title       = "Arch Linux with LUKS Btrfs and Systemd-boot"
+title       = "Arch Linux Install: LUKS + Btrfs + Systemd-boot"
 lastmod     = 2024-11-25T16:28:00+08:00
 date        = 2024-10-28
 showSummary = true
