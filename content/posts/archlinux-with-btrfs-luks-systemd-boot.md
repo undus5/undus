@@ -146,11 +146,14 @@ Ref:
 CPU microcode updates `"amd-ucode"` or `"intel-ucode"` for hardware bug and security fixes:
 
 ```
-# pacstrap -K /mnt base linux linux-firmware btrfs-progs amd-ucode
+# pacstrap -K /mnt base linux linux-lts linux-firmware btrfs-progs amd-ucode
 ```
 
 `"-K"` means to initialize an empty pacman keyring in the target, so only adding it at first running.\
 Ref: [pacstrap(8)](https://man.archlinux.org/man/pacstrap.8)
+
+The latest kernel sometimes may cause annoying bugs like [this](https://github.com/systemd/systemd/issues/33083),
+so setting LTS kernel as a fallback option would be a good choice.
 
 Swap on Zram:
 
@@ -205,8 +208,8 @@ Desktop Font:
 
 Adjust fallback fonts order, this is for fixing wierd looking of some Chinese characters,
 such as "复制".\
-Ref: [Font_configuration#Fontconfig configuration](https://wiki.archlinux.org/title/Font_configuration#Fontconfig_configuration)
-, [Font_configuration#Alias](https://wiki.archlinux.org/title/Font_configuration#Alias)
+Ref: [Font configuration#Fontconfig configuration](https://wiki.archlinux.org/title/Font_configuration#Fontconfig_configuration)
+, [Font configuration#Alias](https://wiki.archlinux.org/title/Font_configuration#Alias)
 
 Create `"/etc/fonts/local.conf"` with:
 
@@ -440,6 +443,9 @@ Ref: [EFI system partition#Alternative mount points](https://wiki.archlinux.org/
 # cp -a /boot/vmlinuz-linux /efi/EFI/arch/
 # cp -a /boot/initramfs-linux.img /efi/EFI/arch/
 # cp -a /boot/initramfs-linux-fallback.img /efi/EFI/arch/
+# cp -a /boot/vmlinuz-linux-lts /efi/EFI/arch/
+# cp -a /boot/initramfs-linux-lts.img /efi/EFI/arch/
+# cp -a /boot/initramfs-linux-lts-fallback.img /efi/EFI/arch/
 ```
 
 Auto update boot files under ESP with systemd.\
@@ -468,6 +474,9 @@ Type=oneshot
 ExecStart=/usr/bin/cp -af /boot/vmlinuz-linux /efi/EFI/arch/
 ExecStart=/usr/bin/cp -af /boot/initramfs-linux.img /efi/EFI/arch/
 ExecStart=/usr/bin/cp -af /boot/initramfs-linux-fallback.img /efi/EFI/arch/
+ExecStart=/usr/bin/cp -af /boot/vmlinuz-linux-lts /efi/EFI/arch/
+ExecStart=/usr/bin/cp -af /boot/initramfs-linux-lts.img /efi/EFI/arch/
+ExecStart=/usr/bin/cp -af /boot/initramfs-linux-lts-fallback.img /efi/EFI/arch/
 ```
 
 Enable systemd units:
@@ -503,6 +512,15 @@ options rootflags=subvol=@ quiet splash
 To use a subvolume as the root mountpoint, specify the subvolume via a kernel parameter
 using rootflags=subvol=@. Or you would get an error "Failed to start Switch Root" when booting.\
 Ref: [Btrfs#Mounting subvolume as root](https://wiki.archlinux.org/title/Btrfs#Mounting_subvolume_as_root)
+
+Create `"/efi/loader/entries/arch-lts.conf"`.
+
+```
+title Arch Linux LTS
+linux /EFI/arch/vmlinuz-linux-lts
+initrd /EFI/arch/initramfs-linux-lts.img
+options rootflags=subvol=@ quiet splash
+```
 
 Create `"/efi/loader/entries/arch-fallback.conf"`.
 

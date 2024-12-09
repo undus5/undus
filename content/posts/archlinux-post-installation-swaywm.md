@@ -35,12 +35,14 @@ Ref: [Sway](https://wiki.archlinux.org/title/Sway)
 , [sway](https://archlinux.org/packages/?name=sway)
 , [XDG Desktop Portal](https://wiki.archlinux.org/title/XDG_Desktop_Portal)
 , [XDG user directories](https://wiki.archlinux.org/title/XDG_user_directories)
+, [Sway#Graphical indicator bars](https://wiki.archlinux.org/title/Sway#Graphical_indicator_bars)
+, [Waybar Wiki](https://github.com/Alexays/Waybar/wiki/Home)
 
 ```
 $ sudo pacman -S \
-    sway foot wmenu swaylock swayidle swaybg sway-contrib mako xorg-xwayland \
+    sway foot foot-terminfo wmenu swaylock swayidle swaybg sway-contrib mako xorg-xwayland \
     xdg-desktop-portal-gtk xdg-desktop-portal-wlr xdg-user-dirs \
-    hicolor-icon-theme
+    hicolor-icon-theme wob waybar
 ```
 
 Initialize sway config file:
@@ -93,6 +95,7 @@ also image viewer via configuration
 
 Default applications: [XDG MIME Applications#mimeapps.list](https://wiki.archlinux.org/title/XDG_MIME_Applications#mimeapps.list)
 , [Zathura#Make zathura the default pdf viewer](https://wiki.archlinux.org/title/Zathura#Make_zathura_the_default_pdf_viewer)
+, [Desktop entries](https://wiki.archlinux.org/title/Desktop_entries)
 
 ## Volume Control
 
@@ -211,7 +214,7 @@ Programming font:
 
 ```
 $ sudo pacman -S \
-    ttf-jetbrains-mono-nerd
+    ttf-jetbrains-mono ttf-nerd-fonts-symbols
 ```
 
 Sway font config, edit `"~/.config/sway/config"` with:
@@ -232,18 +235,22 @@ Ref: [Icons](https://wiki.archlinux.org/title/Icons)
 
 ```
 $ sudo pacman -S \
-    capitaine-cursors papirus-icon-theme
+    capitaine-cursors pop-icon-theme
 ```
 
-Check icon theme names by `"ls /usr/share/icons"`.\
-Edit `"~/.config/sway/config"` with:
+Change default GTK icon theme:
+
+```
+$ ls /usr/share/icons
+$ gsettings set org.gnome.desktop.interface Pop
+```
+
+Ref: [GTK#Basic theme configuration](https://wiki.archlinux.org/title/GTK#Basic_theme_configuration)
+
+Set cursor theme, edit `"~/.config/sway/config"` with:
 
 ```
 seat seat0 xcursor_theme capitaine-cursors 32
-
-bar {
-    icon_theme Papirus-Dark
-}
 ```
 
 ### Plymouth Theme
@@ -262,3 +269,4 @@ Ref: [Plymouth#Install new themes](https://wiki.archlinux.org/title/Plymouth#Ins
 ## Printer
 
 [CUPS](https://wiki.archlinux.org/title/CUPS)
+
