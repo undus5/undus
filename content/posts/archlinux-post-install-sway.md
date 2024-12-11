@@ -32,18 +32,23 @@ $ sudo pacman -Syu
 ## Sway
 
 Ref: [Sway](https://wiki.archlinux.org/title/Sway)
-, [sway](https://archlinux.org/packages/?name=sway)
 , [XDG Desktop Portal](https://wiki.archlinux.org/title/XDG_Desktop_Portal)
 , [XDG user directories](https://wiki.archlinux.org/title/XDG_user_directories)
-, [Sway#Graphical indicator bars](https://wiki.archlinux.org/title/Sway#Graphical_indicator_bars)
 , [Waybar Wiki](https://github.com/Alexays/Waybar/wiki/Home)
 
 ```
 $ sudo pacman -S \
-    sway foot foot-terminfo wmenu swaylock swayidle swaybg sway-contrib mako xorg-xwayland \
+    sway swaylock swayidle swaybg xorg-xwayland \
     xdg-desktop-portal-gtk xdg-desktop-portal-wlr xdg-user-dirs \
-    hicolor-icon-theme wob waybar
+    wmenu foot foot-terminfo waybar mako wob grim sway-contrib
 ```
+
+foot: terminal emulator, mako: desktop notification.\
+wob: indicator bar for volume or brightness.
+Ref: [Sway#Graphical indicator bars](https://wiki.archlinux.org/title/Sway#Graphical_indicator_bars)
+, [wob](https://github.com/francma/wob).\
+grim: screenshot. sway-contrib: area screenshot and window screenshot.\
+waybar: status bar, the built-in `"swaybar"` is lacking system tray support, so waybar came in.
 
 Initialize sway config file:
 
@@ -53,7 +58,7 @@ $ sudo cp /etc/sway/config ~/.config/sway/
 $ sudo chown $USER:$USER ~/.config/sway/config
 ```
 
-There are elaborate comments in the default config, it's a good start point.
+The default config is a good start point, it has elaborate comments.
 
 ## Polkit
 
@@ -61,8 +66,7 @@ Tools like [ventoy](https://www.ventoy.net/) need polkit to evaluate privilege.\
 Ref: [polkit](https://wiki.archlinux.org/title/Polkit)
 
 ```
-$ sudo pacman -S \
-    polkit lxqt-policykit
+$ sudo pacman -S polkit lxqt-policykit
 ```
 
 Autostart with sway, edit `"~/.config/sway/config"` with:
@@ -74,14 +78,14 @@ exec lxqt-policykit-agent
 ## File Manager & Viewer
 
 Ref: [PCManFM](https://wiki.archlinux.org/title/PCManFM)
+, [GVFS](https://wiki.archlinux.org/title/File_manager_functionality#Mounting)
 , [PCManFM#Adding custom items to the context menu](https://wiki.archlinux.org/title/PCManFM#Adding_custom_items_to_the_context_menu)
 
 ```
 $ sudo pacman -S \
-    pcmanfm-qt gvfs gvfs-mtp gvfs-smb gvfs-wsdd gvfs-afc gvfs-dnssd \
-    lxqt-archiver p7zip libarchive \
-    imv zathura foliate mpv \
-    chromium
+    pcmanfm-qt lxqt-archiver p7zip libarchive \
+    gvfs gvfs-mtp gvfs-smb gvfs-wsdd gvfs-afc gvfs-dnssd \
+    imv zathura foliate mpv chromium
 ```
 
 [lxqt-archiver](https://archlinux.org/packages/?name=lxqt-archiver)
@@ -102,8 +106,7 @@ Default applications: [XDG MIME Applications#mimeapps.list](https://wiki.archlin
 Ref: [No sound in mpv vlc but works in web browser](https://wiki.archlinux.org/title/PipeWire#No_sound_in_mpv,_vlc,_totem,_but_sound_works_in_web_browser_and_GNOME_speaker_test)
 
 ```
-$ sudo pacman -S \
-    pavucontrol-qt
+$ sudo pacman -S pavucontrol
 ```
 
 ## Input Method
@@ -113,8 +116,7 @@ Ref: [Fcitx5](https://wiki.archlinux.org/title/Fcitx5)
 , [sway(5)](https://man.archlinux.org/man/sway.5.en)
 
 ```
-$ sudo pacman -S \
-    fcitx5-im fcitx5-rime
+$ sudo pacman -S fcitx5-im fcitx5-rime
 ```
 
 Edit `".bashrc"` with:
@@ -166,24 +168,25 @@ Create `"~/.config/sway/inhibit-idle.sh"` with:
 ```
 #!/usr/bin/env bash
 
-_label="CAFFEINE"
-
-status() {
+idle_status() {
     swaymsg -t get_tree -r | grep -q "inhibit_idle.*true" && \
-        echo "${_label}" || echo ""
+        echo "CAFFEINE" || echo ""
 }
 
-toggle() {
-    if [[ "$(status)" != "${_label}" ]]; then
+idle_toggle() {
+    if [[ "$(status)" != "CAFFEINE" ]]; then
         swaymsg [all] inhibit_idle open
     else
         swaymsg [all] inhibit_idle none
     fi
 }
 
-case "$1" in
-    "status"|"toggle")
-        $1
+case "${1}" in
+    status)
+        idle_status
+        ;;
+    toggle)
+        idle_toggle
         ;;
     *)
         echo "Usage: $(basename $0) [status|toggle]"
@@ -198,7 +201,7 @@ bindsym $mod+z exec ~/.config/sway/inhibit-idle.sh toggle
 ```
 
 Use `"~/.config/sway/inhibit-idle.sh status"` to get caffeine status,
-add it to sway-bar script as an indicator.
+add it to swaybar script as an indicator.
 
 ## Appearance
 
@@ -213,8 +216,7 @@ Ref: [Font configuration](https://wiki.archlinux.org/title/Font_configuration)
 Programming font:
 
 ```
-$ sudo pacman -S \
-    ttf-jetbrains-mono ttf-nerd-fonts-symbols
+$ sudo pacman -S ttf-jetbrains-mono ttf-nerd-fonts-symbols
 ```
 
 Sway font config, edit `"~/.config/sway/config"` with:
@@ -234,8 +236,7 @@ Ref: [Icons](https://wiki.archlinux.org/title/Icons)
 , [sway-bar(5)](https://man.archlinux.org/man/sway-bar.5.en)
 
 ```
-$ sudo pacman -S \
-    capitaine-cursors pop-icon-theme
+$ sudo pacman -S capitaine-cursors pop-icon-theme
 ```
 
 Change default GTK icon theme:

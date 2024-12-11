@@ -181,7 +181,7 @@ install_console_fonts() {
 }
 
 install_desktop_fonts() {
-    pacstrap /mnt noto-fonts noto-fonts-cjk noto-fonts-emoji
+    pacstrap /mnt noto-fonts noto-fonts-cjk noto-fonts-emoji hicolor-icon-theme
 cat > /etc/fonts/local.conf << EOB
 <?xml version="1.0"?>
 <!DOCTYPE fontconfig SYSTEM "urn:fontconfig:fonts.dtd">

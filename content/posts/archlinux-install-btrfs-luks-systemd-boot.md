@@ -203,7 +203,7 @@ Console Font:
 Desktop Font:
 
 ```
-# pacstrap /mnt noto-fonts noto-fonts-cjk noto-fonts-emoji
+# pacstrap /mnt noto-fonts noto-fonts-cjk noto-fonts-emoji hicolor-icon-theme
 ```
 
 Adjust fallback fonts order, this is for fixing wierd looking of some Chinese characters,
