@@ -59,6 +59,7 @@ $ sudo chown $USER:$USER ~/.config/sway/config
 ```
 
 The default config is a good start point, it has elaborate comments.
+Then you may read [i3 User’s Guide](https://i3wm.org/docs/userguide.html) for more details.
 
 ## Polkit
 

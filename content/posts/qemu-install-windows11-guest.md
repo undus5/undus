@@ -34,10 +34,7 @@ good start point, I went back to the arch wiki then made progress.
 I barely use AI tools, since documentations and books are good enough for learning,
 I always feel nothing about those AI hyping things from the internet,
 but this time it surprised me. It also let me understand what is network bridge
-and TAP device, which ... I couldn't get from Wikipedia. Speak of Wikipedia,
-I think it never worked for me from ... since day 1, uh, the contents
-are too ... "formal" ? Or no subjects ? I can't describe accurately.
-These AI tools are great for doing "Getting Started" things I think.
+and TAP device. These AI tools are great for doing "Getting Started" things I think.
 
 ## UEFI
 
