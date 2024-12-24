@@ -13,8 +13,6 @@ Build the exact system that fit my need.
 
 The goal is to keep it as minimal as possible, with essential functions.
 
-The following instructions presume you logged in as a non-root user.
-
 ## Basic System
 
 Refer to my prev post:
@@ -268,7 +266,51 @@ $ sudo plymouth-set-default-theme -R spinner_alt
 
 Ref: [Plymouth#Install new themes](https://wiki.archlinux.org/title/Plymouth#Install_new_themes)
 
+## GPU
+
+AMD. Ref: [AMDGPU#Installation](https://wiki.archlinux.org/title/AMDGPU#Installation)
+
+```
+$ sudo pacman -S lib32-mesa vulkan-radeon lib32-vulkan-radeon
+```
+
+Intel. Ref: [Intel graphics#Installation](https://wiki.archlinux.org/title/Intel_graphics#Installation)
+
+```
+$ sudo pacman -S lib32-mesa vulkan-intel lib32-vulkan-intel
+```
+
+## Hardware Video Acceleration
+
+Ref: [Hardware video acceleration](https://wiki.archlinux.org/title/Hardware_video_acceleration)
+
+Alder Lake:
+
+```
+$ sudo pacman -S intel-media-driver
+```
+
 ## Printer
 
-[CUPS](https://wiki.archlinux.org/title/CUPS)
+Install cups packages:
+
+```
+$ sudo pacman -S cups cups-pdf
+$ sudo systemctl enable --now cups
+```
+
+Install printer driver if needed, for example:
+
+```
+$ yay -S brlaser
+```
+
+Ref: [AUR helpers](https://wiki.archlinux.org/title/AUR_helpers)
+, [yay](https://github.com/Jguer/yay)
+
+The CUPS server can be fully administered through the web interface, and there's
+documentation for adding printer
+[http://localhost:631/help/admin.html](http://localhost:631/help/admin.html).
+
+Ref: [CUPS](https://wiki.archlinux.org/title/CUPS)
 

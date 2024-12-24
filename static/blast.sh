@@ -1,38 +1,26 @@
 #!/usr/bin/env bash
 
 print_help() {
-    printf "Usage:\n"
-    printf "%2s%s\n" "" "$(basename $0) <options>"
-    printf "\n"
-    printf "Arch Linux installation script (LUKS, Btrfs, Systemd-boot)\n"
-    printf "\n"
-    printf "Options:\n"
-    _pfmt1="%2s%-10s%s\n"
-    printf "${_pfmt1}" "" "install" "run installation"
-    printf "${_pfmt1}" "" "check" "check target disk and passwords"
-    printf "${_pfmt1}" "" "genmirrors" "write cn mirror servers to list"
-    printf "${_pfmt1}" "" "help" "print this help"
-    printf "\n"
-    printf "How to set target disk and passwords:\n"
-    _pfmt2="%2s%s\n"
-    printf "${_pfmt2}" "" "run \`lsblk -dp\` to list available disk"
-    printf "${_pfmt2}" "" "run \`export _archdisk=...\` to set target disk"
-    printf "${_pfmt2}" "" "run \`export _lukspass=...\` to set LUKS password"
-    printf "${_pfmt2}" "" "run \`export _rootpass=...\` to set root password"
-    printf "${_pfmt2}" "" "run \`export _username=...\` to set root password"
-    printf "${_pfmt2}" "" "run \`export _userpass=...\` to set root password"
-}
+cat << EOB
+Usage:
+  $(basename $0) <check|install|help>
 
-genmirrors() {
-    _mlist=/etc/pacman.d/mirrorlist
-    if [[ ! -e ${_mlist}.old ]]; then
-        cp ${_mlist} ${_mlist}.old
-cat > ${_mlist} << EOB
-Server = https://mirrors.aliyun.com/archlinux/\$repo/os/\$arch
-Server = https://mirrors.tuna.tsinghua.edu.cn/archlinux/\$repo/os/\$arch
-Server = https://mirrors.ustc.edu.cn/archlinux/\$repo/os/\$arch
+Arch Linux installation script (LUKS, Btrfs, Systemd-boot)
+
+Options:
+  install    run installation
+  check      check variables (target disk and passwords)
+  help       print this help
+
+How to set target disk and passwords:
+  run \`lsblk -dp\` to list available disk
+  run \`export _archdisk=...\` to set target disk
+  run \`export _lukspass=...\` to set LUKS password
+  run \`export _rootpass=...\` to set root password
+  run \`export _username=...\` to set root password
+  run \`export _userpass=...\` to set root password
+  run \`export _usecnmirrors=[yes|no]\` to set root password
 EOB
-    fi
 }
 
 init_variables() {
@@ -51,6 +39,9 @@ init_variables() {
     if [[ -z ${_hostname} ]]; then
         _hostname=archlinux
     fi
+    if [[ -z ${_usecnmirrors} ]]; then
+        _usecnmirrors=no
+    fi
     _efipart=/dev/disk/by-partlabel/efip
     _rootpart=/dev/disk/by-partlabel/rootp
     _luksroot=/dev/mapper/luksroot
@@ -65,6 +56,7 @@ check_variables() {
     echo "_username=${_username}"
     echo "_userpass=${_userpass}"
     echo "_hostname=${_hostname}"
+    echo "_usecnmirrors=${_usecnmirrors}"
 }
 
 is_disk_set() {
@@ -165,14 +157,12 @@ compression-algorithm = zstd
 EOB
 }
 
-install_networkmanager() {
-    pacstrap /mnt networkmanager
-    systemctl enable NetworkManager --root=/mnt
-}
-
 install_plymouth() {
     pacstrap /mnt plymouth
-    printf "[Daemon]\nTheme=spinner\n" >> /mnt/etc/plymouth/plymouth.conf
+cat >> /mnt/etc/plymouth/plymouth.conf <<EOB
+[Daemon]
+Theme=spinner
+EOB
 }
 
 install_console_fonts() {
@@ -231,9 +221,9 @@ install_pipewire() {
 
 install_utilities() {
     pacstrap /mnt \
+        pacman-contrib base-devel \
         man-db man-pages texinfo \
-        pacman-contrib base-devel git rsync \
-        neovim
+        iwd git rsync neovim
 
     echo "EDITOR=/usr/bin/nvim" >> /mnt/etc/profile.d/profile.sh
 }
@@ -264,6 +254,55 @@ UUID=${_luksuuid} /data btrfs compress=zstd,subvol=/@data 0 0
 EOB
 }
 
+disable_watchdogs() {
+cat > /mnt/etc/modprobe.d/nowatchdogs.conf <<EOB
+blacklist iTCO_wdt
+blacklist sp5100_tco
+EOB
+}
+
+set_systemd_networkd() {
+    mkdir -p /mnt/etc/systemd/system/systemd-networkd-wait-online.service.d
+
+cat > /mnt/etc/systemd/system/systemd-networkd-wait-online.service.d/wait-for-only-one-interface.conf <<EOB
+[Service]
+ExecStart=
+ExecStart=/usr/lib/systemd/systemd-networkd-wait-online --any
+EOB
+
+cat > /mnt/etc/systemd/network/23-wired.network <<EOB
+[Match]
+Type=ether
+Kind=!*
+[Link]
+RequiredForOnline=routable
+[Network]
+DHCP=yes
+[DHCPv4]
+RouteMetric=100
+[IPV6AcceptRA]
+RouteMetric=100
+EOB
+
+cat > /mnt/etc/systemd/network/27-wireless.network <<EOB
+[Match]
+Type=wlan
+[Link]
+RequiredForOnline=routable
+[Network]
+DHCP=yes
+IgnoreCarrierLoss=3s
+[DHCPv4]
+RouteMetric=600
+[IPV6AcceptRA]
+RouteMetric=600
+EOB
+
+    sed -i '/^\[Network/a\ManageForeignRoutingPolicyRules=no' \
+        /mnt/etc/systemd/networkd.conf
+    systemctl enable systemd-networkd --root=/mnt
+}
+
 set_timezone() {
 arch-chroot /mnt /usr/bin/bash -e << EOB
 # (-e exit immediately on any error)
@@ -292,12 +331,17 @@ set_keymap() {
 }
 
 enable_multilib() {
-    printf "[multilib]\nInclude = /etc/pacman.d/mirrorlist\n" >> /mnt/etc/pacman.conf
+cat >> /mnt/etc/pacman.conf <<EOB
+[multilib]
+Include = /etc/pacman.d/mirrorlist
+EOB
 }
 
 enable_bbr() {
-    echo "net.core.default_qdisc = cake" >> /mnt/etc/sysctl.d/99-bbr.conf
-    echo "net.ipv4.tcp_congestion_control = bbr" >> /mnt/etc/sysctl.d/99-bbr.conf
+cat > /mnt/etc/sysctl.d/77-sysctl.conf << EOB
+net.core.default_qdisc = cake
+net.ipv4.tcp_congestion_control
+EOB
 }
 
 recreate_initramfs() {
@@ -387,7 +431,6 @@ run_install() {
     mountfs
     install_base_pkgs
     install_zram
-    install_networkmanager
     install_plymouth
     install_console_fonts
     install_desktop_fonts
@@ -395,6 +438,8 @@ run_install() {
     install_utilities
     install_sudo
     write_fstab
+    disable_watchdogs
+    set_systemd_networkd
     set_timezone
     set_localization
     set_hostname
@@ -411,18 +456,26 @@ run_install() {
     create_user
 }
 
+gencnmirrors() {
+    _mlist=/etc/pacman.d/mirrorlist
+    if [[ ! -e ${_mlist}.old ]]; then
+        cp ${_mlist} ${_mlist}.old
+cat > ${_mlist} << EOB
+Server = https://mirrors.aliyun.com/archlinux/\$repo/os/\$arch
+Server = https://mirrors.tuna.tsinghua.edu.cn/archlinux/\$repo/os/\$arch
+Server = https://mirrors.ustc.edu.cn/archlinux/\$repo/os/\$arch
+EOB
+    fi
+}
+
 case ${1} in
-    install)
-        genmirrors
-        run_install
-        ;;
     check)
         check_variables
         exit 0
         ;;
-    genmirrors)
-        genmirrors
-        exit 0
+    install)
+        [[ "${_usecnmirrors}" == "yes" ]] && gencnmirrors
+        run_install
         ;;
     help)
         print_help

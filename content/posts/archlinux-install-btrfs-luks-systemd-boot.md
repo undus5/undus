@@ -1,6 +1,6 @@
 +++
 title       = "Arch Linux Install: LUKS + Btrfs + Systemd-boot"
-lastmod     = 2024-11-25T16:28:00+08:00
+lastmod     = 2024-12-24T17:28:00+08:00
 date        = 2024-10-28
 showSummary = true
 showTOC     = true
@@ -27,9 +27,11 @@ The reflector didn't work well for me, I had to pick mirror servers manually
 then wrote to the mirrorlist:
 
 ```
-# echo "Server = https://mirrors.aliyun.com/archlinux/\$repo/os/\$arch" > /etc/pacman.d/mirrorlist
-# echo "Server = https://mirrors.tuna.tsinghua.edu.cn/archlinux/\$repo/os/\$arch" >> /etc/pacman.d/mirrorlist
-# echo "Server = https://mirrors.ustc.edu.cn/archlinux/\$repo/os/\$arch" >> /etc/pacman.d/mirrorlist
+# cat /etc/pacman.d/mirrorlist <<EOB
+Server = https://mirrors.aliyun.com/archlinux/\$repo/os/\$arch
+Server = https://mirrors.tuna.tsinghua.edu.cn/archlinux/\$repo/os/\$arch
+Server = https://mirrors.ustc.edu.cn/archlinux/\$repo/os/\$arch
+EOB
 ```
 
 ## Partition Disk
@@ -146,7 +148,8 @@ Ref:
 CPU microcode updates `"amd-ucode"` or `"intel-ucode"` for hardware bug and security fixes:
 
 ```
-# pacstrap -K /mnt base linux linux-lts linux-firmware btrfs-progs amd-ucode
+# pacstrap -K /mnt base linux linux-lts linux-firmware \
+    btrfs-progs amd-ucode
 ```
 
 `"-K"` means to initialize an empty pacman keyring in the target, so only adding it at first running.\
@@ -171,20 +174,16 @@ zram-size = min(ram, 8192)
 compression-algorithm = zstd
 ```
 
-NetworkManager:
-
-```
-# pacstrap /mnt networkmanager
-# systemctl enable NetworkManager --root=/mnt
-```
-
 Plymouth:
 
 Ref: [Plymouth](https://wiki.archlinux.org/title/Plymouth)
 
 ```
 # pacstrap /mnt plymouth
-# printf "[Daemon]\nTheme=spinner\n" >> /mnt/etc/plymouth/plymouth.conf
+# cat >> /mnt/etc/plymouth/plymouth.conf <<EOB
+[Daemon]
+Theme=spinner
+EOB
 ```
 
 Add plymouth to the HOOKS array,
@@ -203,7 +202,8 @@ Console Font:
 Desktop Font:
 
 ```
-# pacstrap /mnt noto-fonts noto-fonts-cjk noto-fonts-emoji hicolor-icon-theme
+# pacstrap /mnt noto-fonts noto-fonts-cjk noto-fonts-emoji \
+    hicolor-icon-theme
 ```
 
 Adjust fallback fonts order, this is for fixing wierd looking of some Chinese characters,
@@ -268,9 +268,12 @@ Utilities:
 
 ```
 # pacstrap /mnt \
+    base-devel pacman-contrib \
     man-db man-pages texinfo \
-    pacman-contrib base-devel git rsync
+    iwd git rsync
 ```
+
+Ref: [iwd](https://wiki.archlinux.org/title/Iwd)
 
 Neovim:
 
@@ -283,7 +286,7 @@ Sudo:
 
 Ref: [Sudo#Environment variables](https://wiki.archlinux.org/title/Sudo#Environment_variables)
 , [Sudo#Example entries](https://wiki.archlinux.org/title/Sudo#Example_entries)
-, [Sudo#Tips_and_tricks](https://wiki.archlinux.org/title/Sudo#Tips_and_tricks)
+, [Sudo#Tips and tricks](https://wiki.archlinux.org/title/Sudo#Tips_and_tricks)
 
 ```
 # pacstrap /mnt sudo bash-completion
@@ -341,6 +344,66 @@ UUID=xxxxxxxx-...-xxxxxxxxxxxx /var btrfs compress=zstd,subvol=/@var 0 0
 UUID=xxxxxxxx-...-xxxxxxxxxxxx /data btrfs compress=zstd,subvol=/@data 0 0
 ```
 
+## Disable Watchdogs
+
+```
+# cat > /mnt/etc/modprobe.d/nowatchdogs.conf <<EOB
+blacklist iTCO_wdt
+blacklist sp5100_tco
+EOB
+```
+
+Ref: [Improving performance#Watchdogs](https://wiki.archlinux.org/title/Improving_performance#Watchdogs)
+, [Kernel module#Blacklisting](https://wiki.archlinux.org/title/Kernel_module#Blacklisting)
+
+## Systemd-networkd
+
+```
+# mkdir -p /mnt/etc/systemd/system/systemd-networkd-wait-online.service.d
+# cd /mnt/etc/systemd/system/systemd-networkd-wait-online.service.d
+# cat > wait-for-only-one-interface.conf <<EOB
+[Service]
+ExecStart=
+ExecStart=/usr/lib/systemd/systemd-networkd-wait-online --any
+EOB
+# cd -
+
+# cat > /mnt/etc/systemd/network/23-wired.network <<EOB
+[Match]
+Type=ether
+Kind=!*
+[Link]
+RequiredForOnline=routable
+[Network]
+DHCP=yes
+[DHCPv4]
+RouteMetric=100
+[IPV6AcceptRA]
+RouteMetric=100
+EOB
+
+# cat > /mnt/etc/systemd/network/27-wireless.network <<EOB
+[Match]
+Type=wlan
+[Link]
+RequiredForOnline=routable
+[Network]
+DHCP=yes
+IgnoreCarrierLoss=3s
+[DHCPv4]
+RouteMetric=600
+[IPV6AcceptRA]
+RouteMetric=600
+EOB
+
+# sed -i '/^\[Network/a\ManageForeignRoutingPolicyRules=no' \
+    /mnt/etc/systemd/networkd.conf
+# systemctl enable systemd-networkd --root=/mnt
+```
+
+Ref: [Systemd-networkd](https://wiki.archlinux.org/title/Systemd-networkd)
+, [WireGuard#Connection lost after sleep using systemd-networkd](https://wiki.archlinux.org/title/WireGuard#Connection_lost_after_sleep_using_systemd-networkd)
+
 ## Chroot
 
 ```
@@ -375,23 +438,29 @@ Ref: [Linux console/Keyboard configuration#Creating a custom keymap](https://wik
 ```
 # _kmapdir=/mnt/usr/share/kbd/keymaps/i386/qwerty
 # gzip -dc < ${_kmapdir}/us.map.gz > ${_kmapdir}/usa.map
-# sed -i '/^keycode[[:space:]]58/c\keycode 58 = Control' ${_kmapdir}/usa.map
+# sed -i '/^keycode[[:space:]]58/c\keycode 58 = Control' \
+    ${_kmapdir}/usa.map
 # echo "KEYMAP=usa" >> /mnt/etc/vconsole.conf
 ```
 
 Enable multilib repo.
-Ref: [General_recommendations#Repositories](https://wiki.archlinux.org/title/General_recommendations#Repositories)
+Ref: [General recommendations#Repositories](https://wiki.archlinux.org/title/General_recommendations#Repositories)
 
 ```
-# printf "[multilib]\nInclude = /etc/pacman.d/mirrorlist\n" >> /mnt/etc/pacman.conf
+# cat >> /mnt/etc/pacman.conf <<EOB
+[multilib]
+Include = /etc/pacman.d/mirrorlist
+EOB
 ```
 
 Enable BBR.
 Ref: [Sysctl#Enable BBR](https://wiki.archlinux.org/title/Sysctl#Enable_BBR)
 
 ```
-# echo "net.core.default_qdisc = cake" >> /mnt/etc/sysctl.d/99-bbr.conf
-# echo "net.ipv4.tcp_congestion_control = bbr" >> /mnt/etc/sysctl.d/99-bbr.conf
+# cat > /mnt/etc/sysctl.d/77-sysctl.conf << EOB
+net.core.default_qdisc = cake
+net.ipv4.tcp_congestion_control
+EOB
 ```
 
 Root Password:
