@@ -40,7 +40,11 @@ are hard to read, or no subjects. These AI tools are great for doing "Getting St
 but when you try to dig a little deeper, they would make things up, which is annoying,
 at the end, you always need to get back to the documentations.
 
-## TPM
+## Windows Specific
+
+This guide also works for Linux guest with minor tweaking.
+
+### TPM
 
 ~~If you install Windows 10, you can skip this section.~~
 
@@ -83,6 +87,20 @@ $ qemu-system-x86_64 \
 
 "and TPM will be available inside the virtual machine.
 After shutting down the virtual machine, swtpm will be automatically terminated."
+
+### Local Account
+
+The consumer version of Windows 11 forces user to use an online account when installing the system,
+here is how to bypass it and use local account:
+
+1, On the region selection interface, Press `Shift` + `F10`, a cmd window will pop up,
+type `oobe\bypassnro`, hit enter, then machine will reboot
+
+2, Disconnect internet connection by pulling up the cable or use command `ipconfig /release`
+
+3, In the following steps, choose `I don't have internet` and `Continue with limited setup`
+
+Ref: [Set Up Windows 11 With Only a Local Account](https://www.youtube.com/watch?v=62w1rKxOZMs)
 
 ## UEFI
 
@@ -380,23 +398,23 @@ $ qemu-system-x86_64 \
     -monitor unix:/tmp/monitor.sock,server,nowait
 ```
 
-Then you can connect with either `socat`, `nmap` or `openbsd-netcat`:
+Then you can connect with `socat`:
 
 ```
-$ socat - UNIX-CONNECT:/tmp/monitor.sock
-$ nc -U /tmp/monitor.sock
-$ ncat -U /tmp/monitor.sock
+$ socat -,echo=0,icanon=0 UNIX-CONNECT:/tmp/monitor.sock
 ```
 
-These commands will enter an interaction mode, which is inconvenience,
-since you can't use tab completion or arrow key command history, instead,
-you can use pipe to send commands, like:
+`echo=0,icanon=0` make keyboard interaction nicer here by preventing re-echoing of
+entered commands and enabling Tab completion and arrow keys for history.
+
+To send a one-shot command to QEMU, echo it thru socat to the UNIX socket:
 
 ```
 $ echo "help" | socat - UNIX-CONNECT:/tmp/monitor.sock
 ```
 
 Ref: [QEMU#UNIX socket](https://wiki.archlinux.org/title/QEMU#UNIX_socket)
+, [Connect to running qemu instance with qemu monitor](https://unix.stackexchange.com/questions/426652/connect-to-running-qemu-instance-with-qemu-monitor)
 
 ### Passthrough
 
@@ -438,4 +456,5 @@ $ echo "device_del usbstick1" | socat - UNIX-CONNECT:/tmp/monitor.sock
 
 Ref: [QEMU#Pass-through host USB device](https://wiki.archlinux.org/title/QEMU#Pass-through_host_USB_device)
 , [USB Emulation](https://www.qemu.org/docs/master/system/devices/usb.html)
+, [QemuDiskHotplug](https://wiki.ubuntu.com/QemuDiskHotplug)
 
