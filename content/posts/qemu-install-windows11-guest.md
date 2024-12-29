@@ -436,7 +436,7 @@ Bus 003 Device 007: ID 0781:5406 SanDisk Corp. Cruzer Micro U3
 Remeber device ID, use monitor socket to passthrough:
 
 ```
-$ echo "device_add usb-host,vendorid=0x0781,productid=0x5406,id=usbstick1" | \
+$ echo "device_add usb-host,vendorid=0x0781,productid=0x5406,id=usb1" | \
     socat - UNIX-CONNECT:/tmp/monitor.sock
 ```
 
@@ -451,7 +451,7 @@ $ echo "info usb" | socat - UNIX-CONNECT:/tmp/monitor.sock
 Detach device:
 
 ```
-$ echo "device_del usbstick1" | socat - UNIX-CONNECT:/tmp/monitor.sock
+$ echo "device_del usb1" | socat - UNIX-CONNECT:/tmp/monitor.sock
 ```
 
 Ref: [QEMU#Pass-through host USB device](https://wiki.archlinux.org/title/QEMU#Pass-through_host_USB_device)

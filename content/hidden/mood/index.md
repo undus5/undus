@@ -14,4 +14,3 @@ The Shawshank Redemption (1994)
 
 ![The Shawshank Redemption (1994)](images/the-shawshank-redemption-1994.webp)
 
-...
