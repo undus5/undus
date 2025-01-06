@@ -46,19 +46,11 @@ This guide also works for Linux guest with minor tweaking.
 
 ### TPM
 
-~~If you install Windows 10, you can skip this section.~~
+You can skip this section if you choose the
+[IoT version of Windows 11](https://massgrave.dev/windows_ltsc_links)
+, which do not require TPM, UEFI and Secure boot.
 
->After satisfing all the requirements, finishing the whole process, I found this:
->[Windows 11 IoT Enterprise LTSC 2024](https://massgrave.dev/windows_ltsc_links),
->which do not require TPM, UEFI and Secure boot.
-
->Then these hilarious things happened:\
->2024-12-04: [TPM 2.0 – a necessity for a secure and future-proof Windows 11](https://techcommunity.microsoft.com/blog/windows-itpro-blog/tpm-2-0-%E2%80%93-a-necessity-for-a-secure-and-future-proof-windows-11/4339066)\
->2024-12-10: [Installing Windows 11 on devices that don't meet minimum system requirements](https://support.microsoft.com/en-us/windows/installing-windows-11-on-devices-that-don-t-meet-minimum-system-requirements-0b2dc4a2-5933-4ad4-9c09-ef0a331518f1)
-
->What a clown. "Fuxk Microsoft !" Not my word, it's a line from the TV show "Space Force". ^_^
-
-"QEMU can emulate Trusted Platform Module, ~~which is required by Windows 11 (which requires TPM 2.0).~~"
+"QEMU can emulate Trusted Platform Module, which is required by Windows 11 (which requires TPM 2.0)."
 
 Ref: [QEMU#Trusted Platform Module emulation](https://wiki.archlinux.org/title/QEMU#Trusted_Platform_Module_emulation)
 
@@ -101,6 +93,10 @@ type `oobe\bypassnro`, hit enter, then machine will reboot
 3, In the following steps, choose `I don't have internet` and `Continue with limited setup`
 
 Ref: [Set Up Windows 11 With Only a Local Account](https://www.youtube.com/watch?v=62w1rKxOZMs)
+
+...
+
+"Fuxk Microsoft !" --- A quote from the TV show "Space Force". ^_^
 
 ## UEFI
 
