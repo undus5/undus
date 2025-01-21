@@ -1,6 +1,6 @@
 +++
 title       = "QEMU Install Windows 11 Guest"
-lastmod     = 2024-12-24T19:32:00+08:00
+lastmod     = 2025-01-21T13:22:00+08:00
 date        = 2024-12-09
 showSummary = true
 showTOC     = true
@@ -96,7 +96,7 @@ Ref: [Set Up Windows 11 With Only a Local Account](https://www.youtube.com/watch
 
 ...
 
-"Fuxk Microsoft !" --- A quote from the TV show "Space Force". ^_^
+"Fuxk Microsoft !" --- A quote from the TV show "Space Force (2020)". ^_^
 
 ## UEFI
 
@@ -271,6 +271,21 @@ $ sudo systemctl restart systemd-networkd
 
 Ref: [Systemd-networkd#Network bridge with DHCP](https://wiki.archlinux.org/title/Systemd-networkd#Network_bridge_with_DHCP)
 
+The instructions above created a bridged network, which let virtual machines act
+like real computers under the LAN, obtain IP addresses dynamically from the gateway.
+If your network environment change frequently, for example you often move to different
+working postions, then you IP addresses may vary, which is annoying when communicating
+between the host and virtual machines.
+
+To solve the problem, you may create another bridge, make it a host-only network.
+The steps are similar, create `26-br1.netdev`, `26-br1.network`, exclude
+`26-br1-ether.network`, then assign static IP address for `26-br1.network`,
+replace `DHCP=yes` with `Address=192.168.123.1/24` or whatever private IP adress
+you like. Then your virtual machine will have a second network interface card,
+assign an IP address manually under the same subnet of `br1`, done. Now you can
+communicate your host and virtual machines with these fixed IP address regardless
+your public network environment.
+
 ### Tap Devices
 
 "The performance of virtual networking should be better with tap devices and bridges
@@ -307,7 +322,8 @@ Ref: [QEMU#Tap networking with QEMU](https://wiki.archlinux.org/title/QEMU#Tap_n
 
 ```
 $ qemu-system-x86_64 \
-    -nic bridge,br=br0,model=virtio-net-pci
+    -nic bridge,br=br0,model=virtio-net-pci \
+    -nic bridge,br=br1,model=virtio-net-pci
 ```
 
 Ref: [qemu(1)#nic](https://man.archlinux.org/man/qemu.1#nic)

@@ -19,14 +19,10 @@ Good stuff.
 ## Software / Hardware
 
 [Linuxiac](https://linuxiac.com/)
-, [phoronix](https://www.phoronix.com/)
-, [LinuxLinks](https://www.linuxlinks.com/)
-
-[Hackaday](https://hackaday.com/)
-, [CNX Software](https://www.cnx-software.com/)
+, [Hackaday](https://hackaday.com/)
+, [HackSpace](https://hackspace.raspberrypi.com/)
 
 ## Magazines
 
-[HackSpace](https://hackspace.raspberrypi.com/)
-, [Free Magazines Online](https://freemagazines.top/)
+[Free Magazines Online](https://freemagazines.top/)
 
