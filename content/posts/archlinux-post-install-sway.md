@@ -236,8 +236,6 @@ bar {
 ### Icon Theme
 
 Ref: [Icons](https://wiki.archlinux.org/title/Icons)
-, [Sway#Change cursor theme and size](https://wiki.archlinux.org/title/Sway#Change_cursor_theme_and_size)
-, [sway-bar(5)](https://man.archlinux.org/man/sway-bar.5.en)
 
 ```
 $ sudo pacman -S capitaine-cursors pop-icon-theme
@@ -247,16 +245,19 @@ Change default GTK icon theme:
 
 ```
 $ ls /usr/share/icons
-$ gsettings set org.gnome.desktop.interface Pop
+$ gsettings set org.gnome.desktop.interface icon-theme Pop
 ```
 
 Ref: [GTK#Basic theme configuration](https://wiki.archlinux.org/title/GTK#Basic_theme_configuration)
+, [GTK 3 settings on Wayland](https://github.com/swaywm/sway/wiki/GTK-3-settings-on-Wayland)
 
 Set cursor theme, edit `"~/.config/sway/config"` with:
 
 ```
 seat seat0 xcursor_theme capitaine-cursors 32
 ```
+
+Ref: [Sway#Change cursor theme and size](https://wiki.archlinux.org/title/Sway#Change_cursor_theme_and_size)
 
 ### Plymouth Theme
 
