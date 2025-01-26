@@ -77,17 +77,21 @@ exec /usr/lib/polkit-gnome/polkit-gnome-authentication-agent-1
 
 ## File Manager & Viewer
 
-Ref: [Thuner](https://wiki.archlinux.org/title/Thunar)
+Ref: [PCManFM](https://wiki.archlinux.org/title/PCManFM)
 , [GVFS](https://wiki.archlinux.org/title/File_manager_functionality#Mounting)
 
 ```
 $ sudo pacman -S \
-    thunar thunar-archive-plugin p7zip libarchive \
-    thunar-media-tags-plugin thunar-vcs-plugin thunar-volman tumbler \
+    pcmanfm-qt lxqt-archiver p7zip libarchive \
     gvfs gvfs-mtp gvfs-smb gvfs-wsdd gvfs-afc gvfs-dnssd \
     imv zathura foliate mpv chromium
 ```
 
+Thunar has no confirmation when deleting files out of home directory (means no trash support),
+which is horrible.
+
+[lxqt-archiver](https://archlinux.org/packages/?name=lxqt-archiver)
+compressing and uncompressing\
 [imv](https://man.archlinux.org/man/imv.1.en) image viewer,
 [zathura](https://wiki.archlinux.org/title/Zathura) pdf viewer,
 [foliate](https://johnfactotum.github.io/foliate/) ebook reader\
@@ -95,15 +99,15 @@ $ sudo pacman -S \
 also image viewer via configuration
 [mpv-image-viewer](https://github.com/occivink/mpv-image-viewer)
 
-Disable recent files. Ref: [gsettings](https://man.archlinux.org/man/gsettings.1)
+Default applications: [XDG MIME Applications#mimeapps.list](https://wiki.archlinux.org/title/XDG_MIME_Applications#mimeapps.list)
+, [Zathura#Make zathura the default pdf viewer](https://wiki.archlinux.org/title/Zathura#Make_zathura_the_default_pdf_viewer)
+, [Desktop entries](https://wiki.archlinux.org/title/Desktop_entries)
+
+Disable GTK recent files. Ref: [gsettings](https://man.archlinux.org/man/gsettings.1)
 
 ```
 $ gsettings set org.gnome.desktop.privacy remember-recent-files false
 ```
-
-Default applications: [XDG MIME Applications#mimeapps.list](https://wiki.archlinux.org/title/XDG_MIME_Applications#mimeapps.list)
-, [Zathura#Make zathura the default pdf viewer](https://wiki.archlinux.org/title/Zathura#Make_zathura_the_default_pdf_viewer)
-, [Desktop entries](https://wiki.archlinux.org/title/Desktop_entries)
 
 ## Volume Control
 
