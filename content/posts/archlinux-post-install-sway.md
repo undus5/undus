@@ -33,6 +33,7 @@ Ref: [Sway](https://wiki.archlinux.org/title/Sway)
 , [XDG Desktop Portal](https://wiki.archlinux.org/title/XDG_Desktop_Portal)
 , [XDG user directories](https://wiki.archlinux.org/title/XDG_user_directories)
 , [Waybar Wiki](https://github.com/Alexays/Waybar/wiki/Home)
+, [Desktop_notifications](https://wiki.archlinux.org/title/Desktop_notifications)
 
 ```
 $ sudo pacman -S \
@@ -65,36 +66,40 @@ Tools like [ventoy](https://www.ventoy.net/) need polkit to evaluate privilege.\
 Ref: [polkit](https://wiki.archlinux.org/title/Polkit)
 
 ```
-$ sudo pacman -S polkit lxqt-policykit
+$ sudo pacman -S polkit polkit-gnome
 ```
 
 Autostart with sway, edit `"~/.config/sway/config"` with:
 
 ```
-exec lxqt-policykit-agent
+exec /usr/lib/polkit-gnome/polkit-gnome-authentication-agent-1
 ```
 
 ## File Manager & Viewer
 
-Ref: [PCManFM](https://wiki.archlinux.org/title/PCManFM)
+Ref: [Thuner](https://wiki.archlinux.org/title/Thunar)
 , [GVFS](https://wiki.archlinux.org/title/File_manager_functionality#Mounting)
-, [PCManFM#Adding custom items to the context menu](https://wiki.archlinux.org/title/PCManFM#Adding_custom_items_to_the_context_menu)
 
 ```
 $ sudo pacman -S \
-    pcmanfm-qt lxqt-archiver p7zip libarchive \
+    thunar thunar-archive-plugin p7zip libarchive \
+    thunar-media-tags-plugin thunar-vcs-plugin thunar-volman tumbler \
     gvfs gvfs-mtp gvfs-smb gvfs-wsdd gvfs-afc gvfs-dnssd \
     imv zathura foliate mpv chromium
 ```
 
-[lxqt-archiver](https://archlinux.org/packages/?name=lxqt-archiver)
-compressing and uncompressing\
 [imv](https://man.archlinux.org/man/imv.1.en) image viewer,
 [zathura](https://wiki.archlinux.org/title/Zathura) pdf viewer,
 [foliate](https://johnfactotum.github.io/foliate/) ebook reader\
 [mpv](https://wiki.archlinux.org/title/Mpv) video/audio player,
 also image viewer via configuration
 [mpv-image-viewer](https://github.com/occivink/mpv-image-viewer)
+
+Disable recent files. Ref: [gsettings](https://man.archlinux.org/man/gsettings.1)
+
+```
+$ gsettings set org.gnome.desktop.privacy remember-recent-files false
+```
 
 Default applications: [XDG MIME Applications#mimeapps.list](https://wiki.archlinux.org/title/XDG_MIME_Applications#mimeapps.list)
 , [Zathura#Make zathura the default pdf viewer](https://wiki.archlinux.org/title/Zathura#Make_zathura_the_default_pdf_viewer)
@@ -160,7 +165,7 @@ So I swap Alt with Win then set Win as the main modifier key.
 
 ## Inhibit Idle
 
-Implement function like gnome-shell-extension-caffeine.
+Implement functions like gnome-shell-extension-caffeine.
 
 Create `"~/.config/sway/inhibit-idle.sh"` with:
 
