@@ -77,21 +77,16 @@ exec /usr/lib/polkit-gnome/polkit-gnome-authentication-agent-1
 
 ## File Manager & Viewer
 
-Ref: [PCManFM](https://wiki.archlinux.org/title/PCManFM)
+[Nemo](https://wiki.archlinux.org/title/Nemo)
 , [GVFS](https://wiki.archlinux.org/title/File_manager_functionality#Mounting)
 
 ```
 $ sudo pacman -S \
-    pcmanfm-qt lxqt-archiver p7zip libarchive \
+    nemo nemo-fileroller p7zip \
     gvfs gvfs-mtp gvfs-smb gvfs-wsdd gvfs-afc gvfs-dnssd \
     imv zathura foliate mpv chromium
 ```
 
-Thunar has no confirmation when deleting files out of home directory (means no trash support),
-which is horrible.
-
-[lxqt-archiver](https://archlinux.org/packages/?name=lxqt-archiver)
-compressing and uncompressing\
 [imv](https://man.archlinux.org/man/imv.1.en) image viewer,
 [zathura](https://wiki.archlinux.org/title/Zathura) pdf viewer,
 [foliate](https://johnfactotum.github.io/foliate/) ebook reader\
@@ -103,10 +98,18 @@ Default applications: [XDG MIME Applications#mimeapps.list](https://wiki.archlin
 , [Zathura#Make zathura the default pdf viewer](https://wiki.archlinux.org/title/Zathura#Make_zathura_the_default_pdf_viewer)
 , [Desktop entries](https://wiki.archlinux.org/title/Desktop_entries)
 
+Change the default terminal emulator for Nemo
+
+```
+$ gsettings set org.cinnamon.desktop.default-applications.terminal exec foot
+```
+
 Disable GTK recent files. Ref: [gsettings](https://man.archlinux.org/man/gsettings.1)
 
 ```
-$ gsettings set org.gnome.desktop.privacy remember-recent-files false
+$ gsettings set org.cinnamon.desktop.privacy remember-recent-files false
+$ rm ~/.local/share/recently-used.xbel
+$ ln -s /dev/null ~/.local/share/recently-used.xbel
 ```
 
 ## Volume Control
@@ -242,14 +245,14 @@ bar {
 Ref: [Icons](https://wiki.archlinux.org/title/Icons)
 
 ```
-$ sudo pacman -S capitaine-cursors pop-icon-theme
+$ sudo pacman -S adwaita-icon-theme
 ```
 
 Change default GTK icon theme:
 
 ```
 $ ls /usr/share/icons
-$ gsettings set org.gnome.desktop.interface icon-theme Pop
+$ gsettings set org.gnome.desktop.interface icon-theme Adwaita
 ```
 
 Ref: [GTK#Basic theme configuration](https://wiki.archlinux.org/title/GTK#Basic_theme_configuration)
@@ -258,7 +261,7 @@ Ref: [GTK#Basic theme configuration](https://wiki.archlinux.org/title/GTK#Basic_
 Set cursor theme, edit `"~/.config/sway/config"` with:
 
 ```
-seat seat0 xcursor_theme capitaine-cursors 32
+seat seat0 xcursor_theme Adwaita 32
 ```
 
 Ref: [Sway#Change cursor theme and size](https://wiki.archlinux.org/title/Sway#Change_cursor_theme_and_size)
@@ -299,6 +302,27 @@ Alder Lake:
 ```
 $ sudo pacman -S intel-media-driver
 ```
+
+## Bluetooth
+
+Ref: [Bluetooth](https://wiki.archlinux.org/title/Bluetooth)
+
+```
+$ sudo pacman -S bluez bluez-utils
+$ sudo systemctl enable --now bluetooth
+```
+
+Pairing
+
+```
+$ bluetoothctl
+[bluetoothctl]# scan on
+[bluetoothctl]# pair <MAC_ADDRESS> (tab completion works)
+```
+
+Troubleshooting:\
+Reboot computer when this error occurred:
+[bluetoothctl: No default controller available](https://wiki.archlinux.org/title/Bluetooth#bluetoothctl:_No_default_controller_available)
 
 ## Printer
 
