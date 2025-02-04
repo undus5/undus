@@ -145,6 +145,8 @@ Ref:
 Ref:
 [Installation guide#Install essential packages](https://wiki.archlinux.org/title/Installation_guide#Install_essential_packages)
 
+### Kernel
+
 CPU microcode updates `"amd-ucode"` or `"intel-ucode"` for hardware bug and security fixes:
 
 ```
@@ -158,7 +160,7 @@ Ref: [pacstrap(8)](https://man.archlinux.org/man/pacstrap.8)
 The latest kernel sometimes may cause annoying bugs like [this](https://github.com/systemd/systemd/issues/33083),
 so setting LTS kernel as a fallback option would be a good choice.
 
-Swap on Zram:
+### Swap on Zram
 
 Ref: [Zram#Using zram-generator](https://wiki.archlinux.org/title/Zram#Using_zram-generator)
 
@@ -174,7 +176,7 @@ zram-size = min(ram, 8192)
 compression-algorithm = zstd
 ```
 
-Plymouth:
+### Plymouth
 
 Ref: [Plymouth](https://wiki.archlinux.org/title/Plymouth)
 
@@ -192,14 +194,14 @@ demonstrated at section [Initramfs](#initramfs) of this post.
 Add `"quiet"` `"splash"` kernel parameters,
 demonstrated at section [Boot Loader](#boot-loader) of this post.
 
-Console Font:
+### Console Font
 
 ```
 # pacstrap /mnt terminus-font
 # echo "FONT=ter-132b" >> /mnt/etc/vconsole.conf
 ```
 
-Desktop Font:
+### Desktop Font
 
 ```
 # pacstrap /mnt noto-fonts noto-fonts-cjk noto-fonts-emoji \
@@ -253,7 +255,7 @@ Create `"/etc/fonts/local.conf"` with:
 </fontconfig>
 ```
 
-PipeWire:
+### PipeWire
 
 Ref: [Advanced Linux Sound Architecture](https://wiki.archlinux.org/title/Advanced_Linux_Sound_Architecture)
 , [PipeWire](https://wiki.archlinux.org/title/PipeWire)
@@ -264,7 +266,7 @@ Ref: [Advanced Linux Sound Architecture](https://wiki.archlinux.org/title/Advanc
     pipewire-alsa pipewire-pulse pipewire-jack lib32-pipewire
 ```
 
-Utilities:
+### Utilities
 
 ```
 # pacstrap /mnt \
@@ -275,14 +277,14 @@ Utilities:
 
 Ref: [iwd](https://wiki.archlinux.org/title/Iwd)
 
-Neovim:
+### Neovim
 
 ```
 # pacstrap /mnt neovim
 # echo "EDITOR=/usr/bin/nvim" >> /mnt/etc/profile.d/bashrc
 ```
 
-Sudo:
+### Sudo
 
 Ref: [Sudo#Environment variables](https://wiki.archlinux.org/title/Sudo#Environment_variables)
 , [Sudo#Example entries](https://wiki.archlinux.org/title/Sudo#Example_entries)
@@ -641,9 +643,4 @@ Ref: [dm-crypt/Drive preparation#Wipe LUKS header](https://wiki.archlinux.org/ti
 # cryptsetup erase /dev/vda2
 # wipefs -a /dev/vda
 ```
-
-## Automated Script
-
-The whole process in this post is gathered into an automated script [blast.sh](/blast.sh),
-feel free to take, run `"blast.sh help"` for help, use it at your own risk.
 
