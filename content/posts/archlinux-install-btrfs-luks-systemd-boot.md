@@ -176,6 +176,51 @@ zram-size = min(ram, 8192)
 compression-algorithm = zstd
 ```
 
+### PipeWire
+
+Ref: [Advanced Linux Sound Architecture](https://wiki.archlinux.org/title/Advanced_Linux_Sound_Architecture)
+, [PipeWire](https://wiki.archlinux.org/title/PipeWire)
+
+```
+# pacstrap /mnt alsa-utils \
+    pipewire wireplumber \
+    pipewire-alsa pipewire-pulse pipewire-jack lib32-pipewire
+```
+
+### Sudo
+
+Ref: [Sudo#Environment variables](https://wiki.archlinux.org/title/Sudo#Environment_variables)
+, [Sudo#Example entries](https://wiki.archlinux.org/title/Sudo#Example_entries)
+, [Sudo#Tips and tricks](https://wiki.archlinux.org/title/Sudo#Tips_and_tricks)
+
+```
+# pacstrap /mnt sudo bash-completion
+```
+
+Create `"/mnt/etc/sudoers.d/sudoers"` with:
+
+```
+%wheel ALL=(ALL:ALL) ALL
+Defaults passwd_timeout = 0
+Defaults timestamp_type = global
+Defaults timestamp_timeout = 15
+Defaults env_keep += "http_proxy https_proxy no_proxy"
+Defaults editor = /usr/bin/nvim
+```
+
+Ref: [Sudo#Passing aliases](https://wiki.archlinux.org/title/Sudo#Passing_aliases)
+
+```
+# echo "alias sudo='sudo '" >> /mnt/etc/profile.d/bashrc
+```
+
+### Neovim
+
+```
+# pacstrap /mnt neovim
+# echo "EDITOR=/usr/bin/nvim" >> /mnt/etc/profile.d/bashrc
+```
+
 ### Plymouth
 
 Ref: [Plymouth](https://wiki.archlinux.org/title/Plymouth)
@@ -255,17 +300,6 @@ Create `"/etc/fonts/local.conf"` with:
 </fontconfig>
 ```
 
-### PipeWire
-
-Ref: [Advanced Linux Sound Architecture](https://wiki.archlinux.org/title/Advanced_Linux_Sound_Architecture)
-, [PipeWire](https://wiki.archlinux.org/title/PipeWire)
-
-```
-# pacstrap /mnt alsa-utils \
-    pipewire wireplumber \
-    pipewire-alsa pipewire-pulse pipewire-jack lib32-pipewire
-```
-
 ### Utilities
 
 ```
@@ -276,40 +310,6 @@ Ref: [Advanced Linux Sound Architecture](https://wiki.archlinux.org/title/Advanc
 ```
 
 Ref: [iwd](https://wiki.archlinux.org/title/Iwd)
-
-### Neovim
-
-```
-# pacstrap /mnt neovim
-# echo "EDITOR=/usr/bin/nvim" >> /mnt/etc/profile.d/bashrc
-```
-
-### Sudo
-
-Ref: [Sudo#Environment variables](https://wiki.archlinux.org/title/Sudo#Environment_variables)
-, [Sudo#Example entries](https://wiki.archlinux.org/title/Sudo#Example_entries)
-, [Sudo#Tips and tricks](https://wiki.archlinux.org/title/Sudo#Tips_and_tricks)
-
-```
-# pacstrap /mnt sudo bash-completion
-```
-
-Create `"/mnt/etc/sudoers.d/sudoers"` with:
-
-```
-%wheel ALL=(ALL:ALL) ALL
-Defaults passwd_timeout = 0
-Defaults timestamp_type = global
-Defaults timestamp_timeout = 15
-Defaults env_keep += "http_proxy https_proxy no_proxy"
-Defaults editor = /usr/bin/nvim
-```
-
-Ref: [Sudo#Passing aliases](https://wiki.archlinux.org/title/Sudo#Passing_aliases)
-
-```
-# echo "alias sudo='sudo '" >> /mnt/etc/profile.d/bashrc
-```
 
 ## Fstab
 

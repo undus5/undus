@@ -66,23 +66,23 @@ Tools like [ventoy](https://www.ventoy.net/) need polkit to evaluate privilege.\
 Ref: [polkit](https://wiki.archlinux.org/title/Polkit)
 
 ```
-$ sudo pacman -S polkit polkit-gnome
+$ sudo pacman -S polkit lxqt-policykit
 ```
 
 Autostart with sway, edit `"~/.config/sway/config"` with:
 
 ```
-exec /usr/lib/polkit-gnome/polkit-gnome-authentication-agent-1
+exec lxqt-policykit-agent
 ```
 
 ## File Manager & Viewer
 
-[Nemo](https://wiki.archlinux.org/title/Nemo)
+Ref: [PCManFM](https://wiki.archlinux.org/title/PCManFM)
 , [GVFS](https://wiki.archlinux.org/title/File_manager_functionality#Mounting)
 
 ```
 $ sudo pacman -S \
-    nemo nemo-fileroller p7zip \
+    pcmanfm-qt lxqt-archiver p7zip libarchive \
     gvfs gvfs-mtp gvfs-smb gvfs-wsdd gvfs-afc gvfs-dnssd \
     imv zathura foliate mpv chromium
 ```
@@ -98,18 +98,18 @@ Default applications: [XDG MIME Applications#mimeapps.list](https://wiki.archlin
 , [Zathura#Make zathura the default pdf viewer](https://wiki.archlinux.org/title/Zathura#Make_zathura_the_default_pdf_viewer)
 , [Desktop entries](https://wiki.archlinux.org/title/Desktop_entries)
 
-Change the default terminal emulator for Nemo
-
-```
-$ gsettings set org.cinnamon.desktop.default-applications.terminal exec foot
-```
-
 Disable GTK recent files. Ref: [gsettings](https://man.archlinux.org/man/gsettings.1)
 
 ```
 $ gsettings set org.cinnamon.desktop.privacy remember-recent-files false
 $ rm ~/.local/share/recently-used.xbel
 $ ln -s /dev/null ~/.local/share/recently-used.xbel
+```
+
+Change the default terminal emulator for GTK based desktop
+
+```
+$ gsettings set org.cinnamon.desktop.default-applications.terminal exec foot
 ```
 
 ## Volume Control
