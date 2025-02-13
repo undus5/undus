@@ -32,14 +32,13 @@ $ sudo pacman -Syu
 Ref: [Sway](https://wiki.archlinux.org/title/Sway)
 , [XDG Desktop Portal](https://wiki.archlinux.org/title/XDG_Desktop_Portal)
 , [XDG user directories](https://wiki.archlinux.org/title/XDG_user_directories)
-, [Waybar Wiki](https://github.com/Alexays/Waybar/wiki/Home)
 , [Desktop_notifications](https://wiki.archlinux.org/title/Desktop_notifications)
 
 ```
 $ sudo pacman -S \
     sway swaylock swayidle swaybg xorg-xwayland \
     xdg-desktop-portal-gtk xdg-desktop-portal-wlr xdg-user-dirs \
-    wmenu foot foot-terminfo waybar mako wob grim sway-contrib
+    wmenu foot foot-terminfo mako wob grim sway-contrib
 ```
 
 foot: terminal emulator, mako: desktop notification.\
@@ -47,7 +46,6 @@ wob: indicator bar for volume or brightness.
 Ref: [Sway#Graphical indicator bars](https://wiki.archlinux.org/title/Sway#Graphical_indicator_bars)
 , [wob](https://github.com/francma/wob).\
 grim: screenshot. sway-contrib: area screenshot and window screenshot.\
-waybar: status bar, the built-in `"swaybar"` is lacking system tray support, so waybar came in.
 
 Initialize sway config file:
 
