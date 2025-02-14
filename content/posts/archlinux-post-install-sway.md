@@ -168,6 +168,10 @@ but some applications have useful default shortcuts combined with Alt key,
 such as `Alt+b` `Alt+f` in bash for jumping backward and forward word by word.
 So I swap Alt with Win then set Win as the main modifier key.
 
+## Keybindings
+
+Use [wev](https://archlinux.org/packages/?name=wev) to detect key names.
+
 ## Inhibit Idle
 
 Implement functions like gnome-shell-extension-caffeine.
