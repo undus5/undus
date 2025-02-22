@@ -115,8 +115,17 @@ $ gsettings set org.cinnamon.desktop.default-applications.terminal exec foot
 Ref: [No sound in mpv vlc but works in web browser](https://wiki.archlinux.org/title/PipeWire#No_sound_in_mpv,_vlc,_totem,_but_sound_works_in_web_browser_and_GNOME_speaker_test)
 
 ```
-$ sudo pacman -S pavucontrol
+$ sudo pacman -S pavucontrol-qt
 ```
+
+Fix missing icons:
+
+```
+$ XDG_CURRENT_DESKTOP=GNOME pavucontrol-qt
+```
+
+Ref: [Configuration of Qt 5/6 applications under environments other than KDE Plasma](https://wiki.archlinux.org/title/Qt#Configuration_of_Qt_5/6_applications_under_environments_other_than_KDE_Plasma)
+, [Not showing functional icons](https://github.com/lxqt/pavucontrol-qt/issues/126)
 
 ## Input Method
 
@@ -247,14 +256,14 @@ bar {
 Ref: [Icons](https://wiki.archlinux.org/title/Icons)
 
 ```
-$ sudo pacman -S adwaita-icon-theme
+$ sudo pacman -S breeze-icons
 ```
 
 Change default GTK icon theme:
 
 ```
 $ ls /usr/share/icons
-$ gsettings set org.gnome.desktop.interface icon-theme Adwaita
+$ gsettings set org.gnome.desktop.interface icon-theme breeze
 ```
 
 Ref: [GTK#Basic theme configuration](https://wiki.archlinux.org/title/GTK#Basic_theme_configuration)
@@ -295,7 +304,7 @@ Intel. Ref: [Intel graphics#Installation](https://wiki.archlinux.org/title/Intel
 $ sudo pacman -S lib32-mesa vulkan-intel lib32-vulkan-intel
 ```
 
-## Hardware Video Acceleration
+## HW Video Acceleration
 
 Ref: [Hardware video acceleration](https://wiki.archlinux.org/title/Hardware_video_acceleration)
 
