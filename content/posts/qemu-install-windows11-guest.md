@@ -13,32 +13,22 @@ Get rid of complex middle layers.
 
 ## Background
 
-Virtual machine management tool like libvirt is overkill for personal use, I think,
-from this perspective, it just increases the complexity and the cost for learning,
-which are unnecessary.
-
+Libvirt is overkill for personal use, I don't want to spend time to learn it for now.
 However, using the low level tool directly is not easy.
 Normally I would go to the official website reading the documentation when trying
 to learn some new tools, but this approach is not working well on QEMU, it's
 [documentation](https://www.qemu.org/documentation/) is not friendly for beginners,
 there's no "Getting Started" or "Tutorial", I didn't know where to start.
+[Arch wiki](https://wiki.archlinux.org/title/QEMU) is better, but still not specific for me.
+Google search, no luck either, everyone is using libvirt.
 
-[Arch wiki](https://wiki.archlinux.org/title/QEMU)
-is way better, but feel not kinda specific, I'm lacking some knowledge about such as
-operating system and hardware interface I presume, so still being a bit confusing.
-Google searching, no luck either, everyone is using libvirt.
-Then I asked ChatGPT for help, just sent a simple phrase "qemu command for windows guest",
-and it gave me a really well example with explaination, with the help of this
-good start point, I went back to the arch wiki then made progress.
-
-I barely use AI tools, since documentations and books are good enough for learning,
-I always feel nothing about those AI hyping things from the internet,
-but this time it surprised me. It also let me understand what is network bridge
-and TAP device, which ... I can't get from Wikipedia. Speak of Wikipedia,
-I think it never worked for me from ... since day 1, uh, the contents on this website
-are hard to read, or no subjects. These AI tools are great for doing "Getting Started" things,
-but when you try to dig a little deeper, they would make things up, which is annoying,
-at the end, you always need to get back to the documentations.
+Then I asked ChatGPT for help with a simple phrase "qemu command for windows guest",
+and it gave me a really good example with explaination, just one problem, it will
+make things up when you trying to dig deeper by asking more details.
+At the end, you always go back to the human written documentations for real study.
+But it still finished a good job, let me understand what is network bridge
+and TAP device, which I can't get from Wikipedia,
+the contents on Wikipedia are hard to read, often lacking subjects.
 
 ## Windows Specific
 
