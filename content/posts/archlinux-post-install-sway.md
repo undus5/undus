@@ -336,7 +336,7 @@ which is annoying, this is the most reason I don't like KDE stuff, feels like so
 ```
 $ sudo pacman -S gnome-themes-extra
 $ ls /usr/share/themes
-$ gsettings set org.gnome.desktop.interface gtk-theme Adwaita-Dark
+$ gsettings set org.gnome.desktop.interface gtk-theme Adwaita-dark
 ```
 
 ### Cursor Theme
