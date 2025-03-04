@@ -1,13 +1,13 @@
 +++
 title       = "Arch Linux Post Install: Sway"
-lastmod     = 2024-11-25T16:38:00+08:00
+lastmod     = 2025-03-04T10:29:00+08:00
 date        = 2024-11-24
 showSummary = true
 showTOC     = true
 weight      = 1000
 +++
 
-Build the exact system that fit my need.
+Build the exact system that fit my needs.
 
 <!--more-->
 
@@ -32,7 +32,7 @@ $ sudo pacman -Syu
 Ref: [Sway](https://wiki.archlinux.org/title/Sway)
 , [XDG Desktop Portal](https://wiki.archlinux.org/title/XDG_Desktop_Portal)
 , [XDG user directories](https://wiki.archlinux.org/title/XDG_user_directories)
-, [Desktop_notifications](https://wiki.archlinux.org/title/Desktop_notifications)
+, [Desktop notifications](https://wiki.archlinux.org/title/Desktop_notifications)
 
 ```
 $ sudo pacman -S \
@@ -58,130 +58,7 @@ $ sudo chown $USER:$USER ~/.config/sway/config
 The default config is a good start point, it has elaborate comments.
 Then you may read [i3 User’s Guide](https://i3wm.org/docs/userguide.html) for more details.
 
-## Polkit
-
-Tools like [ventoy](https://www.ventoy.net/) need polkit to evaluate privilege.\
-Ref: [polkit](https://wiki.archlinux.org/title/Polkit)
-
-```
-$ sudo pacman -S polkit lxqt-policykit
-```
-
-Autostart with sway, edit `"~/.config/sway/config"` with:
-
-```
-exec lxqt-policykit-agent
-```
-
-## File Manager & Viewer
-
-Ref: [PCManFM](https://wiki.archlinux.org/title/PCManFM)
-, [GVFS](https://wiki.archlinux.org/title/File_manager_functionality#Mounting)
-
-```
-$ sudo pacman -S \
-    pcmanfm-qt lxqt-archiver p7zip libarchive \
-    gvfs gvfs-mtp gvfs-smb gvfs-wsdd gvfs-afc gvfs-dnssd \
-    imv zathura foliate mpv chromium
-```
-
-[imv](https://man.archlinux.org/man/imv.1.en) image viewer,
-[zathura](https://wiki.archlinux.org/title/Zathura) pdf viewer,
-[foliate](https://johnfactotum.github.io/foliate/) ebook reader\
-[mpv](https://wiki.archlinux.org/title/Mpv) video/audio player,
-also image viewer via configuration
-[mpv-image-viewer](https://github.com/occivink/mpv-image-viewer)
-
-Default applications: [XDG MIME Applications#mimeapps.list](https://wiki.archlinux.org/title/XDG_MIME_Applications#mimeapps.list)
-, [Zathura#Make zathura the default pdf viewer](https://wiki.archlinux.org/title/Zathura#Make_zathura_the_default_pdf_viewer)
-, [Desktop entries](https://wiki.archlinux.org/title/Desktop_entries)
-
-Disable GTK recent files. Ref: [gsettings](https://man.archlinux.org/man/gsettings.1)
-
-```
-$ gsettings set org.cinnamon.desktop.privacy remember-recent-files false
-$ rm ~/.local/share/recently-used.xbel
-$ ln -s /dev/null ~/.local/share/recently-used.xbel
-```
-
-Change the default terminal emulator for GTK based desktop
-
-```
-$ gsettings set org.cinnamon.desktop.default-applications.terminal exec foot
-```
-
-## Volume Control
-
-Ref: [No sound in mpv vlc but works in web browser](https://wiki.archlinux.org/title/PipeWire#No_sound_in_mpv,_vlc,_totem,_but_sound_works_in_web_browser_and_GNOME_speaker_test)
-
-```
-$ sudo pacman -S pavucontrol-qt
-```
-
-Fix missing icons:
-
-```
-$ XDG_CURRENT_DESKTOP=GNOME pavucontrol-qt
-```
-
-Ref: [Configuration of Qt 5/6 applications under environments other than KDE Plasma](https://wiki.archlinux.org/title/Qt#Configuration_of_Qt_5/6_applications_under_environments_other_than_KDE_Plasma)
-, [Not showing functional icons](https://github.com/lxqt/pavucontrol-qt/issues/126)
-
-## Input Method
-
-Ref: [Fcitx5](https://wiki.archlinux.org/title/Fcitx5)
-, [Using Fcitx 5 on Wayland](https://fcitx-im.org/wiki/Using_Fcitx_5_on_Wayland)
-, [sway(5)](https://man.archlinux.org/man/sway.5.en)
-
-```
-$ sudo pacman -S fcitx5-im fcitx5-rime
-```
-
-Edit `".bashrc"` with:
-
-```
-export QT_IM_MODULE=fcitx
-export XMODIFIERS=@im=fcitx
-```
-
-Autostart with sway, edit `"~/.config/sway/config"` with:
-
-```
-exec fcitx5 -d -r
-```
-
-Fix fcitx5 not working for chromium on wayland,
-enter `"chrome://flags"` from chromium address bar, search for `"wayland"`, edit:
-
-```
-Preferred Ozone platform: Auto
-Wayland text-input-v3: Enabled
-```
-
-## Keymap
-
-Ref: [Sway#Keymap](https://wiki.archlinux.org/title/Sway#Keymap)
-
-Remap CapsLock to Ctrl, swap Alt with Win, and enable NumLock.\
-Edit `"~/.config/sway/config"` with:
-
-```
-input type:keyboard {
-    xkb_options 'ctrl:nocaps,altwin:swap_alt_win'
-    xkb_numlock enabled
-}
-```
-
-The position of left Alt key is the best for modifier key,
-but some applications have useful default shortcuts combined with Alt key,
-such as `Alt+b` `Alt+f` in bash for jumping backward and forward word by word.
-So I swap Alt with Win then set Win as the main modifier key.
-
-## Keybindings
-
-Use [wev](https://archlinux.org/packages/?name=wev) to detect key names.
-
-## Inhibit Idle
+### Inhibit Idle
 
 Implement functions like gnome-shell-extension-caffeine.
 
@@ -225,72 +102,125 @@ bindsym $mod+z exec ~/.config/sway/inhibit-idle.sh toggle
 Use `"~/.config/sway/inhibit-idle.sh status"` to get caffeine status,
 add it to swaybar script as an indicator.
 
-## Appearance
+## Keymap
 
-Tweaking some eye candy stuff.
+Ref: [Sway#Keymap](https://wiki.archlinux.org/title/Sway#Keymap)
 
-### Fonts
-
-Ref: [Font configuration](https://wiki.archlinux.org/title/Font_configuration)
-, [Font configuration#Alias](https://wiki.archlinux.org/title/Font_configuration#Alias)
-, [Pango.FontDescription](https://docs.gtk.org/Pango/type_func.FontDescription.from_string.html#description)
-
-Programming font:
+Remap CapsLock to Ctrl, swap Alt with Win, and enable NumLock.\
+Edit `"~/.config/sway/config"` with:
 
 ```
-$ sudo pacman -S ttf-jetbrains-mono ttf-nerd-fonts-symbols
-```
-
-Sway font config, edit `"~/.config/sway/config"` with:
-
-```
-font [pango:]<font>
-
-bar {
-    font [pango:]<font>
+input type:keyboard {
+    xkb_options 'ctrl:nocaps,altwin:swap_alt_win'
+    xkb_numlock enabled
 }
 ```
 
-### Icon Theme
+The position of left Alt key is the best for modifier key,
+but some applications have useful default shortcuts combined with Alt key,
+such as `Alt+b` `Alt+f` in bash for jumping backward and forward word by word.
+So I swap Alt with Win then set Win as the main modifier key.
 
-Ref: [Icons](https://wiki.archlinux.org/title/Icons)
+### Keybindings
 
-```
-$ sudo pacman -S breeze-icons
-```
+Use [wev](https://archlinux.org/packages/?name=wev) to detect key names.
 
-Change default GTK icon theme:
+## Input Method
 
-```
-$ ls /usr/share/icons
-$ gsettings set org.gnome.desktop.interface icon-theme breeze
-```
-
-Ref: [GTK#Basic theme configuration](https://wiki.archlinux.org/title/GTK#Basic_theme_configuration)
-, [GTK 3 settings on Wayland](https://github.com/swaywm/sway/wiki/GTK-3-settings-on-Wayland)
-
-Set cursor theme, edit `"~/.config/sway/config"` with:
+Ref: [Fcitx5](https://wiki.archlinux.org/title/Fcitx5)
+, [Using Fcitx 5 on Wayland](https://fcitx-im.org/wiki/Using_Fcitx_5_on_Wayland)
+, [sway(5)](https://man.archlinux.org/man/sway.5.en)
 
 ```
-seat seat0 xcursor_theme Adwaita 32
+$ sudo pacman -S fcitx5-im fcitx5-rime
 ```
 
-Ref: [Sway#Change cursor theme and size](https://wiki.archlinux.org/title/Sway#Change_cursor_theme_and_size)
-
-### Plymouth Theme
-
-Collection: [adi1090x/plymouth-themes](https://github.com/adi1090x/plymouth-themes)
+Edit `".bashrc"` with:
 
 ```
-$ tar xf spinner_alt.tar.gz
-$ sudo cp -r spinner_alt /usr/share/plymouth/themes/
-$ sudo plymouth-set-default-theme -l
-$ sudo plymouth-set-default-theme -R spinner_alt
+export QT_IM_MODULE=fcitx
+export XMODIFIERS=@im=fcitx
 ```
 
-Ref: [Plymouth#Install new themes](https://wiki.archlinux.org/title/Plymouth#Install_new_themes)
+Autostart with sway, edit `"~/.config/sway/config"` with:
 
-## GPU
+```
+exec fcitx5 -d -r
+```
+
+Fix fcitx5 not working for chromium on wayland,
+enter `"chrome://flags"` from chromium address bar, search for `"wayland"`, edit:
+
+```
+Preferred Ozone platform: Auto
+Wayland text-input-v3: Enabled
+```
+
+## Polkit
+
+Tools like [ventoy](https://www.ventoy.net/) need polkit to evaluate privilege.\
+Ref: [polkit](https://wiki.archlinux.org/title/Polkit)
+
+```
+$ sudo pacman -S polkit lxqt-policykit
+```
+
+Autostart with sway, edit `"~/.config/sway/config"` with:
+
+```
+exec lxqt-policykit-agent
+```
+
+## Volume Control
+
+Ref: [No sound in mpv vlc but works in web browser](https://wiki.archlinux.org/title/PipeWire#No_sound_in_mpv,_vlc,_totem,_but_sound_works_in_web_browser_and_GNOME_speaker_test)
+
+```
+$ sudo pacman -S pavucontrol
+```
+
+## File Manager, Reader
+
+Ref: [PCManFM](https://wiki.archlinux.org/title/PCManFM)
+, [GVFS](https://wiki.archlinux.org/title/File_manager_functionality#Mounting)
+
+```
+$ sudo pacman -S \
+    pcmanfm-qt lxqt-archiver p7zip libarchive \
+    gvfs gvfs-mtp gvfs-smb gvfs-wsdd gvfs-afc gvfs-dnssd \
+    imv zathura foliate mpv chromium
+```
+
+[imv](https://man.archlinux.org/man/imv.1.en) image viewer,
+[zathura](https://wiki.archlinux.org/title/Zathura) pdf viewer,
+[foliate](https://johnfactotum.github.io/foliate/) ebook reader\
+[mpv](https://wiki.archlinux.org/title/Mpv) video/audio player,
+also image viewer via configuration
+[mpv-image-viewer](https://github.com/occivink/mpv-image-viewer)
+
+Default applications: [XDG MIME Applications#mimeapps.list](https://wiki.archlinux.org/title/XDG_MIME_Applications#mimeapps.list)
+, [Zathura#Make zathura the default pdf viewer](https://wiki.archlinux.org/title/Zathura#Make_zathura_the_default_pdf_viewer)
+, [Desktop entries](https://wiki.archlinux.org/title/Desktop_entries)
+
+The fallback Qt theme is not looking good, for better appearance, check section [Qt Theme](#qt-theme).
+
+Following settings are for GTK based file managers, like Thunar and Nemo.
+
+Disable GTK recent files. Ref: [gsettings](https://man.archlinux.org/man/gsettings.1)
+
+```
+$ gsettings set org.cinnamon.desktop.privacy remember-recent-files false
+$ rm ~/.local/share/recently-used.xbel
+$ ln -s /dev/null ~/.local/share/recently-used.xbel
+```
+
+Change the default terminal emulator for GTK based desktop
+
+```
+$ gsettings set org.cinnamon.desktop.default-applications.terminal exec foot
+```
+
+## GPU Drivers
 
 AMD. Ref: [AMDGPU#Installation](https://wiki.archlinux.org/title/AMDGPU#Installation)
 
@@ -304,7 +234,7 @@ Intel. Ref: [Intel graphics#Installation](https://wiki.archlinux.org/title/Intel
 $ sudo pacman -S lib32-mesa vulkan-intel lib32-vulkan-intel
 ```
 
-## HW Video Acceleration
+### HW Video Acceleration
 
 Ref: [Hardware video acceleration](https://wiki.archlinux.org/title/Hardware_video_acceleration)
 
@@ -358,4 +288,75 @@ documentation for adding printer
 [http://localhost:631/help/admin.html](http://localhost:631/help/admin.html).
 
 Ref: [CUPS](https://wiki.archlinux.org/title/CUPS)
+
+## Appearance
+
+Tweaking some eye candy stuff.
+
+Ref: [Plymouth#Install new themes](https://wiki.archlinux.org/title/Plymouth#Install_new_themes)
+
+### Icon Theme
+
+Ref: [Icons](https://wiki.archlinux.org/title/Icons)
+
+```
+$ sudo pacman -S papirus-icon-theme
+```
+
+Change default GTK icon theme:
+
+```
+$ ls /usr/share/icons
+$ gsettings set org.gnome.desktop.interface icon-theme Papirus
+```
+
+Ref: [GTK#Basic theme configuration](https://wiki.archlinux.org/title/GTK#Basic_theme_configuration)
+, [GTK 3 settings on Wayland](https://github.com/swaywm/sway/wiki/GTK-3-settings-on-Wayland)
+
+For Qt settings check section [Qt Theme](#qt-theme).
+
+### Qt Theme
+
+Install `qt6ct` and set environment variables, then restart sway:
+
+```
+$ sudo pacman -S qt6ct
+$ echo "export QT_QPA_PLATFORM=wayland" >> ~/.bashrc
+$ echo "export QT_QPA_PLATFORMTHEME=qt6ct" >> ~/.bashrc
+```
+
+Ref: [Configuration of Qt 5/6 applications under environments other than KDE Plasma](https://wiki.archlinux.org/title/Qt#Configuration_of_Qt_5/6_applications_under_environments_other_than_KDE_Plasma)
+, [Not showing functional icons](https://github.com/lxqt/pavucontrol-qt/issues/126)
+
+Not recommending the `breeze` theme, the package will install lots of irrelevant KDE components,
+which is annoying, this is the most reason I don't like KDE stuff, feels like some virus suites.
+
+### GTK Dark Theme
+
+```
+$ sudo pacman -S gnome-themes-extra
+$ ls /usr/share/themes
+$ gsettings set org.gnome.desktop.interface gtk-theme Adwaita-Dark
+```
+
+### Cursor Theme
+
+Set cursor theme, edit `"~/.config/sway/config"` with:
+
+```
+seat seat0 xcursor_theme default 32
+```
+
+Ref: [Sway#Change cursor theme and size](https://wiki.archlinux.org/title/Sway#Change_cursor_theme_and_size)
+
+### Plymouth
+
+Collection: [adi1090x/plymouth-themes](https://github.com/adi1090x/plymouth-themes)
+
+```
+$ tar xf spinner_alt.tar.gz
+$ sudo cp -r spinner_alt /usr/share/plymouth/themes/
+$ sudo plymouth-set-default-theme -l
+$ sudo plymouth-set-default-theme -R spinner_alt
+```
 

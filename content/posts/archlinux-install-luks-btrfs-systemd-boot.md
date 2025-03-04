@@ -1,5 +1,6 @@
 +++
 title       = "Arch Linux Install: LUKS + Btrfs + Systemd-boot"
+aliases     = "/posts/archlinux-install-btrfs-luks-systemd-boot/"
 lastmod     = 2024-12-24T17:28:00+08:00
 date        = 2024-10-28
 showSummary = true
@@ -63,10 +64,11 @@ Ref: [Device file#Block devices](https://wiki.archlinux.org/title/Device_file#Bl
 ```
 # parted /dev/vda
 (parted) mklabel gpt
-(parted) mkpart efip fat32 1MiB 1025MiB
+(parted) mkpart efipart fat32 1MiB 1025MiB
 (parted) set 1 esp on
-(parted) mkpart rootp ext4 1025MiB 100%
+(parted) mkpart rootpart ext4 1025MiB 100%
 (parted) type 2 4f68bce3-e8cd-4db1-96e7-fbcaf984b709
+(parted) quit
 ```
 
 All partitions that have partition labels are listed in the /dev/disk/by-partlabel directory.\
@@ -75,8 +77,8 @@ Ref: [Persistent block device naming#by-partlabel](https://wiki.archlinux.org/ti
 ```
 # ls -l /dev/disk/by-partlabel
 total 0
-lrwxrwxrwx 1 root root ... efip -> ../../vda1
-lrwxrwxrwx 1 root root ... rootp -> ../../vda2
+lrwxrwxrwx 1 root root ... efipart -> ../../vda1
+lrwxrwxrwx 1 root root ... rootpart -> ../../vda2
 ```
 
 ## EFI Partition
@@ -85,7 +87,7 @@ Ref:
 [EFI system partition#Format the partition](https://wiki.archlinux.org/title/EFI_system_partition#Format_the_partition)
 
 ```
-# mkfs.fat -F32 /dev/disk/by-partlabel/efip
+# mkfs.fat -F32 /dev/disk/by-partlabel/efipart
 ```
 
 ## LUKS
@@ -97,8 +99,8 @@ Ref:
 Format LUKS partition and open:
 
 ```
-# cryptsetup luksFormat /dev/disk/by-partlabel/rootp
-# cryptsetup open /dev/disk/by-partlabel/rootp luksroot
+# cryptsetup luksFormat /dev/disk/by-partlabel/rootpart
+# cryptsetup open /dev/disk/by-partlabel/rootpart luksroot
 # ls /dev/mapper/luksroot
 ```
 
@@ -137,7 +139,7 @@ Ref:
 # mount -o subvol=@var --mkdir /dev/mapper/luksroot /mnt/var
 # mount -o subvol=@data --mkdir /dev/mapper/luksroot /mnt/data
 
-# mount --mkdir /dev/disk/by-partlabel/efip /mnt/efi
+# mount --mkdir /dev/disk/by-partlabel/efipart /mnt/efi
 ```
 
 ## Install Base Pkgs

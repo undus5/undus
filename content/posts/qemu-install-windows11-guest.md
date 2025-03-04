@@ -1,6 +1,6 @@
 +++
 title       = "QEMU Install Windows 11 Guest"
-lastmod     = 2025-01-21T13:22:00+08:00
+lastmod     = 2025-03-02T14:33:00+08:00
 date        = 2024-12-09
 showSummary = true
 showTOC     = true
@@ -259,7 +259,8 @@ Restart `systemd-networkd.service`:
 $ sudo systemctl restart systemd-networkd
 ```
 
-Ref: [Systemd-networkd#Network bridge with DHCP](https://wiki.archlinux.org/title/Systemd-networkd#Network_bridge_with_DHCP)
+Ref: [Systemd-networkd#Configuration examples](https://wiki.archlinux.org/title/Systemd-networkd#Configuration_examples)
+, [Systemd-networkd#Network bridge with DHCP](https://wiki.archlinux.org/title/Systemd-networkd#Network_bridge_with_DHCP)
 
 The instructions above created a bridged network, which let virtual machines act
 like real computers under the LAN, obtain IP addresses dynamically from the gateway.
@@ -275,6 +276,14 @@ you like. Then your virtual machine will have a second network interface card,
 assign an IP address manually under the same subnet of `br1`, done. Now you can
 communicate your host and virtual machines with these fixed IP address regardless
 your public network environment.
+
+You may want to have a DHCP server running on the bridge interface to service the virtual network.
+Edit `26-br1.network`, append `DHCPServer=yes` to the [Network] section.
+
+Ref:
+[QEMU#Host-only networking](https://wiki.archlinux.org/title/QEMU#Host-only_networking)
+, [Systemd-networkd#[DHCPServer]](https://wiki.archlinux.org/title/Systemd-networkd#[DHCPServer])
+, [systemd.network(5)](https://man.archlinux.org/man/systemd.network.5#%5BDHCPSERVER%5D_SECTION_OPTIONS)
 
 ### Tap Devices
 
