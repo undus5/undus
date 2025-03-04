@@ -321,7 +321,6 @@ Install `qt6ct` and set environment variables, then restart sway:
 
 ```
 $ sudo pacman -S qt6ct
-$ echo "export QT_QPA_PLATFORM=wayland" >> ~/.bashrc
 $ echo "export QT_QPA_PLATFORMTHEME=qt6ct" >> ~/.bashrc
 ```
 
