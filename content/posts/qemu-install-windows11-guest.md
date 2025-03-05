@@ -13,8 +13,7 @@ Get rid of complex middle layers.
 
 ## Background
 
-Libvirt is overkill for personal use, I don't want to spend time to learn it for now.
-However, using the low level tool directly is not easy.
+Libvirt is overkill for personal use. However, using the low level tool directly is not easy.
 Normally I would go to the official website reading the documentation when trying
 to learn some new tools, but this approach is not working well on QEMU, it's
 [documentation](https://www.qemu.org/documentation/) is not friendly for beginners,
