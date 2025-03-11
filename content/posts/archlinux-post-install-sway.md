@@ -16,7 +16,7 @@ The goal is to keep it as minimal as possible, with essential functions.
 ## Basic System
 
 Refer to my prev post:
-[Arch Linux with LUKS Btrfs and Systemd-boot](/posts/archlinux-with-btrfs-luks-systemd-boot/)
+[Arch Linux Install: LUKS + Btrfs + Systemd-boot](/posts/archlinux-install-luks-btrfs-systemd-boot/)
 
 ## Upgrade System
 
@@ -328,7 +328,7 @@ Ref: [Configuration of Qt 5/6 applications under environments other than KDE Pla
 , [Not showing functional icons](https://github.com/lxqt/pavucontrol-qt/issues/126)
 
 Not recommending the `breeze` theme, the package will install lots of irrelevant KDE components,
-which is annoying, this is the most reason I don't like KDE stuff, feels like some virus suites.
+which is annoying, this is the most reason I don't like KDE stuff.
 
 ### GTK Dark Theme
 
