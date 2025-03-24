@@ -187,7 +187,7 @@ Ref: [PCManFM](https://wiki.archlinux.org/title/PCManFM)
 ```
 $ sudo pacman -S \
     pcmanfm-qt lxqt-archiver p7zip libarchive \
-    gvfs gvfs-mtp gvfs-smb gvfs-wsdd gvfs-afc gvfs-dnssd \
+    gvfs gvfs-mtp gvfs-afc \
     imv zathura foliate mpv chromium
 ```
 

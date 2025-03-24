@@ -1,13 +1,13 @@
 +++
 title       = "QEMU Install Windows 11 Guest"
-lastmod     = 2025-03-02T14:33:00+08:00
+lastmod     = 2025-03-22T12:17:00+08:00
 date        = 2024-12-09
 showSummary = true
 showTOC     = true
 weight      = 1000
 +++
 
-Get rid of complex middle layers.
+Use the low level tools directly.
 
 <!--more-->
 
@@ -29,9 +29,10 @@ But it still finished a good job, let me understand what is network bridge
 and TAP device, which I can't get from Wikipedia,
 the contents on Wikipedia are hard to read, often lacking subjects.
 
-## Windows Specific
+This guide also works for other versions of Windows and Linux systems,
+since Windows 11 is the most requirements needed OS, it can cover all the situations.
 
-This guide also works for Linux guest with minor tweaking.
+## Windows Specific
 
 ### TPM
 
@@ -117,6 +118,8 @@ Ref: [qemu(1)#machine](https://man.archlinux.org/man/qemu.1#machine)
 "QEMU offers guests the ability to use paravirtualized block and network devices
 using the virtio drivers, which provide better performance and lower overhead."
 
+This step is optional, you could skip this section if you just want a quick boot.
+
 Download [virtio-win.iso](https://fedorapeople.org/groups/virt/virtio-win/direct-downloads/stable-virtio/virtio-win.iso)
 from [virtio-win GitHub](https://github.com/virtio-win/virtio-win-pkg-scripts/blob/master/README.md)
 
@@ -150,9 +153,13 @@ $ qemu-system-x86_64 \
     -device virtio-blk-pci,drive=disk0,bootindex=1
 ```
 
-Ref: [QEMU#Creating a hard disk image](https://wiki.archlinux.org/title/QEMU#Creating_a_hard_disk_image)
-
 During installation, you need to load driver from virtio iso to let disk controller working.
+
+If you just want a quick boot, and don't want bother with virtio,
+replace `virtio-blk-pci` with `ide-hd`,
+it's a built-in emulation drive, no need extra settings to work.
+
+Ref: [QEMU#Creating a hard disk image](https://wiki.archlinux.org/title/QEMU#Creating_a_hard_disk_image)
 
 ## Graphics Card
 
@@ -163,22 +170,32 @@ For cdrom booting:
 
 ```
 $ qemu-system-x86_64 \
-    -vga std -display gtk
+    -display sdl,gl=on,full-screen=on \
+    -vga std 
 ```
 
 For disk booting:
 
 ```
 $ qemu-system-x86_64 \
-    -device virtio-vga-gl -display sdl,gl=on,full-screen=on
+    -display sdl,gl=on,full-screen=on \
+    -device virtio-vga-gl
 ```
 
-The difference is after finishing the os installation, you can use virtio device
-to get better performance.
+If you just want a quick boot, and don't want bother with virtio, keep using `-vga std`,
+it's a built-in emulation drive, no need extra settings to work.
 
 Ref: [QEMU#Graphics card](https://wiki.archlinux.org/title/QEMU#Graphics_card)
 
 ## Networking
+
+If you just want a quick boot, and don't want bother with virtio,
+you could use the following options instead, and skip the rest of the section:
+
+```
+$ qemu-system-x86_64 \
+    -nic user,model=e1000
+```
 
 There're several types of network adapter in VirtualBox: NAT, Bridged, Host Only, Internal,
 and I didn't know much about how they work in details back then.
@@ -320,11 +337,38 @@ Ref: [QEMU#Tap networking with QEMU](https://wiki.archlinux.org/title/QEMU#Tap_n
 
 ```
 $ qemu-system-x86_64 \
-    -nic bridge,br=br0,model=virtio-net-pci \
-    -nic bridge,br=br1,model=virtio-net-pci
+    -nic bridge,br=br0,model=virtio-net-pci,mac=52:54:xx:xx:xx:xx \
+    -nic bridge,br=br1,model=virtio-net-pci,mac=52:54:xx:xx:xx:xx
 ```
 
 Ref: [qemu(1)#nic](https://man.archlinux.org/man/qemu.1#nic)
+
+Since QEMU by default will assign MAC addresses start from the same value
+for every virtual machine's first NIC, which is 52:54:00:12:34:56,
+then :57 :58 for the second and third NIC, it will cause conflict when
+using bridged networking with multiple virtual machines.
+
+To solve this problem, you can use the following bash script
+to generate unique but fixed MAC address. Save it as `genmacaddr.sh`:
+
+```
+#!/usr/bin/bash
+printf "${1}" | sha256sum |\
+    awk -v offset="$(( ${2} + 7 ))" '{ printf "52:54:%s:%s:%s:%s\n", \
+    substr($1,1,2), substr($1,3,2), substr($1,5,2), substr($1,offset,2) }'
+```
+
+Next, give your virtual machine a unique name, say "myvm1", then run:
+
+```
+$ ./genmacaddr.sh myvm1 1
+$ ./genmacaddr.sh myvm1 2
+$ ./genmacaddr.sh myvm1 3
+```
+
+The numbers represent to generate for the first, second, third NIC.
+
+[QEMU#Link-level address caveat](https://wiki.archlinux.org/title/QEMU#Link-level_address_caveat)
 
 ## Audio
 
@@ -335,11 +379,11 @@ $ qemu-system-x86_64 \
     -audiodev help
 ```
 
-Choose PipeWire as backend for example:
+Choose pulseaudio as backend for example:
 
 ```
 $ qemu-system-x86_64 \
-    -audiodev pipewire,id=snd0
+    -audiodev pa,id=snd0
 ```
 
 `id` can be arbitrary name.

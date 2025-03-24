@@ -1,7 +1,7 @@
 +++
 title       = "Arch Linux Install: LUKS + Btrfs + Systemd-boot"
 aliases     = "/posts/archlinux-install-btrfs-luks-systemd-boot/"
-lastmod     = 2024-12-24T17:28:00+08:00
+lastmod     = 2025-03-20T11:53:00+08:00
 date        = 2024-10-28
 showSummary = true
 showTOC     = true
@@ -153,7 +153,7 @@ CPU microcode updates `"amd-ucode"` or `"intel-ucode"` for hardware bug and secu
 
 ```
 # pacstrap -K /mnt base linux linux-lts linux-firmware \
-    btrfs-progs amd-ucode
+    btrfs-progs amd-ucode neovim
 ```
 
 `"-K"` means to initialize an empty pacman keyring in the target, so only adding it at first running.\
@@ -206,21 +206,7 @@ Create `"/mnt/etc/sudoers.d/sudoers"` with:
 Defaults passwd_timeout = 0
 Defaults timestamp_type = global
 Defaults timestamp_timeout = 15
-Defaults env_keep += "http_proxy https_proxy no_proxy"
 Defaults editor = /usr/bin/nvim
-```
-
-Ref: [Sudo#Passing aliases](https://wiki.archlinux.org/title/Sudo#Passing_aliases)
-
-```
-# echo "alias sudo='sudo '" >> /mnt/etc/profile.d/bashrc
-```
-
-### Neovim
-
-```
-# pacstrap /mnt neovim
-# echo "EDITOR=/usr/bin/nvim" >> /mnt/etc/profile.d/bashrc
 ```
 
 ### Plymouth
@@ -515,10 +501,8 @@ Ref: [EFI system partition#Alternative mount points](https://wiki.archlinux.org/
 # mkdir -p /efi/EFI/arch
 # cp -a /boot/vmlinuz-linux /efi/EFI/arch/
 # cp -a /boot/initramfs-linux.img /efi/EFI/arch/
-# cp -a /boot/initramfs-linux-fallback.img /efi/EFI/arch/
 # cp -a /boot/vmlinuz-linux-lts /efi/EFI/arch/
 # cp -a /boot/initramfs-linux-lts.img /efi/EFI/arch/
-# cp -a /boot/initramfs-linux-lts-fallback.img /efi/EFI/arch/
 ```
 
 Auto update boot files under ESP with systemd.\
@@ -546,10 +530,8 @@ Description=Copy EFISTUB Kernel to EFI system partition
 Type=oneshot
 ExecStart=/usr/bin/cp -af /boot/vmlinuz-linux /efi/EFI/arch/
 ExecStart=/usr/bin/cp -af /boot/initramfs-linux.img /efi/EFI/arch/
-ExecStart=/usr/bin/cp -af /boot/initramfs-linux-fallback.img /efi/EFI/arch/
 ExecStart=/usr/bin/cp -af /boot/vmlinuz-linux-lts /efi/EFI/arch/
 ExecStart=/usr/bin/cp -af /boot/initramfs-linux-lts.img /efi/EFI/arch/
-ExecStart=/usr/bin/cp -af /boot/initramfs-linux-lts-fallback.img /efi/EFI/arch/
 ```
 
 Enable systemd units:
@@ -593,15 +575,6 @@ title Arch Linux LTS
 linux /EFI/arch/vmlinuz-linux-lts
 initrd /EFI/arch/initramfs-linux-lts.img
 options rootflags=subvol=@ quiet splash
-```
-
-Create `"/efi/loader/entries/arch-fallback.conf"`.
-
-```
-title Arch Linux (fallback initramfs)
-linux /EFI/arch/vmlinuz-linux
-initrd /EFI/arch/initramfs-linux-fallback.img
-options rootflags=subvol=@
 ```
 
 Note: If disk partitions were not following
