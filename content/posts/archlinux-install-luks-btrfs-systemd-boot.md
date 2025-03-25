@@ -209,24 +209,6 @@ Defaults timestamp_timeout = 15
 Defaults editor = /usr/bin/nvim
 ```
 
-### Plymouth
-
-Ref: [Plymouth](https://wiki.archlinux.org/title/Plymouth)
-
-```
-# pacstrap /mnt plymouth
-# cat >> /mnt/etc/plymouth/plymouth.conf <<EOB
-[Daemon]
-Theme=spinner
-EOB
-```
-
-Add plymouth to the HOOKS array,
-demonstrated at section [Initramfs](#initramfs) of this post.
-
-Add `"quiet"` `"splash"` kernel parameters,
-demonstrated at section [Boot Loader](#boot-loader) of this post.
-
 ### Console Font
 
 ```
@@ -443,16 +425,6 @@ Include = /etc/pacman.d/mirrorlist
 EOB
 ```
 
-Enable BBR.
-Ref: [Sysctl#Enable BBR](https://wiki.archlinux.org/title/Sysctl#Enable_BBR)
-
-```
-# cat > /mnt/etc/sysctl.d/77-sysctl.conf << EOB
-net.core.default_qdisc = cake
-net.ipv4.tcp_congestion_control
-EOB
-```
-
 Root Password:
 
 ```
@@ -472,7 +444,7 @@ Ref: [dm-crypt/System configuration#mkinitcpio](https://wiki.archlinux.org/title
 Edit `"/etc/mkinitcpio.conf"`:
 
 ```
-HOOKS=(base systemd plymouth autodetect microcode modconf kms keyboard sd-vconsole sd-encrypt block filesystems fsck)
+HOOKS=(base systemd autodetect microcode modconf kms keyboard sd-vconsole sd-encrypt block filesystems fsck)
 ```
 
 Recreate initramfs image:
@@ -561,7 +533,7 @@ Create `"/efi/loader/entries/arch.conf"`.
 title Arch Linux
 linux /EFI/arch/vmlinuz-linux
 initrd /EFI/arch/initramfs-linux.img
-options rootflags=subvol=@ quiet splash
+options rootflags=subvol=@ quiet
 ```
 
 To use a subvolume as the root mountpoint, specify the subvolume via a kernel parameter
@@ -574,7 +546,7 @@ Create `"/efi/loader/entries/arch-lts.conf"`.
 title Arch Linux LTS
 linux /EFI/arch/vmlinuz-linux-lts
 initrd /EFI/arch/initramfs-linux-lts.img
-options rootflags=subvol=@ quiet splash
+options rootflags=subvol=@ quiet
 ```
 
 Note: If disk partitions were not following

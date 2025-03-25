@@ -291,9 +291,7 @@ Ref: [CUPS](https://wiki.archlinux.org/title/CUPS)
 
 ## Appearance
 
-Tweaking some eye candy stuff.
-
-Ref: [Plymouth#Install new themes](https://wiki.archlinux.org/title/Plymouth#Install_new_themes)
+Necessary appearance settings.
 
 ### Icon Theme
 
@@ -338,24 +336,13 @@ $ ls /usr/share/themes
 $ gsettings set org.gnome.desktop.interface gtk-theme Adwaita-dark
 ```
 
-### Cursor Theme
+### Cursor Size
 
-Set cursor theme, edit `"~/.config/sway/config"` with:
+Change cursor size by setting cursor theme, edit `"~/.config/sway/config"` with:
 
 ```
 seat seat0 xcursor_theme default 32
 ```
 
 Ref: [Sway#Change cursor theme and size](https://wiki.archlinux.org/title/Sway#Change_cursor_theme_and_size)
-
-### Plymouth
-
-Collection: [adi1090x/plymouth-themes](https://github.com/adi1090x/plymouth-themes)
-
-```
-$ tar xf spinner_alt.tar.gz
-$ sudo cp -r spinner_alt /usr/share/plymouth/themes/
-$ sudo plymouth-set-default-theme -l
-$ sudo plymouth-set-default-theme -R spinner_alt
-```
 
