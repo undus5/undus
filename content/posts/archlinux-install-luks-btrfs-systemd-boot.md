@@ -152,8 +152,9 @@ Ref:
 CPU microcode updates `"amd-ucode"` or `"intel-ucode"` for hardware bug and security fixes:
 
 ```
-# pacstrap -K /mnt base linux linux-lts linux-firmware \
-    btrfs-progs amd-ucode neovim
+# pacstrap -K /mnt \
+    base linux linux-lts linux-firmware btrfs-progs iptables-nft \
+    amd-ucode neovim
 ```
 
 `"-K"` means to initialize an empty pacman keyring in the target, so only adding it at first running.\
@@ -176,17 +177,6 @@ Create `"/mnt/etc/systemd/zram-generator.conf"` with:
 [zram0]
 zram-size = min(ram, 8192)
 compression-algorithm = zstd
-```
-
-### PipeWire
-
-Ref: [Advanced Linux Sound Architecture](https://wiki.archlinux.org/title/Advanced_Linux_Sound_Architecture)
-, [PipeWire](https://wiki.archlinux.org/title/PipeWire)
-
-```
-# pacstrap /mnt alsa-utils \
-    pipewire wireplumber \
-    pipewire-alsa pipewire-pulse pipewire-jack lib32-pipewire
 ```
 
 ### Sudo
@@ -214,60 +204,6 @@ Defaults editor = /usr/bin/nvim
 ```
 # pacstrap /mnt terminus-font
 # echo "FONT=ter-132b" >> /mnt/etc/vconsole.conf
-```
-
-### Desktop Font
-
-```
-# pacstrap /mnt noto-fonts noto-fonts-cjk noto-fonts-emoji \
-    hicolor-icon-theme
-```
-
-Adjust fallback fonts order, this is for fixing wierd looking of some Chinese characters,
-such as "复制".\
-Ref: [Font configuration#Fontconfig configuration](https://wiki.archlinux.org/title/Font_configuration#Fontconfig_configuration)
-, [Font configuration#Alias](https://wiki.archlinux.org/title/Font_configuration#Alias)
-
-Create `"/etc/fonts/local.conf"` with:
-
-```
-<?xml version="1.0"?>
-<!DOCTYPE fontconfig SYSTEM "urn:fontconfig:fonts.dtd">
-<fontconfig>
-<alias>
-    <family>sans-serif</family>
-    <prefer>
-        <family>Noto Sans</family>
-        <family>Noto Sans CJK SC</family>
-        <family>Noto Sans CJK TC</family>
-        <family>Noto Sans CJK HK</family>
-        <family>Noto Sans CJK JP</family>
-        <family>Noto Sans CJK KR</family>
-    </prefer>
-</alias>
-<alias>
-    <family>serif</family>
-    <prefer>
-        <family>Noto Serif</family>
-        <family>Noto Serif CJK SC</family>
-        <family>Noto Serif CJK TC</family>
-        <family>Noto Serif CJK HK</family>
-        <family>Noto Serif CJK JP</family>
-        <family>Noto Serif CJK KR</family>
-    </prefer>
-</alias>
-<alias>
-    <family>monospace</family>
-    <prefer>
-        <family>Noto Sans Mono</family>
-        <family>Noto Sans Mono CJK SC</family>
-        <family>Noto Sans Mono CJK TC</family>
-        <family>Noto Sans Mono CJK HK</family>
-        <family>Noto Sans Mono CJK JP</family>
-        <family>Noto Sans Mono CJK KR</family>
-    </prefer>
-</alias>
-</fontconfig>
 ```
 
 ### Utilities
@@ -568,8 +504,8 @@ Ref: [Snapper#Suggested filesystem layout](https://wiki.archlinux.org/title/Snap
 So, to keep /var as a separate btrfs subvolume, we need to move pacman database out of /var:
 
 ```
-# sed -i '/^#DBPath/a\DBPath=/usr/pacman' /etc/pacman.conf
-# mv /var/lib/pacman /usr/pacman
+# sed -i '/^#DBPath/a\DBPath=/usr/pacmandb' /etc/pacman.conf
+# mv /var/lib/pacman /usr/pacmandb
 ```
 
 ## Reboot

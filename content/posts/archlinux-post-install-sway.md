@@ -13,14 +13,10 @@ Build the exact system that fit my needs.
 
 The goal is to keep it as minimal as possible, with essential functions.
 
-## Basic System
-
-Refer to my prev post:
+For basic system installation, refer to my prev post:
 [Arch Linux Install: LUKS + Btrfs + Systemd-boot](/posts/archlinux-install-luks-btrfs-systemd-boot/)
 
-## Upgrade System
-
-Upgrade first.
+Upgrade system first before installing any packages.\
 Ref: [System maintenance#Avoid certain pacman commands](https://wiki.archlinux.org/title/System_maintenance#Avoid_certain_pacman_commands)
 
 ```
@@ -38,10 +34,10 @@ Ref: [Sway](https://wiki.archlinux.org/title/Sway)
 $ sudo pacman -S \
     sway swaylock swayidle swaybg xorg-xwayland \
     xdg-desktop-portal-gtk xdg-desktop-portal-wlr xdg-user-dirs \
-    wmenu foot foot-terminfo mako wob grim sway-contrib
+    wmenu alacritty mako wob grim sway-contrib
 ```
 
-foot: terminal emulator, mako: desktop notification.\
+alacritty: terminal emulator, mako: desktop notification.\
 wob: indicator bar for volume or brightness.
 Ref: [Sway#Graphical indicator bars](https://wiki.archlinux.org/title/Sway#Graphical_indicator_bars)
 , [wob](https://github.com/francma/wob).\
@@ -57,50 +53,6 @@ $ sudo chown $USER:$USER ~/.config/sway/config
 
 The default config is a good start point, it has elaborate comments.
 Then you may read [i3 User’s Guide](https://i3wm.org/docs/userguide.html) for more details.
-
-### Inhibit Idle
-
-Implement functions like gnome-shell-extension-caffeine.
-
-Create `"~/.config/sway/inhibit-idle.sh"` with:
-
-```
-#!/usr/bin/env bash
-
-idle_status() {
-    swaymsg -t get_tree -r | grep -q "inhibit_idle.*true" && \
-        echo "CAFFEINE" || echo ""
-}
-
-idle_toggle() {
-    if [[ "$(status)" != "CAFFEINE" ]]; then
-        swaymsg [all] inhibit_idle open
-    else
-        swaymsg [all] inhibit_idle none
-    fi
-}
-
-case "${1}" in
-    status)
-        idle_status
-        ;;
-    toggle)
-        idle_toggle
-        ;;
-    *)
-        echo "Usage: $(basename $0) [status|toggle]"
-        ;;
-esac
-```
-
-Make it executable, then bind key combo to it in `"~/.config/sway/config"` like this:
-
-```
-bindsym $mod+z exec ~/.config/sway/inhibit-idle.sh toggle
-```
-
-Use `"~/.config/sway/inhibit-idle.sh status"` to get caffeine status,
-add it to swaybar script as an indicator.
 
 ## Keymap
 
@@ -121,8 +73,7 @@ but some applications have useful default shortcuts combined with Alt key,
 such as `Alt+b` `Alt+f` in bash for jumping backward and forward word by word.
 So I swap Alt with Win then set Win as the main modifier key.
 
-### Keybindings
-
+For keybinding configs,
 Use [wev](https://archlinux.org/packages/?name=wev) to detect key names.
 
 ## Input Method
@@ -156,19 +107,15 @@ Preferred Ozone platform: Auto
 Wayland text-input-v3: Enabled
 ```
 
-## Polkit
+## PipeWire
 
-Tools like [ventoy](https://www.ventoy.net/) need polkit to evaluate privilege.\
-Ref: [polkit](https://wiki.archlinux.org/title/Polkit)
-
-```
-$ sudo pacman -S polkit lxqt-policykit
-```
-
-Autostart with sway, edit `"~/.config/sway/config"` with:
+Ref: [Advanced Linux Sound Architecture](https://wiki.archlinux.org/title/Advanced_Linux_Sound_Architecture)
+, [PipeWire](https://wiki.archlinux.org/title/PipeWire)
 
 ```
-exec lxqt-policykit-agent
+# pacstrap /mnt alsa-utils \
+    pipewire wireplumber \
+    pipewire-alsa pipewire-pulse pipewire-jack lib32-pipewire
 ```
 
 ## Volume Control
@@ -217,81 +164,81 @@ $ ln -s /dev/null ~/.local/share/recently-used.xbel
 Change the default terminal emulator for GTK based desktop
 
 ```
-$ gsettings set org.cinnamon.desktop.default-applications.terminal exec foot
+$ gsettings set org.cinnamon.desktop.default-applications.terminal exec alacritty
 ```
 
-## GPU Drivers
+## Polkit
 
-AMD. Ref: [AMDGPU#Installation](https://wiki.archlinux.org/title/AMDGPU#Installation)
-
-```
-$ sudo pacman -S lib32-mesa vulkan-radeon lib32-vulkan-radeon
-```
-
-Intel. Ref: [Intel graphics#Installation](https://wiki.archlinux.org/title/Intel_graphics#Installation)
+Tools like [ventoy](https://www.ventoy.net/) need polkit to evaluate privilege.\
+Ref: [polkit](https://wiki.archlinux.org/title/Polkit)
 
 ```
-$ sudo pacman -S lib32-mesa vulkan-intel lib32-vulkan-intel
+$ sudo pacman -S polkit lxqt-policykit
 ```
 
-### HW Video Acceleration
-
-Ref: [Hardware video acceleration](https://wiki.archlinux.org/title/Hardware_video_acceleration)
-
-Alder Lake:
+Autostart with sway, edit `"~/.config/sway/config"` with:
 
 ```
-$ sudo pacman -S intel-media-driver
+exec lxqt-policykit-agent
 ```
-
-## Bluetooth
-
-Ref: [Bluetooth](https://wiki.archlinux.org/title/Bluetooth)
-
-```
-$ sudo pacman -S bluez bluez-utils
-$ sudo systemctl enable --now bluetooth
-```
-
-Pairing
-
-```
-$ bluetoothctl
-[bluetoothctl]# scan on
-[bluetoothctl]# pair <MAC_ADDRESS> (tab completion works)
-```
-
-Troubleshooting:\
-Reboot computer when this error occurred:
-[bluetoothctl: No default controller available](https://wiki.archlinux.org/title/Bluetooth#bluetoothctl:_No_default_controller_available)
-
-## Printer
-
-Install cups packages:
-
-```
-$ sudo pacman -S cups cups-pdf
-$ sudo systemctl enable --now cups
-```
-
-Install printer driver if needed, for example:
-
-```
-$ yay -S brlaser
-```
-
-Ref: [AUR helpers](https://wiki.archlinux.org/title/AUR_helpers)
-, [yay](https://github.com/Jguer/yay)
-
-The CUPS server can be fully administered through the web interface, and there's
-documentation for adding printer
-[http://localhost:631/help/admin.html](http://localhost:631/help/admin.html).
-
-Ref: [CUPS](https://wiki.archlinux.org/title/CUPS)
 
 ## Appearance
 
 Necessary appearance settings.
+
+### Fonts
+
+```
+# pacstrap /mnt noto-fonts noto-fonts-cjk noto-fonts-emoji \
+    hicolor-icon-theme
+```
+
+Adjust fallback fonts order, this is for fixing wierd looking of some Chinese characters,
+such as "复制".\
+Ref: [Font configuration#Fontconfig configuration](https://wiki.archlinux.org/title/Font_configuration#Fontconfig_configuration)
+, [Font configuration#Alias](https://wiki.archlinux.org/title/Font_configuration#Alias)
+
+Create `"/etc/fonts/local.conf"` with:
+
+```
+<?xml version="1.0"?>
+<!DOCTYPE fontconfig SYSTEM "urn:fontconfig:fonts.dtd">
+<fontconfig>
+<alias>
+    <family>sans-serif</family>
+    <prefer>
+        <family>Noto Sans</family>
+        <family>Noto Sans CJK SC</family>
+        <family>Noto Sans CJK TC</family>
+        <family>Noto Sans CJK HK</family>
+        <family>Noto Sans CJK JP</family>
+        <family>Noto Sans CJK KR</family>
+    </prefer>
+</alias>
+<alias>
+    <family>serif</family>
+    <prefer>
+        <family>Noto Serif</family>
+        <family>Noto Serif CJK SC</family>
+        <family>Noto Serif CJK TC</family>
+        <family>Noto Serif CJK HK</family>
+        <family>Noto Serif CJK JP</family>
+        <family>Noto Serif CJK KR</family>
+    </prefer>
+</alias>
+<alias>
+    <family>monospace</family>
+    <prefer>
+        <family>Noto Sans Mono</family>
+        <family>Noto Sans Mono CJK SC</family>
+        <family>Noto Sans Mono CJK TC</family>
+        <family>Noto Sans Mono CJK HK</family>
+        <family>Noto Sans Mono CJK JP</family>
+        <family>Noto Sans Mono CJK KR</family>
+    </prefer>
+</alias>
+</fontconfig>
+```
 
 ### Icon Theme
 
@@ -345,4 +292,72 @@ seat seat0 xcursor_theme default 32
 ```
 
 Ref: [Sway#Change cursor theme and size](https://wiki.archlinux.org/title/Sway#Change_cursor_theme_and_size)
+
+## GPU
+
+AMD. Ref: [AMDGPU#Installation](https://wiki.archlinux.org/title/AMDGPU#Installation)
+
+```
+$ sudo pacman -S lib32-mesa vulkan-radeon lib32-vulkan-radeon
+```
+
+Intel. Ref: [Intel graphics#Installation](https://wiki.archlinux.org/title/Intel_graphics#Installation)
+
+```
+$ sudo pacman -S lib32-mesa vulkan-intel lib32-vulkan-intel
+```
+
+Hardware Video Acceleration.
+Ref: [Hardware video acceleration](https://wiki.archlinux.org/title/Hardware_video_acceleration)
+
+Alder Lake:
+
+```
+$ sudo pacman -S intel-media-driver
+```
+
+## Bluetooth
+
+Ref: [Bluetooth](https://wiki.archlinux.org/title/Bluetooth)
+
+```
+$ sudo pacman -S bluez bluez-utils
+$ sudo systemctl enable --now bluetooth
+```
+
+Pairing
+
+```
+$ bluetoothctl
+[bluetoothctl]# scan on
+[bluetoothctl]# pair <MAC_ADDRESS> (tab completion works)
+```
+
+Troubleshooting:\
+Reboot computer when this error occurred:
+[bluetoothctl: No default controller available](https://wiki.archlinux.org/title/Bluetooth#bluetoothctl:_No_default_controller_available)
+
+## Printer
+
+Install cups packages:
+
+```
+$ sudo pacman -S cups cups-pdf
+$ sudo systemctl enable --now cups
+```
+
+Install printer driver if needed, for example:
+
+```
+$ yay -S brlaser
+```
+
+Ref: [AUR helpers](https://wiki.archlinux.org/title/AUR_helpers)
+, [yay](https://github.com/Jguer/yay)
+
+The CUPS server can be fully administered through the web interface, and there's
+documentation for adding printer
+[http://localhost:631/help/admin.html](http://localhost:631/help/admin.html).
+
+Ref: [CUPS](https://wiki.archlinux.org/title/CUPS)
 
