@@ -192,11 +192,11 @@ Ref: [Sudo#Environment variables](https://wiki.archlinux.org/title/Sudo#Environm
 Create `"/mnt/etc/sudoers.d/sudoers"` with:
 
 ```
-%wheel ALL=(ALL:ALL) ALL
 Defaults passwd_timeout = 0
 Defaults timestamp_type = global
 Defaults timestamp_timeout = 15
 Defaults editor = /usr/bin/nvim
+%wheel ALL=(ALL:ALL) ALL
 ```
 
 ### Console Font

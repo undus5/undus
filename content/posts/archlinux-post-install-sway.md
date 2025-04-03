@@ -32,7 +32,7 @@ Ref: [Sway](https://wiki.archlinux.org/title/Sway)
 
 ```
 $ sudo pacman -S \
-    sway swaylock swayidle swaybg xorg-xwayland \
+    sway swaylock swayidle swaybg xorg-xwayland wl-clipboard \
     xdg-desktop-portal-gtk xdg-desktop-portal-wlr xdg-user-dirs \
     wmenu alacritty mako wob grim sway-contrib
 ```

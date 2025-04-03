@@ -38,13 +38,11 @@ I put the commands from this guide into a bash script.
 When I finished it, I realized that I just implemented my own version of "libvirt",
 so I call it [bashvirt](https://github.com/undus5/bashvirt).
 
-## Windows Specific
-
-### TPM
+## TPM
 
 You can skip this section if you choose the
 [IoT version of Windows 11](https://massgrave.dev/windows_ltsc_links)
-, which do not require TPM, UEFI and Secure boot.
+, which does not require TPM, UEFI and Secure boot.
 
 "QEMU can emulate Trusted Platform Module, which is required by Windows 11 (which requires TPM 2.0)."
 
@@ -75,20 +73,6 @@ $ qemu-system-x86_64 \
 
 "and TPM will be available inside the virtual machine.
 After shutting down the virtual machine, swtpm will be automatically terminated."
-
-### Local Account
-
-The consumer version of Windows 11 forces user to use an online account when installing the system,
-here is how to bypass it and use local account:
-
-1, On the region selection interface, Press `Shift` + `F10`, a cmd window will pop up,
-type `oobe\bypassnro`, hit enter, then machine will reboot
-
-2, Disconnect internet connection by pulling up the cable or use command `ipconfig /release`
-
-3, In the following steps, choose `I don't have internet` and `Continue with limited setup`
-
-Ref: [Set Up Windows 11 With Only a Local Account](https://www.youtube.com/watch?v=62w1rKxOZMs)
 
 ...
 
