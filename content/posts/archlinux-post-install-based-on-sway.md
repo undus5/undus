@@ -1,6 +1,6 @@
 +++
-title       = "Arch Linux Post Install: Sway"
-lastmod     = 2025-03-04T10:29:00+08:00
+title       = "Arch Linux Post Install Based On Sway"
+lastmod     = 2025-04-12T10:29:00+08:00
 date        = 2024-11-24
 showSummary = true
 showTOC     = true
@@ -34,14 +34,18 @@ Ref: [Sway](https://wiki.archlinux.org/title/Sway)
 $ sudo pacman -S \
     sway swaylock swayidle swaybg xorg-xwayland wl-clipboard \
     xdg-desktop-portal-gtk xdg-desktop-portal-wlr xdg-user-dirs \
-    wmenu alacritty mako wob grim sway-contrib
+    wmenu alacritty mako wob grim sway-contrib kanshi
 ```
 
-alacritty: terminal emulator, mako: desktop notification.\
-wob: indicator bar for volume or brightness.
-Ref: [Sway#Graphical indicator bars](https://wiki.archlinux.org/title/Sway#Graphical_indicator_bars)
-, [wob](https://github.com/francma/wob).\
-grim: screenshot. sway-contrib: area screenshot and window screenshot.\
+[alacritty](https://alacritty.org): terminal emulator, mako: desktop notification.\
+[wob](https://github.com/francma/wob): indicator bar for volume or brightness, ref:
+[Sway#Graphical indicator bars](https://wiki.archlinux.org/title/Sway#Graphical_indicator_bars)
+, [mywob](https://gitlab.com/wef/dotfiles/-/blob/master/bin/mywob)\
+[sway-contrib](https://github.com/OctopusET/sway-contrib): area screenshot and window screenshot;
+grim: screenshot\
+[kanshi](https://gitlab.freedesktop.org/emersion/kanshi): dynamic output configuration, ref:
+[Kanshi](https://wiki.archlinux.org/title/Kanshi)
+, [kanshi(5)](https://man.archlinux.org/man/kanshi.5.en)
 
 Initialize sway config file:
 

@@ -66,7 +66,7 @@ Ref: [Device file#Block devices](https://wiki.archlinux.org/title/Device_file#Bl
 (parted) mklabel gpt
 (parted) mkpart efipart fat32 1MiB 1025MiB
 (parted) set 1 esp on
-(parted) mkpart rootpart ext4 1025MiB 100%
+(parted) mkpart cryptpart ext4 1025MiB 100%
 (parted) type 2 4f68bce3-e8cd-4db1-96e7-fbcaf984b709
 (parted) quit
 ```
@@ -100,8 +100,8 @@ Format LUKS partition and open:
 
 ```
 # cryptsetup luksFormat /dev/disk/by-partlabel/rootpart
-# cryptsetup open /dev/disk/by-partlabel/rootpart luksroot
-# ls /dev/mapper/luksroot
+# cryptsetup open /dev/disk/by-partlabel/rootpart root
+# ls /dev/mapper/root
 ```
 
 ## Btrfs
@@ -114,8 +114,8 @@ Ref:
 Create Btrfs filesystem:
 
 ```
-# mkfs.btrfs /dev/mapper/luksroot
-# mount /dev/mapper/luksroot /mnt
+# mkfs.btrfs /dev/mapper/root
+# mount /dev/mapper/root /mnt
 
 # btrfs subvolume create /mnt/@
 # btrfs subvolume create /mnt/@home
@@ -134,10 +134,10 @@ Ref:
 , [EFI system partition#Typical mount points](https://wiki.archlinux.org/title/EFI_system_partition#Typical_mount_points)
 
 ```
-# mount -o subvol=@ /dev/mapper/luksroot /mnt
-# mount -o subvol=@home --mkdir /dev/mapper/luksroot /mnt/home
-# mount -o subvol=@var --mkdir /dev/mapper/luksroot /mnt/var
-# mount -o subvol=@data --mkdir /dev/mapper/luksroot /mnt/data
+# mount -o subvol=@ /dev/mapper/root /mnt
+# mount -o subvol=@home --mkdir /dev/mapper/root /mnt/home
+# mount -o subvol=@var --mkdir /dev/mapper/root /mnt/var
+# mount -o subvol=@data --mkdir /dev/mapper/root /mnt/data
 
 # mount --mkdir /dev/disk/by-partlabel/efipart /mnt/efi
 ```
@@ -239,7 +239,7 @@ Save partitions UUID to temp files for later use:
 
 ```
 # blkid -s UUID -o value /dev/vda1 > /tmp/efiuuid
-# blkid -s UUID -o value /dev/mapper/luksroot > /tmp/luksuuid
+# blkid -s UUID -o value /dev/mapper/root > /tmp/luksuuid
 ```
 
 Edit `"/mnt/etc/fstab"` with:
@@ -323,6 +323,7 @@ Time:
 ```
 # ln -sf /usr/share/zoneinfo/Asia/Shanghai /etc/localtime
 # hwclock --systohc
+# systemctl enable systemd-timesyncd.service
 ```
 
 Localization:
@@ -493,7 +494,7 @@ Ref: [dm-crypt/Encrypting an entire system#Configuring the boot loader](https://
 [dm-crypt/System configuration#rd.luks.name](https://wiki.archlinux.org/title/Dm-crypt/System_configuration#rd.luks.name)
 
 ```
-options rd.luks.name=<UUID>=luskroot root=/dev/mapper/luksroot rootflags=subvol=@ quiet
+options rd.luks.name=<UUID>=luskroot root=/dev/mapper/root rootflags=subvol=@ quiet
 ```
 
 ## Move PacmanDB
@@ -522,7 +523,7 @@ Ref: [dm-crypt/Drive preparation#Wipe LUKS header](https://wiki.archlinux.org/ti
 ```
 # umount /mnt/efi
 # umount -AR /mnt
-# cryptsetup close /dev/mapper/luksroot
+# cryptsetup close /dev/mapper/root
 # cryptsetup erase /dev/vda2
 # wipefs -a /dev/vda
 ```

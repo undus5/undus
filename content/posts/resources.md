@@ -1,5 +1,7 @@
 +++
 title       = "Resources"
+lastmod     = 2025-04-13T07:42:00+08:00
+date        = 2023-06-20
 showSummary = true
 weight      = 9000
 +++
@@ -8,21 +10,12 @@ Good stuff.
 
 <!--more-->
 
-## Background Music
-
-[Programming Music Editions - FilFar](https://www.youtube.com/watch?v=AF8LSurfct4&list=PLEM4vOSCprSvlS4kKEEBX1ubMDWRuES3c)
-
-## Tech Industry
+[HBR1](http://www.hbr1.com/) Music Radio
 
 [Hacker News](https://news.ycombinator.com/)
 
-## Software / Hardware
-
-[Linuxiac](https://linuxiac.com/)
-, [Hackaday](https://hackaday.com/)
+[Hackaday](https://hackaday.com/)
 , [HackSpace](https://hackspace.raspberrypi.com/)
-
-## Magazines
 
 [Free Magazines Online](https://freemagazines.top/)
 

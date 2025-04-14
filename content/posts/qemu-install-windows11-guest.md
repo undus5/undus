@@ -146,8 +146,15 @@ $ qemu-system-x86_64 \
 During installation, you need to load driver from virtio iso to let disk controller working.
 
 If you just want a quick boot, and don't want bother with virtio,
-replace `virtio-blk-pci` with `ide-hd`,
-it's a built-in emulation drive, no need extra settings to work.
+use sata device instead,
+it's a built-in emulation drive, no need extra settings to work:
+
+```
+$ qemu-system-x86_64 \
+    -drive file=/path/to/win11.qcow2,if=none,id=disk0 \
+    -device achi,id=achi0
+    -device ide-hd,drive=disk0,bootindex=1,bus=achi0.0
+```
 
 Ref: [QEMU#Creating a hard disk image](https://wiki.archlinux.org/title/QEMU#Creating_a_hard_disk_image)
 
