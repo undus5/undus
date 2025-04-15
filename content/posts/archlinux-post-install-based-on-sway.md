@@ -139,17 +139,20 @@ Ref: [PCManFM](https://wiki.archlinux.org/title/PCManFM)
 $ sudo pacman -S \
     pcmanfm-qt lxqt-archiver p7zip libarchive \
     gvfs gvfs-mtp gvfs-afc \
-    imv zathura foliate mpv chromium
+    zathura zathura-pdf-mupdf tesseract-data-eng tesseract-data-chi_sim \
+    imv mpv chromium
 ```
 
-[imv](https://man.archlinux.org/man/imv.1.en) image viewer,
-[zathura](https://wiki.archlinux.org/title/Zathura) pdf viewer,
-[foliate](https://johnfactotum.github.io/foliate/) ebook reader\
+[zathura](https://pwmt.org/projects/zathura/documentation/) pdf,epub viewer,
+ref: [zathura - archwiki](https://wiki.archlinux.org/title/Zathura)
+, [tesseract data files](https://tesseract-ocr.github.io/tessdoc/Data-Files-in-different-versions.html)\
+zathura tips: to revert color, use `ctrl-r` or `:set recolor <true|false>`\
+[imv](https://man.archlinux.org/man/imv.1.en) image viewer\
 [mpv](https://wiki.archlinux.org/title/Mpv) video/audio player,
 also image viewer via configuration
 [mpv-image-viewer](https://github.com/occivink/mpv-image-viewer)
 
-Default applications: [XDG MIME Applications#mimeapps.list](https://wiki.archlinux.org/title/XDG_MIME_Applications#mimeapps.list)
+Setting default applications: [XDG MIME Applications#mimeapps.list](https://wiki.archlinux.org/title/XDG_MIME_Applications#mimeapps.list)
 , [Zathura#Make zathura the default pdf viewer](https://wiki.archlinux.org/title/Zathura#Make_zathura_the_default_pdf_viewer)
 , [Desktop entries](https://wiki.archlinux.org/title/Desktop_entries)
 
