@@ -13,7 +13,9 @@ Use the low level tools directly.
 
 ## Background
 
-Libvirt is overkill for personal use. However, using the low level tool directly is not easy.
+Libvirt is overkill for personal use, you could just start a virtual machine via
+the `qemu-system-*` command with proper options.
+However, using the low level tool directly is not easy.
 Normally I would go to the official website reading the documentation when trying
 to learn some new tools, but this approach is not working well on QEMU, it's
 [documentation](https://www.qemu.org/documentation/) is not friendly for beginners,
