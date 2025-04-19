@@ -1,6 +1,6 @@
 +++
 title       = "QEMU Install Windows 11 Guest"
-lastmod     = 2025-03-22T12:17:00+08:00
+lastmod     = 2025-04-18T13:40:00+08:00
 date        = 2024-12-09
 showSummary = true
 showTOC     = true
@@ -29,7 +29,7 @@ make things up when you trying to dig deeper by asking more details.
 At the end, you always go back to the human written documentations for real study.
 But it still finished a good job, let me understand what is network bridge
 and TAP device, which I can't get from Wikipedia,
-the contents on Wikipedia are hard to read, often lacking subjects.
+the contents for technologis on Wikipedia are hard to read, often lacking subjects.
 
 This guide also works for other versions of Windows and Linux systems,
 since Windows 11 is the most requirements needed OS, it can cover all the situations.
@@ -141,7 +141,7 @@ Can be specified in option nocow for qcow2 format when creating image:"
 ```
 $ qemu-img create -f qcow2 win11.qcow2 -o nocow=on 120G
 $ qemu-system-x86_64 \
-    -drive file=/path/to/win11.qcow2,if=none,id=disk0 \
+    -drive file=/path/to/win11.qcow2,if=none,id=disk0,format=qcow2 \
     -device virtio-blk-pci,drive=disk0,bootindex=1
 ```
 
@@ -413,11 +413,10 @@ let the group use the device, and then attach a TAG named uaccess. This special
 tag makes udev apply a dynamic user ACL to the device node, which coordinates with
 systemd-logind to make the device usable to logged-in users."
 
-Allow regular user to use all USB devices:
+Allow regular user to use all USB devices,
+create `/etc/udev/rules.d/71-usb-uaccess.rules` with:
 
 ```
-# /etc/udev/rules.d/71-usb-uaccess.rules
-
 SUBSYSTEM=="usb", MODE="0660", TAG+="uaccess"
 ```
 
@@ -425,7 +424,7 @@ SUBSYSTEM=="usb", MODE="0660", TAG+="uaccess"
 [has to lexically precede](https://github.com/systemd/systemd/issues/4288#issuecomment-348166161)
 `/usr/lib/udev/rules.d/73-seat-late.rules`"
 
-Reload new rules:
+Apply new rules:
 
 ```
 $ sudo udevadm control -R && sudo udevadm trigger
@@ -510,4 +509,157 @@ $ echo "device_del usb1" | socat - UNIX-CONNECT:/tmp/monitor.sock
 Ref: [QEMU#Pass-through host USB device](https://wiki.archlinux.org/title/QEMU#Pass-through_host_USB_device)
 , [USB Emulation](https://www.qemu.org/docs/master/system/devices/usb.html)
 , [QemuDiskHotplug](https://wiki.ubuntu.com/QemuDiskHotplug)
+
+## File Sharing
+
+virtiofsd is a modern and high-performance way share files between host and guest,
+it is way faster than the traditional ways based on network protocols such as ssh and samba,
+almost like accessing the local filesystems.
+
+"virtiofsd is shipped with the [virtiofsd](https://archlinux.org/packages/?name=virtiofsd) package."
+
+"Example use case: virtiofsd runs unprivileged with UID:GID 1001:100.  It cannot change its own UID/GID, so attempting to
+let the guest create files with any other UID/GID combination will fail.  By using --translate-uid and
+--translate-gid, however, a mapping from guest UIDs/GIDs can be set up such that virtiofsd will create files under the
+only combination that it can, which is 1001:100.  For example, to allow any guest user to create a file, we can squash
+everything to 1001:100, which will create all those files as 1001:100 on the host.  In the guest, we may want to have
+those files appear as 1000:1000, though, and all other UIDs and GIDs should be visible unchanged in the guest.  That
+would look like so:"
+
+```
+$ /usr/lib/virtiofsd \
+    --socket-path path/to/myviofsd.sock \
+    --shared-dir path/to/shared_dir \
+    --sandbox namespace \
+    --translate-uid host:1001:1000:1 \
+    --translate-gid host:100:1000:1 \
+    --translate-uid squash-guest:0:1000:4294967295 \
+    --translate-gid squash-guest:0:1000:4294967295 \
+```
+
+Corresponding QEMU options:
+
+```
+$ vm_memory=4G
+$ qemu-system-x86_64 \
+    -m ${vm_memory}
+    -object memory-backend-memfd,id=mem,size=${vm_memory},share=on
+    -numa node,memdev=mem \
+    -chardev socket,id=charviofsd,path=/path/to/myviofsd.sock
+    -device vhost-user-fs-pci,chardev=charviofsd,tag=myviofsd
+```
+
+- `size=4G` must match the size specified with `-m 4G` option
+- `myviofsd` is an identifier that you will use later in the guest to mount the share
+- multiple vms can share the same folder with same tag, but every vm needs to start its own virtiofsd service,
+means specifing a unique socket file, and virtiofsd will be terminated automatically after shutting down the vm.
+
+On Windows guest, install virtio driver first (ref to section: [virtio-driver](#virtio-driver)),
+then download and install [winfsp](https://winfsp.dev/rel/), start `VirtIO-FS Service`, enable autostart if necessary.
+After starting the service, go to Explorer -> This PC, you could see a `Z:` drive, which is the shared folder,
+if not showing, check virtiofsd options and errors.
+
+On Linux guest, mount with:
+
+```
+$ sudo mount -t virtiofs myviofsd ~/myviofsd
+```
+
+Ref: [QEMU#Host file sharing with virtiofsd](https://wiki.archlinux.org/title/QEMU#Host_file_sharing_with_virtiofsd)
+, [virtiofsd README](https://gitlab.com/virtio-fs/virtiofsd/-/blob/main/README.md?ref_type=heads)
+, [virtiofs](https://virtio-fs.gitlab.io/)
+
+## Hyper-V Enlightenments
+
+Ref: [QEMU#Improve virtual machine performance](https://wiki.archlinux.org/title/QEMU#Improve_virtual_machine_performance)
+, [Hyper-V Enlightenments](https://www.qemu.org/docs/master/system/i386/hyperv.html)
+
+"In some cases when implementing a hardware interface in software is slow,
+KVM implements its own paravirtualized interfaces. This works well for Linux as
+guest support for such features is added simultaneously with the feature itself.
+It may, however, be hard-to-impossible to add support for these interfaces to
+proprietary OSes, namely, Microsoft Windows."
+
+"KVM on x86 implements Hyper-V Enlightenments for Windows guests.
+These features make Windows and Hyper-V guests think they’re running on top of a
+Hyper-V compatible hypervisor and use Hyper-V specific features."
+
+```
+$ opts="hv_relaxed,hv_vapic,hv_spinlocks=0xfff"
+$ opts="${opts},hv_relaxed,hv_vapic,hv_spinlocks=0xfff"
+$ opts="${opts},hv_vpindex,hv_synic,hv_time,hv_stimer"
+$ opts="${opts},hv_tlbflush,hv_tlbflush_ext,hv_ipi,hv_stimer_direct"
+$ opts="${opts},hv_runtime,hv_frequencies,hv_reenlightenment"
+$ opts="${opts},hv_avic,hv_xmm_input"
+$ qemu-system-x86_64 \
+    -cpu host,${opts}
+```
+
+If your CPU is Intel, also append "hv_evmcs".
+
+## Windows VM Optimization
+
+Disable SuperFetch. Type "services" in search box and open, find "SysMain" service, disable it.
+
+Disable ScheduledDefrag. Type "task scheduler" in search box and open, find `Microsoft\Windows\Defrag`, disable it.
+
+Disable useplatformclock. Right click start menu, select Windows Powershell (Admin), run `bcdedit /set useplatformclock No`.
+
+Disable unnecessary startups from `Settings -> Apps -> Startup`.
+
+Ref: [How To PROPERLY Install Windows 11 on KVM (2024)](https://www.youtube.com/watch?v=7tqKBy9r9b4)
+
+## Boot From Physical Disk
+
+To boot from physical disk, only one thing need to do, which is configuring udev rules
+for that disk device, give it normal user access permission, similar as section
+[USB udev rules](#usb-udev-rules).
+
+Assume the device is /dev/sdb, first we need to get necessary info about it:
+
+```
+$ udevadm info --attribute-walk --name=/dev/sdb
+```
+
+The output is like:
+
+```
+looking at device '/devices/pci0000:00/.../target1:0:0/1:0:0:0/block/sdb':
+    KERNEL=="sdb"
+    SUBSYSTEM=="block"
+    ...
+looking at parent device '/devices/pci0000:00/.../target1:0:0/1:0:0:0':
+    KERNELS=="1:0:0:0"
+    SUBSYSTEMS=="scsi"
+    ...
+    ATTRS{model}=="SSD 32GB        "
+    ...
+    ATTRS{vendor}=="ATA     "
+    ...
+```
+
+Combine proper attributes to let udev rules only applying to this specific device,
+create `/etc/udev/rules.d/51-ssd32g-uaccess.rules` with:
+
+```
+KERNEL=="sd*", SUBSYSTEM=="block", SUBSYSTEMS=="scsi", \
+ATTRS{model}=="SSD 32GB*", ATTRS{vendor}=="ATA*", \
+MODE="0660", TAG+="uaccess"
+```
+
+Apply new rules:
+
+```
+$ sudo udevadm control -R && sudo udevadm trigger
+```
+
+Boot qemu with raw format:
+
+```
+$ qemu-system-x86_64 \
+    -drive file=/dev/sdb,if=none,id=disk0,format=raw \
+    -device virtio-blk-pci,drive=disk0,bootindex=1
+```
+
+Ref: [Udev#udev rule example](https://wiki.archlinux.org/title/Udev#udev_rule_example)
 
