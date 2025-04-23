@@ -1,7 +1,7 @@
 +++
 title       = "Arch Linux Install: LUKS + Btrfs + Systemd-boot"
 aliases     = "/posts/archlinux-install-btrfs-luks-systemd-boot/"
-lastmod     = 2025-04-23T13:49:00+08:00
+lastmod     = 2025-04-23T22:28:00+08:00
 date        = 2024-10-28
 showSummary = true
 showTOC     = true
@@ -229,7 +229,7 @@ Defaults editor = /usr/bin/nvim
     iwd git rsync
 ```
 
-Ref: [iwd](https://wiki.archlinux.org/title/Iwd)
+[iwd](https://wiki.archlinux.org/title/Iwd) is a wireless network management tool.
 
 ## Fstab
 
@@ -266,34 +266,39 @@ UUID=xxxxxxxx-...-xxxxxxxxxxxx /var btrfs compress=zstd,subvol=/@var 0 0
 UUID=xxxxxxxx-...-xxxxxxxxxxxx /data btrfs compress=zstd,subvol=/@data 0 0
 ```
 
-## Disable Watchdogs
+## Networking
+
+### Systemd-networkd
+
+Ref:
+[Network configuration#Network management](https://wiki.archlinux.org/title/Network_configuration#Network_management)
+
+"For system with multiple network interfaces that are not expected to be connected
+all the time (e.g. if a dual-port Ethernet card, but only one cable plugged in),
+starting systemd-networkd-wait-online.service will fail after the default timeout of 2 minutes.
+This may cause an unwanted delay in the startup process. To change the behaviour to
+wait for any interface rather than all interfaces to become online,
+edit the service and add the --any parameter to the ExecStart line:"
 
 ```
-# cat > /mnt/etc/modprobe.d/nowatchdogs.conf <<EOB
-blacklist iTCO_wdt
-blacklist sp5100_tco
-EOB
-```
-
-Ref: [Improving performance#Watchdogs](https://wiki.archlinux.org/title/Improving_performance#Watchdogs)
-, [Kernel module#Blacklisting](https://wiki.archlinux.org/title/Kernel_module#Blacklisting)
-
-## Systemd-networkd
-
-```
-# mkdir -p /mnt/etc/systemd/system/systemd-networkd-wait-online.service.d
-# cd /mnt/etc/systemd/system/systemd-networkd-wait-online.service.d
-# cat > wait-for-only-one-interface.conf <<EOB
+# _waitdir=/mnt/etc/systemd/system/systemd-networkd-wait-online.service.d
+# mkdir -p ${_waitdir}
+# cat > ${_waitdir}/wait-for-only-one-interface.conf <<EOB
 [Service]
 ExecStart=
 ExecStart=/usr/lib/systemd/systemd-networkd-wait-online --any
 EOB
-# cd -
+```
 
-# cat > /mnt/etc/systemd/network/23-wired.network <<EOB
+Ref:
+[Systemd-networkd#systemd-networkd-wait-online](https://wiki.archlinux.org/title/Systemd-networkd#systemd-networkd-wait-online)
+
+Run `ip link show` to list network devices, write configs for them:
+
+```
+# cat > /mnt/etc/systemd/network/23-enp0s1.network <<EOB
 [Match]
-Type=ether
-Kind=!*
+Name=enp0s1
 [Link]
 RequiredForOnline=routable
 [Network]
@@ -306,7 +311,7 @@ EOB
 
 # cat > /mnt/etc/systemd/network/27-wireless.network <<EOB
 [Match]
-Type=wlan
+Name=wlan0
 [Link]
 RequiredForOnline=routable
 [Network]
@@ -318,17 +323,60 @@ RouteMetric=600
 RouteMetric=600
 EOB
 
-# sed -i '/^\[Network/a\ManageForeignRoutingPolicyRules=no' \
-    /mnt/etc/systemd/networkd.conf
-# systemctl enable systemd-networkd --root=/mnt
-# systemctl enable systemd-resolved --root=/mnt
 ```
 
 Ref:
-[Network configuration#Network management](https://wiki.archlinux.org/title/Network_configuration#Network_management)
-, [Systemd-networkd](https://wiki.archlinux.org/title/Systemd-networkd)
-, [WireGuard#Connection lost after sleep using systemd-networkd](https://wiki.archlinux.org/title/WireGuard#Connection_lost_after_sleep_using_systemd-networkd)
-, [Systemd-resolved](https://wiki.archlinux.org/title/Systemd-resolved)
+[Systemd-networkd#Wired and wireless adapters on the same machine](https://wiki.archlinux.org/title/Systemd-networkd#Wired_and_wireless_adapters_on_the_same_machine)
+
+"IgnoreCarrierLoss=3s ensures that systemd-networkd will not re-configure the interface
+(e.g., release and re-acquire a DHCP lease) for a short period (3 seconds in this example)
+while the wireless interface roams to another access point within the same wireless network (SSID),
+which translates to shorter downtime when roaming."
+
+Ref:
+[Systemd-networkd#Wireless adapter](https://wiki.archlinux.org/title/Systemd-networkd#Wireless_adapter)
+
+If you have multiple network cards of same type, say 2 wired interfaces,
+you must specific different `RouteMetric` for them, or the "race condition"
+will cause extreamly slow network connections.
+
+Ref:
+[Systemd-networkd#Prevent multiple default routes](https://wiki.archlinux.org/title/Systemd-networkd#Prevent_multiple_default_routes)
+
+If you have custom routing configs, you must disable `ManageForeignRoutingPolicyRules` option,
+because it will remove rules that are not configured in .network files by default.
+
+"systemd-networkd will alter routing tables also for other network software.
+If this is undesired, configure ManageForeignRoutingPolicyRules= in
+[networkd.conf(5)](https://man.archlinux.org/man/networkd.conf.5.en#%5BNETWORK%5D_SECTION_OPTIONS)
+accordingly.
+For example, see
+[WireGuard#Connection lost after sleep using systemd-networkd](https://wiki.archlinux.org/title/WireGuard#Connection_lost_after_sleep_using_systemd-networkd)"
+
+```
+# sed -i '/^\[Network/a\ManageForeignRoutingPolicyRules=no' \
+    /mnt/etc/systemd/networkd.conf
+```
+
+Ref:
+[Systemd-networkd#Configuration files](https://wiki.archlinux.org/title/Systemd-networkd#Configuration_files)
+
+Enable systemd-networkd.service:
+
+```
+# systemctl enable systemd-networkd.service --root=/mnt
+```
+
+### Systemd-resolved
+
+Enable systemd-resolved.service to let DNS work:
+
+```
+# systemctl enable systemd-resolved.service --root=/mnt
+```
+
+Ref:
+[Systemd-resolved](https://wiki.archlinux.org/title/Systemd-resolved)
 
 ## Chroot
 
@@ -526,6 +574,18 @@ So, to keep /var as a separate btrfs subvolume, we need to move pacman database 
 # sed -i '/^#DBPath/a\DBPath=/usr/pacmandb' /etc/pacman.conf
 # mv /var/lib/pacman /usr/pacmandb
 ```
+
+## Disable Watchdogs
+
+```
+# cat > /mnt/etc/modprobe.d/nowatchdogs.conf <<EOB
+blacklist iTCO_wdt
+blacklist sp5100_tco
+EOB
+```
+
+Ref: [Improving performance#Watchdogs](https://wiki.archlinux.org/title/Improving_performance#Watchdogs)
+, [Kernel module#Blacklisting](https://wiki.archlinux.org/title/Kernel_module#Blacklisting)
 
 ## Reboot
 

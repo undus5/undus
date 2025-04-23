@@ -1,6 +1,6 @@
 +++
 title       = "QEMU Install Windows 11 Guest"
-lastmod     = 2025-04-18T13:40:00+08:00
+lastmod     = 2025-04-23T22:40:00+08:00
 date        = 2024-12-09
 showSummary = true
 showTOC     = true
@@ -233,39 +233,32 @@ Ref: [QEMU#Networking](https://wiki.archlinux.org/title/QEMU#Networking)
 
 ### Create Bridge
 
-For systemd-networkd, create these files:
+For systemd-networkd, suppose your network interface is enp0s1, create these files:
 
 ```
 # /etc/systemd/network/25-br0.netdev
-
 [NetDev]
 Name=br0
 Kind=bridge
 ```
 
 ```
-# /etc/systemd/network/25-br0-ether.network
-
-[Match]
-Type=ether
-Kind=!*
-
-[Network]
-Bridge=br0
-```
-
-```
 # /etc/systemd/network/25-br0.network
-
 [Match]
 Name=br0
-
 [Link]
 RequiredForOnline=routable
-
 [Network]
 DHCP=yes
 IPv4Forwarding=yes
+```
+
+```
+# /etc/systemd/network/25-br0-enp0s1.network
+[Match]
+Name=enp0s1
+[Network]
+Bridge=br0
 ```
 
 Restart `systemd-networkd.service`:
@@ -285,7 +278,7 @@ between the host and virtual machines.
 
 To solve the problem, you may create another bridge, make it a host-only network.
 The steps are similar, create `26-br1.netdev`, `26-br1.network`, exclude
-`26-br1-ether.network`, then assign static IP address for `26-br1.network`,
+`26-br1-enp0s1.network`, then assign static IP address for `26-br1.network`,
 replace `DHCP=yes` with `Address=192.168.123.1/24` or whatever private IP adress
 you like. Then your virtual machine will have a second network interface card,
 assign an IP address manually under the same subnet of `br1`, done. Now you can
