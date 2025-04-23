@@ -321,10 +321,14 @@ EOB
 # sed -i '/^\[Network/a\ManageForeignRoutingPolicyRules=no' \
     /mnt/etc/systemd/networkd.conf
 # systemctl enable systemd-networkd --root=/mnt
+# systemctl enable systemd-resolved --root=/mnt
 ```
 
-Ref: [Systemd-networkd](https://wiki.archlinux.org/title/Systemd-networkd)
+Ref:
+[Network configuration#Network management](https://wiki.archlinux.org/title/Network_configuration#Network_management)
+, [Systemd-networkd](https://wiki.archlinux.org/title/Systemd-networkd)
 , [WireGuard#Connection lost after sleep using systemd-networkd](https://wiki.archlinux.org/title/WireGuard#Connection_lost_after_sleep_using_systemd-networkd)
+, [Systemd-resolved](https://wiki.archlinux.org/title/Systemd-resolved)
 
 ## Chroot
 

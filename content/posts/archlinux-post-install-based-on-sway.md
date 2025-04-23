@@ -1,6 +1,6 @@
 +++
 title       = "Arch Linux Post Install Based On Sway"
-lastmod     = 2025-04-12T10:29:00+08:00
+lastmod     = 2025-04-23T14:06:00+08:00
 date        = 2024-11-24
 showSummary = true
 showTOC     = true
