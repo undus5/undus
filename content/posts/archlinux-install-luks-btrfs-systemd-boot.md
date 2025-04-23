@@ -1,7 +1,7 @@
 +++
 title       = "Arch Linux Install: LUKS + Btrfs + Systemd-boot"
 aliases     = "/posts/archlinux-install-btrfs-luks-systemd-boot/"
-lastmod     = 2025-03-20T11:53:00+08:00
+lastmod     = 2025-04-23T13:49:00+08:00
 date        = 2024-10-28
 showSummary = true
 showTOC     = true
@@ -11,6 +11,20 @@ weight      = 1000
 Joining in the "by the way" club, finally.
 
 <!--more-->
+
+## Background
+
+The reason someone always do distro hopping is they actually don't know what options
+are there to choose, then always be distracted from shining fancy components. 
+This is the most thing I learned after reading through the ArchWiki.
+
+It took me roughly a month searching and thinking about the wiki, when finished,
+I realized 2 things. One, I have designed my own workstation build during this process.
+Two, I could implement this build on top of nearly any distros now, distro is
+not a problem for me anymone.
+
+If you still do distro hopping and want to settle down, go reading through the
+ArchWiki, you will get answers, this is my advice.
 
 ## Official Guide
 
@@ -494,7 +508,7 @@ Ref: [dm-crypt/Encrypting an entire system#Configuring the boot loader](https://
 [dm-crypt/System configuration#rd.luks.name](https://wiki.archlinux.org/title/Dm-crypt/System_configuration#rd.luks.name)
 
 ```
-options rd.luks.name=<UUID>=luskroot root=/dev/mapper/root rootflags=subvol=@ quiet
+options rd.luks.name=<UUID>=root root=/dev/mapper/root rootflags=subvol=@ quiet
 ```
 
 ## Move PacmanDB

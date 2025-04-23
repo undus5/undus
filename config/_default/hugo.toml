@@ -31,13 +31,10 @@ name       = "MOOD"
 weight     = 3
 
 [[menus.footer]]
-identifier  = "github"
-name        = "Github"
-url         = "https://github.com/undus5"
-weight      = 5
+name        = "🄯2023-2025"
+weight      = 1
 [menus.footer.params]
-targetBlank = true
-iconClass   = "fa-brands fa-github"
+type = "plain"
 
 [[menus.footer]]
 identifier  = "rss"
@@ -46,6 +43,13 @@ pageRef     = "/"
 weight      = 3
 [menus.footer.params]
 targetBlank = true
-iconClass   = "fa-solid fa-rss"
 format      = "rss"
+
+[[menus.footer]]
+identifier  = "github"
+name        = "Github"
+url         = "https://github.com/undus5"
+weight      = 5
+[menus.footer.params]
+targetBlank = true
 
