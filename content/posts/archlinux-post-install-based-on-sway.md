@@ -11,6 +11,8 @@ Build the exact system that fit my needs.
 
 <!--more-->
 
+## Prerequisite
+
 The goal is to keep it as minimal as possible, with essential functions.
 
 For basic system installation, refer to my prev post:
@@ -56,7 +58,7 @@ $ sudo chown $USER:$USER ~/.config/sway/config
 ```
 
 The default config is a good start point, it has elaborate comments.
-Then you may read [i3 User’s Guide](https://i3wm.org/docs/userguide.html) for more details.
+You may also read [i3 User’s Guide](https://i3wm.org/docs/userguide.html) for more details.
 
 ## Keymap
 
@@ -75,7 +77,11 @@ input type:keyboard {
 The position of left Alt key is the best for modifier key,
 but some applications have useful default shortcuts combined with Alt key,
 such as `Alt+b` `Alt+f` in bash for jumping backward and forward word by word.
-So I swap Alt with Win then set Win as the main modifier key.
+So I swap Alt and Win key positions then set Win as the main modifier key.
+
+There's another benefit about swapping Alt and Win, which is if you running a virtual
+machine with swaywm, you could keep the vm keys unswapped, then use the same
+sway keybinding configs without conflicting to your host machine.
 
 For keybinding configs,
 Use [wev](https://archlinux.org/packages/?name=wev) to detect key names.
