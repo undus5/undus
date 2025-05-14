@@ -1,5 +1,6 @@
 +++
-title       = "Arch Linux Post Install Based On Sway"
+aliases     = ["/posts/archlinux-post-install-sway", "/posts/archlinux-post-install-based-on-sway"]
+title       = "Arch Linux Post Install: Wayland and Others"
 lastmod     = 2025-04-23T14:06:00+08:00
 date        = 2024-11-24
 showSummary = true
@@ -7,7 +8,7 @@ showTOC     = true
 weight      = 1000
 +++
 
-Build the exact system that fit my needs.
+Build the exact workstation that fit my needs. No ricing.
 
 <!--more-->
 
@@ -53,8 +54,7 @@ Initialize sway config file:
 
 ```
 $ mkdir -p ~/.config/sway
-$ sudo cp /etc/sway/config ~/.config/sway/
-$ sudo chown $USER:$USER ~/.config/sway/config
+$ cp /etc/sway/config ~/.config/sway/
 ```
 
 The default config is a good start point, it has elaborate comments.
@@ -93,7 +93,7 @@ Ref: [Fcitx5](https://wiki.archlinux.org/title/Fcitx5)
 , [sway(5)](https://man.archlinux.org/man/sway.5.en)
 
 ```
-$ sudo pacman -S fcitx5-im fcitx5-rime
+$ sudo pacman -S fcitx5 fcitx5-qt fcitx5-configtool fcitx5-rime
 ```
 
 Edit `".bashrc"` with:
@@ -123,9 +123,8 @@ Ref: [Advanced Linux Sound Architecture](https://wiki.archlinux.org/title/Advanc
 , [PipeWire](https://wiki.archlinux.org/title/PipeWire)
 
 ```
-# pacstrap /mnt alsa-utils \
-    pipewire wireplumber \
-    pipewire-alsa pipewire-pulse pipewire-jack lib32-pipewire
+$ sudo pacman -S alsa-utils \
+    pipewire pipewire-alsa pipewire-pulse pipewire-jack wireplumber lib32-pipewire
 ```
 
 ## Volume Control
@@ -145,7 +144,7 @@ Ref: [PCManFM](https://wiki.archlinux.org/title/PCManFM)
 $ sudo pacman -S \
     pcmanfm-qt lxqt-archiver p7zip libarchive \
     gvfs gvfs-mtp gvfs-afc \
-    zathura zathura-pdf-mupdf tesseract-data-eng tesseract-data-chi_sim \
+    zathura zathura-pdf-mupdf tesseract-data-eng \
     imv mpv chromium
 ```
 
@@ -202,8 +201,8 @@ Necessary appearance settings.
 ### Fonts
 
 ```
-# pacstrap /mnt noto-fonts noto-fonts-cjk noto-fonts-emoji \
-    hicolor-icon-theme
+$ sudo pacman -S \
+    noto-fonts noto-fonts-cjk noto-fonts-emoji hicolor-icon-theme
 ```
 
 Adjust fallback fonts order, this is for fixing wierd looking of some Chinese characters,
@@ -311,13 +310,13 @@ Ref: [Sway#Change cursor theme and size](https://wiki.archlinux.org/title/Sway#C
 AMD. Ref: [AMDGPU#Installation](https://wiki.archlinux.org/title/AMDGPU#Installation)
 
 ```
-$ sudo pacman -S lib32-mesa vulkan-radeon lib32-vulkan-radeon
+$ sudo pacman -S vulkan-radeon lib32-vulkan-radeon lib32-mesa
 ```
 
 Intel. Ref: [Intel graphics#Installation](https://wiki.archlinux.org/title/Intel_graphics#Installation)
 
 ```
-$ sudo pacman -S lib32-mesa vulkan-intel lib32-vulkan-intel
+$ sudo pacman -S vulkan-intel lib32-vulkan-intel lib32-mesa
 ```
 
 Hardware Video Acceleration.

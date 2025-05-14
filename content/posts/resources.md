@@ -18,4 +18,8 @@ Good stuff.
 , [HackSpace](https://hackspace.raspberrypi.com/)
 
 [Free Magazines Online](https://freemagazines.top/)
+, [awesome-english-ebooks](https://github.com/hehonghui/awesome-english-ebooks)
+
+[Anna’s Archive](https://annas-archive.org/)
+, [Z-Library](https://en.wikipedia.org/wiki/Z-Library)
 

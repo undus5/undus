@@ -1,6 +1,6 @@
 +++
 title       = "QEMU Install Windows 11 Guest"
-lastmod     = 2025-04-23T22:40:00+08:00
+lastmod     = 2025-05-14T11:12:00+08:00
 date        = 2024-12-09
 showSummary = true
 showTOC     = true
@@ -160,6 +160,15 @@ $ qemu-system-x86_64 \
 
 Ref: [QEMU#Creating a hard disk image](https://wiki.archlinux.org/title/QEMU#Creating_a_hard_disk_image)
 
+Resize disk image
+
+```
+$ qemu-img resize disk.qcow2 +10G
+$ qemu-img resize --shrink disk.qcow2 -10G
+```
+
+Ref: [QEMU#Resizing an image](https://wiki.archlinux.org/title/QEMU#Resizing_an_image)
+
 ## Graphics Card
 
 There're two options, one for booting from cdrom to install,
@@ -169,7 +178,7 @@ For cdrom booting:
 
 ```
 $ qemu-system-x86_64 \
-    -display sdl,gl=on,full-screen=on \
+    -display gtk,gl=on,full-screen=on \
     -vga std 
 ```
 
@@ -177,7 +186,7 @@ For disk booting:
 
 ```
 $ qemu-system-x86_64 \
-    -display sdl,gl=on,full-screen=on \
+    -display gtk,gl=on,full-screen=on \
     -device virtio-vga-gl
 ```
 
@@ -185,6 +194,33 @@ If you just want a quick boot, and don't want bother with virtio, keep using `-v
 it's a built-in emulation drive, no need extra settings to work.
 
 Ref: [QEMU#Graphics card](https://wiki.archlinux.org/title/QEMU#Graphics_card)
+
+## Mouse Integration
+
+If use GTK based display, you may need to enable tablet mode for mouse to work:
+
+```
+$ qemu-system-x86_64 \
+    -usb -device usb-tablet
+```
+
+or use `qemu-xhci` for USB 3.0 support:
+
+```
+$ qemu-system-x86_64 \
+    -device qemu-xhci -device usb-tablet
+```
+
+or use `usb-ehci` for only USB 2.0 support, since Windows 7 do not support USB 3.0:
+
+```
+$ qemu-system-x86_64 \
+    -device usb-ehci -device usb-tablet
+```
+
+Ref: [QEMU#Mouse integration](https://wiki.archlinux.org/title/QEMU#Mouse_integration)
+, [QEMU#Not grabbing mouse input](https://wiki.archlinux.org/title/QEMU#Not_grabbing_mouse_input)
+, [USB emulation](https://qemu-project.gitlab.io/qemu/system/devices/usb.html)
 
 ## Networking
 
@@ -259,7 +295,19 @@ IPv4Forwarding=yes
 Name=enp0s1
 [Network]
 Bridge=br0
+[DHCPv4]
+RouteMetric=100
+[IPV6AcceptRA]
+RouteMetric=100
 ```
+
+Systemd-networkd does not set per-interface-type default route metrics.
+If you have multiple physical network cards of same type, say 2 wired network cards,
+you must specific different `RouteMetric` for them, or the "race condition"
+will cause extreamly slow network connections.
+
+Ref:
+[Systemd-networkd#Prevent multiple default routes](https://wiki.archlinux.org/title/Systemd-networkd#Prevent_multiple_default_routes)
 
 Restart `systemd-networkd.service`:
 
@@ -505,9 +553,9 @@ Ref: [QEMU#Pass-through host USB device](https://wiki.archlinux.org/title/QEMU#P
 
 ## File Sharing
 
-virtiofsd is a modern and high-performance way share files between host and guest,
-it is way faster than the traditional ways based on network protocols such as ssh and samba,
-almost like accessing the local filesystems.
+virtiofsd is a modern and high-performance way to share files between host and guest,
+it has nearly naive performance, way faster than the traditional ways based on
+network protocols such as ssh and samba.
 
 "virtiofsd is shipped with the [virtiofsd](https://archlinux.org/packages/?name=virtiofsd) package."
 

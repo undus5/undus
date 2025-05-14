@@ -42,7 +42,7 @@ The reflector didn't work well for me, I had to pick mirror servers manually
 then wrote to the mirrorlist:
 
 ```
-# cat /etc/pacman.d/mirrorlist <<EOB
+# cat > /etc/pacman.d/mirrorlist << EOB
 Server = https://mirrors.aliyun.com/archlinux/\$repo/os/\$arch
 Server = https://mirrors.tuna.tsinghua.edu.cn/archlinux/\$repo/os/\$arch
 Server = https://mirrors.ustc.edu.cn/archlinux/\$repo/os/\$arch
@@ -51,28 +51,28 @@ EOB
 
 ## Partition Disk
 
-When using GPT, it is advised to follow the
+"When using GPT, it is advised to follow the
 [Discoverable Partitions Specification](https://uapi-group.org/specifications/specs/discoverable_partitions_specification/)
 since [systemd-gpt-auto-generator](https://wiki.archlinux.org/title/Systemd#GPT_partition_automounting)
 can automount them. The EFI system partition, XBOOTLDR partition,
 swap partition and home partition types can be changed using the set command,
-while for the root partition and others, you will need to specify the partition type UUID manually with the type command.\
+while for the root partition and others, you will need to specify the partition type UUID manually with the type command."\
 Ref: [Parted#Partition schemes](https://wiki.archlinux.org/title/Parted#Partition_schemes)
 
-EFI system partition on a [GUID Partition Table](https://en.wikipedia.org/wiki/GUID_Partition_Table#Partition_type_GUIDs)
+"EFI system partition on a [GUID Partition Table](https://en.wikipedia.org/wiki/GUID_Partition_Table#Partition_type_GUIDs)
 is identified by the partition type GUID c12a7328-f81f-11d2-ba4b-00a0c93ec93b.
-Parted can set it automatically, create a partition with fat32 as the file system type and set the esp flag on it.\
+Parted can set it automatically, create a partition with fat32 as the file system type and set the esp flag on it."\
 Ref: [EFI system partition#GPT partitioned disks](https://wiki.archlinux.org/title/EFI_system_partition#GPT_partitioned_disks),
 [Parted#UEFI/GPT examples](https://wiki.archlinux.org/title/Parted#UEFI/GPT_examples)
 
-Root partition type GUID should be "root partition" not "LUKS partition", which is
-4f68bce3-e8cd-4db1-96e7-fbcaf984b709.\
+"Root partition type GUID should be "root partition" not "LUKS partition", which is
+4f68bce3-e8cd-4db1-96e7-fbcaf984b709."\
 Ref: [dm-crypt/Encrypt an entire system/Configuring the boot loader](https://wiki.archlinux.org/title/Dm-crypt/Encrypting_an_entire_system#Configuring_the_boot_loader)
 
-Partition alignment need to be handled manually with parted.\
+"Partition alignment need to be handled manually with parted."\
 Ref: [Parted#Alignment](https://wiki.archlinux.org/title/Parted#Alignment)
 
-Disk file name would be like /dev/sda, /dev/nvme0n1, /dev/mmcblk0, /dev/vda.\
+"Disk file name would be like /dev/sda, /dev/nvme0n1, /dev/mmcblk0, /dev/vda."\
 Ref: [Device file#Block devices](https://wiki.archlinux.org/title/Device_file#Block_devices)
 
 ```
@@ -156,7 +156,7 @@ Ref:
 # mount --mkdir /dev/disk/by-partlabel/efipart /mnt/efi
 ```
 
-## Install Base Pkgs
+## Base Pkgs Configs
 
 Ref:
 [Installation guide#Install essential packages](https://wiki.archlinux.org/title/Installation_guide#Install_essential_packages)
@@ -167,7 +167,7 @@ CPU microcode updates `"amd-ucode"` or `"intel-ucode"` for hardware bug and secu
 
 ```
 # pacstrap -K /mnt \
-    base linux linux-lts linux-firmware btrfs-progs iptables-nft \
+    base mkinitcpio linux linux-lts linux-firmware btrfs-progs iptables-nft \
     amd-ucode neovim
 ```
 
@@ -231,20 +231,41 @@ Defaults editor = /usr/bin/nvim
 
 [iwd](https://wiki.archlinux.org/title/Iwd) is a wireless network management tool.
 
+### Move PacmanDB
+
+The pacman database in /var/lib/pacman must stay on the root subvolume `@`.\
+Ref: [Snapper#Suggested filesystem layout](https://wiki.archlinux.org/title/Snapper#Suggested_filesystem_layout)
+
+So, to keep /var as a separate btrfs subvolume, we need to move pacman database out of /var:
+
+```
+# sed -i '/^#DBPath/a\DBPath=/usr/pacmandb' /etc/pacman.conf
+# mv /var/lib/pacman /usr/pacmandb
+```
+
+### Disable Watchdogs
+
+```
+# cat > /mnt/etc/modprobe.d/nowatchdogs.conf << EOB
+blacklist iTCO_wdt
+blacklist sp5100_tco
+EOB
+```
+
 ## Fstab
 
-When using encrypted containers with dm-crypt, the labels of filesystems inside of
-containers are not available while the container is locked/encrypted.\
+"When using encrypted containers with dm-crypt, the labels of filesystems inside of
+containers are not available while the container is locked/encrypted."\
 Ref: [Persistent block device naming#by-label](https://wiki.archlinux.org/title/Persistent_block_device_naming#by-label)
 
-The advantage of using the UUID method is that it is much less likely that name collisions occur than with labels.
+"The advantage of using the UUID method is that it is much less likely that name collisions occur than with labels.
 Further, it is generated automatically on creation of the filesystem.
 It will, for example, stay unique even if the device is plugged into another system
-(which may perhaps have a device with the same label).\
+(which may perhaps have a device with the same label)."\
 Ref: [Persistent block device naming#by-uuid](https://wiki.archlinux.org/title/Persistent_block_device_naming#by-uuid)
 
-It is preferable to mount using subvol=/path/to/subvolume, rather than the subvolid,
-as the subvolid may change when restoring snapshots, requiring a change of mount configuration.\
+"It is preferable to mount using subvol=/path/to/subvolume, rather than the subvolid,
+as the subvolid may change when restoring snapshots, requiring a change of mount configuration."\
 Ref: [Btrfs#Mounting subvolumes](https://wiki.archlinux.org/title/Btrfs#Mounting_subvolumes)
 
 Since `"genfstab"` would generate subvolid and other redundant options, I choose to write fstab manually.
@@ -283,7 +304,7 @@ edit the service and add the --any parameter to the ExecStart line:"
 ```
 # _waitdir=/mnt/etc/systemd/system/systemd-networkd-wait-online.service.d
 # mkdir -p ${_waitdir}
-# cat > ${_waitdir}/wait-for-only-one-interface.conf <<EOB
+# cat > ${_waitdir}/wait-for-only-one-interface.conf << EOB
 [Service]
 ExecStart=
 ExecStart=/usr/lib/systemd/systemd-networkd-wait-online --any
@@ -296,7 +317,7 @@ Ref:
 Run `ip link show` to list network devices, write configs for them:
 
 ```
-# cat > /mnt/etc/systemd/network/23-enp0s1.network <<EOB
+# cat > /mnt/etc/systemd/network/23-enp0s1.network << EOB
 [Match]
 Name=enp0s1
 [Link]
@@ -309,7 +330,7 @@ RouteMetric=100
 RouteMetric=100
 EOB
 
-# cat > /mnt/etc/systemd/network/27-wireless.network <<EOB
+# cat > /mnt/etc/systemd/network/27-wireless.network << EOB
 [Match]
 Name=wlan0
 [Link]
@@ -336,7 +357,8 @@ which translates to shorter downtime when roaming."
 Ref:
 [Systemd-networkd#Wireless adapter](https://wiki.archlinux.org/title/Systemd-networkd#Wireless_adapter)
 
-If you have multiple network cards of same type, say 2 wired interfaces,
+Systemd-networkd does not set per-interface-type default route metrics.
+If you have multiple network cards of same type, say 2 wired network cards,
 you must specific different `RouteMetric` for them, or the "race condition"
 will cause extreamly slow network connections.
 
@@ -404,7 +426,7 @@ Localization:
 Hostname:
 
 ```
-# echo "archlinux" >> /etc/hostname
+# echo "archlinux" > /etc/hostname
 ```
 
 Remap CapsLock to Control for console.\
@@ -422,7 +444,7 @@ Enable multilib repo.
 Ref: [General recommendations#Repositories](https://wiki.archlinux.org/title/General_recommendations#Repositories)
 
 ```
-# cat >> /mnt/etc/pacman.conf <<EOB
+# cat >> /mnt/etc/pacman.conf << EOB
 [multilib]
 Include = /etc/pacman.d/mirrorlist
 EOB
@@ -561,27 +583,6 @@ Ref: [dm-crypt/Encrypting an entire system#Configuring the boot loader](https://
 
 ```
 options rd.luks.name=<UUID>=root root=/dev/mapper/root rootflags=subvol=@ quiet
-```
-
-## Move PacmanDB
-
-The pacman database in /var/lib/pacman must stay on the root subvolume `@`.\
-Ref: [Snapper#Suggested filesystem layout](https://wiki.archlinux.org/title/Snapper#Suggested_filesystem_layout)
-
-So, to keep /var as a separate btrfs subvolume, we need to move pacman database out of /var:
-
-```
-# sed -i '/^#DBPath/a\DBPath=/usr/pacmandb' /etc/pacman.conf
-# mv /var/lib/pacman /usr/pacmandb
-```
-
-## Disable Watchdogs
-
-```
-# cat > /mnt/etc/modprobe.d/nowatchdogs.conf <<EOB
-blacklist iTCO_wdt
-blacklist sp5100_tco
-EOB
 ```
 
 Ref: [Improving performance#Watchdogs](https://wiki.archlinux.org/title/Improving_performance#Watchdogs)
