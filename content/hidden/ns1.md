@@ -18,7 +18,7 @@ Shh~ Do it quietly.
 ## Firmware
 
 [Darthsternie's Firmware](https://darthsternie.net/switch-firmwares/)
-, [NX_Firmware](https://github.com/THZoria/NX_Firmware)\
+, [NX Firmware](https://github.com/THZoria/NX_Firmware)\
 Upgrade with daybreak (bundled with atmosphere)
 
 ## Atmosphere

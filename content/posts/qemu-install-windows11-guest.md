@@ -1,6 +1,6 @@
 +++
 title       = "QEMU Install Windows 11 Guest"
-lastmod     = 2025-05-14T11:12:00+08:00
+lastmod     = 2025-05-14T22:12:00+08:00
 date        = 2024-12-09
 showSummary = true
 showTOC     = true
@@ -171,23 +171,26 @@ Ref: [QEMU#Resizing an image](https://wiki.archlinux.org/title/QEMU#Resizing_an_
 
 ## Graphics Card
 
-There're two options, one for booting from cdrom to install,
-another for booting from disk image normally.
-
-For cdrom booting:
+Use `VGA` for CDROM booting,
+since there may no GPU drivers for qxl or virtio at the moment,
+and specify a decent resolution for it, since the default resolution is very low:
 
 ```
 $ qemu-system-x86_64 \
     -display gtk,gl=on,full-screen=on \
-    -vga std 
+    -device VGA,xres=1920,yres=1080
 ```
 
-For disk booting:
+After the system and proper drivers installed,
+you can change to `qxl-vga` or `virtio-vga-gl`:
 
 ```
 $ qemu-system-x86_64 \
     -display gtk,gl=on,full-screen=on \
     -device virtio-vga-gl
+
+# or
+    -device qxl-vga,xres=1920,yres=1080
 ```
 
 If you just want a quick boot, and don't want bother with virtio, keep using `-vga std`,
