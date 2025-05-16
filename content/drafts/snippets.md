@@ -1,13 +1,9 @@
 +++
 title       = "Snippets"
-showSummary = true
+date        = 2014-11-25
 weight      = 9900
 hidden      = true
 +++
-
-useful commands.
-
-<!--more-->
 
 Write protecting file
 

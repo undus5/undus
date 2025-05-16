@@ -1,20 +1,22 @@
-theme   = "hugo-pure"
-baseURL = "https://undus.net/"
 title   = "Undus' Blog"
-paginate = 6
+baseURL = "https://undus.net/"
+theme   = "hugo-pure"
+paginatation.pagerSize = 6
 enableEmoji = true
-    
+
+[markup]
+[markup.highlight]
+noClasses = false
+[markup.tableOfContents]
+endLevel  = 3
 
 [permalinks]
 [permalinks.page]
-posts = "/:sections[0]/:slugorfilename/"
-hidden = "/:slugorfilename/"
-
+posts = "/:sections[0]/:slugorcontentbasename/"
 
 [params]
 #doubleColumns = true
 description = "Keep it simple."
-
 
 [menus]
 
@@ -52,4 +54,10 @@ url         = "https://github.com/undus5"
 weight      = 5
 [menus.footer.params]
 targetBlank = true
+
+[[menus.footer]]
+identifier  = "drafts"
+name        = "Drafts"
+pageRef     = "/drafts"
+weight      = 7
 

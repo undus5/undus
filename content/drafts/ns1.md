@@ -1,9 +1,9 @@
 +++
 title       = "Switch V1"
-showSummary = true
-weight      = 5000
 date        = 2023-07-22
 lastmod     = 2024-10-01T12:16:00+08:00
+weight      = 9500
+hidden      = true
 +++
 
 Shh~ Do it quietly.

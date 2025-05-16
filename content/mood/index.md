@@ -1,8 +1,6 @@
 +++
 title       = "Mood"
-type        = "hidden"
-#showSummary = true
-weight      = 3000
+hidden      = true
 +++
 
 <!--more-->

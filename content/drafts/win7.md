@@ -3,6 +3,8 @@ title       = "Windows 7 Softwares"
 #lastmod     = 2025-04-23T14:06:00+08:00
 date        = 2025-05-14
 showTOC     = true
+hidden      = true
+weight      = 9200
 +++
 
 ## Windows 7 Ultimate

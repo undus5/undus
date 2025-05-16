@@ -7,6 +7,7 @@ aliases     = "/posts/remembering-haoel/"
 weight      = 2000
 showSummary = true
 type        = "hidden"
+hidden = true
 +++
 
 R.I.P.
