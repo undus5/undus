@@ -1,7 +1,7 @@
 +++
 title       = "Arch Linux Install: LUKS + Btrfs + Systemd-boot"
 aliases     = "/posts/archlinux-install-btrfs-luks-systemd-boot/"
-lastmod     = 2025-04-23T22:28:00+08:00
+lastmod     = 2025-05-16
 date        = 2024-10-28
 showSummary = true
 showTOC     = true
@@ -587,6 +587,52 @@ options rd.luks.name=<UUID>=root root=/dev/mapper/root rootflags=subvol=@ quiet
 
 Ref: [Improving performance#Watchdogs](https://wiki.archlinux.org/title/Improving_performance#Watchdogs)
 , [Kernel module#Blacklisting](https://wiki.archlinux.org/title/Kernel_module#Blacklisting)
+
+## Snapshot
+
+We can use pacman hooks to automatically create backup when upgrading system.
+
+Create `/usr/local/bin/snapshot.sh` which do the job:
+
+```
+#!/usr/bin/bash
+set -e
+[[ ${EUID} == 0 ]] || (echo "run as root" && exit 1)
+_shotsdir=/home/snapshots
+mkdir -p ${_shotsdir}
+printf "=== Cleaning old snapshots ..."
+_shots=(${_shotsdir}/*)
+for ((i=${#_shots[@]}-2; i>=0; i--)); do
+    rm -rf ${_shots[$i]}
+done
+printf " Done.\n"
+btrfs subvolume snapshot -r / ${_shotsdir}/@$(date +%Y%m%d%H%M%S)$(date +%N|cut -c1)
+```
+
+Make it executable:
+
+```
+# chmod +x /usr/local/bin/snapshot.sh
+```
+
+Create `/etc/pacman.d/hooks/snapshot-before-upgrade.hook`,
+(create hooks directory manually if necessary):
+
+```
+[Trigger]
+Operation = Upgrade
+Type = Package
+Target = linux
+[Action]
+Depends = btrfs-progs
+When = PreTransaction
+Exec = /usr/local/bin/snapshot.sh
+```
+
+This hook will be triggerd when the kernel package `linux` being upgraded.
+
+Ref: [Btrfs#Snapshots](https://wiki.archlinux.org/title/Btrfs#Snapshots)
+, [alpm-hooks(5)](https://man.archlinux.org/man/alpm-hooks.5)
 
 ## Reboot
 
