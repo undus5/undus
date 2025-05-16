@@ -8,13 +8,11 @@ showTOC     = true
 weight      = 1000
 +++
 
-Build the exact workstation that fit my needs. No ricing.
+Build a minimal workstation with essential components, no ricing.
 
 <!--more-->
 
 ## Prerequisite
-
-The goal is to keep it as minimal as possible, with essential functions.
 
 For basic system installation, refer to my prev post:
 [Arch Linux Install: LUKS + Btrfs + Systemd-boot](/posts/archlinux-install-luks-btrfs-systemd-boot/)
@@ -26,191 +24,59 @@ Ref: [System maintenance#Avoid certain pacman commands](https://wiki.archlinux.o
 $ sudo pacman -Syu
 ```
 
-## Sway
+## Wayland Compositor
+
+I prefer wayland GUI environment since its ecosystem is mature enough.\
+I prefer wayland compositors since I'm an experienced user who thinks desktop environments are bloat.\
+I use [sway](https://swaywm.org) on my host machine, and use [labwc](labwc.github.io)
+for virtual machine.
+
+Packages for sway, labwc and other essential components:
+
+```
+$ sudo pacman -S \
+    sway swaylock swayidle swaybg labwc \
+    xorg-xwayland wl-clipboard \
+    xdg-desktop-portal-gtk xdg-desktop-portal-wlr xdg-user-dirs \
+    wmenu alacritty mako wob grim sway-contrib kanshi wev
+```
+
+xdg-desktop-portal-gtk : necessary component for e.g. file chooser.\
+xdg-desktop-portal-wlr : necessary component for e.g. screenshot.\
+[XDG user directories](https://wiki.archlinux.org/title/XDG_user_directories) :
+manage well known user directories e.g. Desktop, Documents, Downloads etc.\
+[wl-clipboard](https://github.com/bugaevc/wl-clipboard) : wayland clipboard utilities.\
+[wmenu](https://codeberg.org/adnano/wmenu) : menu for running commands, launching apps.\
+[alacritty](https://alacritty.org) : terminal emulator.\
+[mako](https://github.com/emersion/mako) : desktop notification.\
+[wob](https://github.com/francma/wob) : indicator bar for volume or brightness.\
+[grim](https://gitlab.freedesktop.org/emersion/grim) screenshot tool for wayland.\
+[sway-contrib](https://github.com/OctopusET/sway-contrib) : grim helper for partial screenshot.\
+[kanshi](https://gitlab.freedesktop.org/emersion/kanshi): dynamic output configuration.\
+[wev](https://git.sr.ht/~sircmpwn/wev) : detect key name, for configuring keybindings.
 
 Ref: [Sway](https://wiki.archlinux.org/title/Sway)
+, [Labwc](https://wiki.archlinux.org/title/Labwc)
 , [XDG Desktop Portal](https://wiki.archlinux.org/title/XDG_Desktop_Portal)
-, [XDG user directories](https://wiki.archlinux.org/title/XDG_user_directories)
-, [Desktop notifications](https://wiki.archlinux.org/title/Desktop_notifications)
 
-```
-$ sudo pacman -S \
-    sway swaylock swayidle swaybg xorg-xwayland wl-clipboard \
-    xdg-desktop-portal-gtk xdg-desktop-portal-wlr xdg-user-dirs \
-    wmenu alacritty mako wob grim sway-contrib kanshi
-```
-
-[alacritty](https://alacritty.org): terminal emulator, mako: desktop notification.\
-[wob](https://github.com/francma/wob): indicator bar for volume or brightness, ref:
-[Sway#Graphical indicator bars](https://wiki.archlinux.org/title/Sway#Graphical_indicator_bars)
-, [mywob](https://gitlab.com/wef/dotfiles/-/blob/master/bin/mywob)\
-[sway-contrib](https://github.com/OctopusET/sway-contrib): area screenshot and window screenshot;
-grim: screenshot\
-[kanshi](https://gitlab.freedesktop.org/emersion/kanshi): dynamic output configuration, ref:
-[Kanshi](https://wiki.archlinux.org/title/Kanshi)
-, [kanshi(5)](https://man.archlinux.org/man/kanshi.5.en)
-
-Initialize sway config file:
-
-```
-$ mkdir -p ~/.config/sway
-$ cp /etc/sway/config ~/.config/sway/
-```
-
-The default config is a good start point, it has elaborate comments.
-You may also read [i3 User’s Guide](https://i3wm.org/docs/userguide.html) for more details.
-
-## Keymap
-
-Ref: [Sway#Keymap](https://wiki.archlinux.org/title/Sway#Keymap)
-
-Remap CapsLock to Ctrl, swap Alt with Win, and enable NumLock.\
-Edit `"~/.config/sway/config"` with:
-
-```
-input type:keyboard {
-    xkb_options 'ctrl:nocaps,altwin:swap_alt_win'
-    xkb_numlock enabled
-}
-```
-
-The position of left Alt key is the best for modifier key,
-but some applications have useful default shortcuts combined with Alt key,
-such as `Alt+b` `Alt+f` in bash for jumping backward and forward word by word.
-So I swap Alt and Win key positions then set Win as the main modifier key.
-
-There's another benefit about swapping Alt and Win, which is if you running a virtual
-machine with swaywm, you could keep the vm keys unswapped, then use the same
-sway keybinding configs without conflicting to your host machine.
-
-For keybinding configs,
-Use [wev](https://archlinux.org/packages/?name=wev) to detect key names.
-
-## Input Method
-
-Ref: [Fcitx5](https://wiki.archlinux.org/title/Fcitx5)
-, [Using Fcitx 5 on Wayland](https://fcitx-im.org/wiki/Using_Fcitx_5_on_Wayland)
-, [sway(5)](https://man.archlinux.org/man/sway.5.en)
-
-```
-$ sudo pacman -S fcitx5 fcitx5-qt fcitx5-configtool fcitx5-rime
-```
-
-Edit `".bashrc"` with:
-
-```
-export QT_IM_MODULE=fcitx
-export XMODIFIERS=@im=fcitx
-```
-
-Autostart with sway, edit `"~/.config/sway/config"` with:
-
-```
-exec fcitx5 -d -r
-```
-
-Fix fcitx5 not working for chromium on wayland,
-enter `"chrome://flags"` from chromium address bar, search for `"wayland"`, edit:
-
-```
-Preferred Ozone platform: Auto
-Wayland text-input-v3: Enabled
-```
-
-## PipeWire
-
-Ref: [Advanced Linux Sound Architecture](https://wiki.archlinux.org/title/Advanced_Linux_Sound_Architecture)
-, [PipeWire](https://wiki.archlinux.org/title/PipeWire)
-
-```
-$ sudo pacman -S alsa-utils \
-    pipewire pipewire-alsa pipewire-pulse pipewire-jack wireplumber lib32-pipewire
-```
-
-## Volume Control
-
-Ref: [No sound in mpv vlc but works in web browser](https://wiki.archlinux.org/title/PipeWire#No_sound_in_mpv,_vlc,_totem,_but_sound_works_in_web_browser_and_GNOME_speaker_test)
-
-```
-$ sudo pacman -S pavucontrol
-```
-
-## File Manager, Reader
-
-Ref: [PCManFM](https://wiki.archlinux.org/title/PCManFM)
-, [GVFS](https://wiki.archlinux.org/title/File_manager_functionality#Mounting)
-
-```
-$ sudo pacman -S \
-    pcmanfm-qt lxqt-archiver p7zip libarchive \
-    gvfs gvfs-mtp gvfs-afc \
-    zathura zathura-pdf-mupdf tesseract-data-eng \
-    imv mpv chromium
-```
-
-[zathura](https://pwmt.org/projects/zathura/documentation/) pdf,epub viewer,
-ref: [zathura - archwiki](https://wiki.archlinux.org/title/Zathura)
-, [tesseract data files](https://tesseract-ocr.github.io/tessdoc/Data-Files-in-different-versions.html)\
-zathura tips: to revert color, use `ctrl-r` or `:set recolor <true|false>`\
-[imv](https://man.archlinux.org/man/imv.1.en) image viewer\
-[mpv](https://wiki.archlinux.org/title/Mpv) video/audio player,
-also image viewer via configuration
-[mpv-image-viewer](https://github.com/occivink/mpv-image-viewer)
-
-Setting default applications: [XDG MIME Applications#mimeapps.list](https://wiki.archlinux.org/title/XDG_MIME_Applications#mimeapps.list)
-, [Zathura#Make zathura the default pdf viewer](https://wiki.archlinux.org/title/Zathura#Make_zathura_the_default_pdf_viewer)
-, [Desktop entries](https://wiki.archlinux.org/title/Desktop_entries)
-
-The fallback Qt theme is not looking good, for better appearance, check section [Qt Theme](#qt-theme).
-
-Following settings are for GTK based file managers, like Thunar and Nemo.
-
-Disable GTK recent files. Ref: [gsettings](https://man.archlinux.org/man/gsettings.1)
-
-```
-$ gsettings set org.cinnamon.desktop.privacy remember-recent-files false
-$ rm ~/.local/share/recently-used.xbel
-$ ln -s /dev/null ~/.local/share/recently-used.xbel
-```
-
-Change the default terminal emulator for GTK based desktop
-
-```
-$ gsettings set org.cinnamon.desktop.default-applications.terminal exec alacritty
-```
-
-## Polkit
-
-Tools like [ventoy](https://www.ventoy.net/) need polkit to evaluate privilege.\
-Ref: [polkit](https://wiki.archlinux.org/title/Polkit)
-
-```
-$ sudo pacman -S polkit lxqt-policykit
-```
-
-Autostart with sway, edit `"~/.config/sway/config"` with:
-
-```
-exec lxqt-policykit-agent
-```
+Here is my configurations for sway and labwc: [wlrc](https://github.com/undus5/wlrc)
+, feel free to download and test.
 
 ## Appearance
 
-Necessary appearance settings.
+Not ricing, but fixing some missing configurations.
 
-### Fonts
+### CJK Fonts
 
 ```
-$ sudo pacman -S \
-    noto-fonts noto-fonts-cjk noto-fonts-emoji hicolor-icon-theme
+$ sudo pacman -S noto-fonts noto-fonts-cjk noto-fonts-emoji
 ```
 
-Adjust fallback fonts order, this is for fixing wierd looking of some Chinese characters,
-such as "复制".\
-Ref: [Font configuration#Fontconfig configuration](https://wiki.archlinux.org/title/Font_configuration#Fontconfig_configuration)
-, [Font configuration#Alias](https://wiki.archlinux.org/title/Font_configuration#Alias)
+The default lookup order for CJK fonts has a little problem,
+picking wrong characters in some cases, such as "复" in chinese word "复制".
 
-Create `"/etc/fonts/local.conf"` with:
+Adjust fallback fonts order to fix the problem,
+create `/etc/fonts/local.conf` with:
 
 ```
 <?xml version="1.0"?>
@@ -252,42 +118,39 @@ Create `"/etc/fonts/local.conf"` with:
 </fontconfig>
 ```
 
+Later you could create `~/.config/fontconfig/fonts.conf` with same format to
+overwrite this configuration, replace with custom fonts under `~/.local/share/fonts`
+for example.
+
+Ref: [Font configuration#Fontconfig configuration](https://wiki.archlinux.org/title/Font_configuration#Fontconfig_configuration)
+, [Font configuration#Alias](https://wiki.archlinux.org/title/Font_configuration#Alias)
+
 ### Icon Theme
+
+Icon theme is an essential component,
+[Papirus](https://github.com/PapirusDevelopmentTeam/papirus-icon-theme)
+is a good one.
+
+"It is recommended to install the `hicolor-icon-theme` package as many programs
+will deposit their icons in `/usr/share/icons/hicolor/` and most other icon themes
+will inherit icons from the Hicolor icon theme"
+
+```
+$ sudo pacman -S papirus-icon-theme hicolor-icon-theme
+```
 
 Ref: [Icons](https://wiki.archlinux.org/title/Icons)
 
-```
-$ sudo pacman -S papirus-icon-theme
-```
+### GTK Theme
 
-Change default GTK icon theme:
+Set GTK icon theme
 
 ```
 $ ls /usr/share/icons
 $ gsettings set org.gnome.desktop.interface icon-theme Papirus
 ```
 
-Ref: [GTK#Basic theme configuration](https://wiki.archlinux.org/title/GTK#Basic_theme_configuration)
-, [GTK 3 settings on Wayland](https://github.com/swaywm/sway/wiki/GTK-3-settings-on-Wayland)
-
-For Qt settings check section [Qt Theme](#qt-theme).
-
-### Qt Theme
-
-Install `qt6ct` and set environment variables, then restart sway:
-
-```
-$ sudo pacman -S qt6ct
-$ echo "export QT_QPA_PLATFORMTHEME=qt6ct" >> ~/.bashrc
-```
-
-Ref: [Configuration of Qt 5/6 applications under environments other than KDE Plasma](https://wiki.archlinux.org/title/Qt#Configuration_of_Qt_5/6_applications_under_environments_other_than_KDE_Plasma)
-, [Not showing functional icons](https://github.com/lxqt/pavucontrol-qt/issues/126)
-
-Not recommending the `breeze` theme, the package will install lots of irrelevant KDE components,
-which is annoying, this is the most reason I don't like KDE stuff.
-
-### GTK Dark Theme
+Set GTK dark theme
 
 ```
 $ sudo pacman -S gnome-themes-extra
@@ -295,42 +158,143 @@ $ ls /usr/share/themes
 $ gsettings set org.gnome.desktop.interface gtk-theme Adwaita-dark
 ```
 
-### Cursor Size
+Ref: [GTK#Basic theme configuration](https://wiki.archlinux.org/title/GTK#Basic_theme_configuration)
+, [GTK 3 settings on Wayland](https://github.com/swaywm/sway/wiki/GTK-3-settings-on-Wayland)
 
-Change cursor size by setting cursor theme, edit `"~/.config/sway/config"` with:
+For Qt settings check following section [Qt Theme](#qt-theme).
+
+### Qt Theme
+
+Without proper settings, Qt apps is not looking good, also may not showing icons correctly.
+
+Install `qt6ct` and set environment variables, then restart wayland compositor:
 
 ```
-seat seat0 xcursor_theme default 32
+$ sudo pacman -S qt6ct
+$ echo "export QT_QPA_PLATFORMTHEME=qt6ct" >> ~/.bashrc
 ```
 
-Ref: [Sway#Change cursor theme and size](https://wiki.archlinux.org/title/Sway#Change_cursor_theme_and_size)
+Not recommending the `breeze` theme, the package is highly dependent on the KDE framework, 
+would install lots of irrelevant KDE components, which is annoying,
+this is the most reason I don't like KDE stuff.
 
-## GPU
+Ref: [Configuration of Qt 5/6 applications under environments other than KDE Plasma](https://wiki.archlinux.org/title/Qt#Configuration_of_Qt_5/6_applications_under_environments_other_than_KDE_Plasma)
+, [Not showing functional icons](https://github.com/lxqt/pavucontrol-qt/issues/126)
 
-AMD. Ref: [AMDGPU#Installation](https://wiki.archlinux.org/title/AMDGPU#Installation)
+## Sound System
+
+### PipeWire
+
+```
+$ sudo pacman -S alsa-utils \
+    pipewire pipewire-alsa pipewire-pulse pipewire-jack wireplumber lib32-pipewire
+```
+
+Ref: [Advanced Linux Sound Architecture](https://wiki.archlinux.org/title/Advanced_Linux_Sound_Architecture)
+, [PipeWire](https://wiki.archlinux.org/title/PipeWire)
+
+### Volume Control
+
+```
+$ sudo pacman -S pavucontrol
+```
+
+Ref: [No sound in mpv vlc but works in web browser](https://wiki.archlinux.org/title/PipeWire#No_sound_in_mpv,_vlc,_totem,_but_sound_works_in_web_browser_and_GNOME_speaker_test)
+
+## File Manager, Reader
+
+```
+$ sudo pacman -S \
+    pcmanfm-qt lxqt-archiver p7zip libarchive \
+    gvfs gvfs-mtp gvfs-afc \
+    zathura zathura-pdf-mupdf tesseract-data-eng \
+    imv mpv chromium
+```
+
+[PCManFM](https://wiki.archlinux.org/title/PCManFM) : file manager.\
+[GVFS](https://wiki.archlinux.org/title/File_manager_functionality#Mounting) :
+provides mounting and trash functionality.\
+[Zathura](https://pwmt.org/projects/zathura/documentation/) : pdf/epub viewer.\
+[Tesseract](https://tesseract-ocr.github.io/tessdoc/) : zathura dependency, OCR engine.\
+[imv](https://sr.ht/~exec64/imv/) : image viewer.\
+[mpv](https://mpv.io/) : video/audio player.\
+[Chromium](https://wiki.archlinux.org/title/Chromium) : web browser.
+
+## Polkit
+
+Tools like [Ventoy](https://www.ventoy.net/) need polkit to evaluate privilege.\
+
+```
+$ sudo pacman -S polkit lxqt-policykit
+```
+
+Autostart with sway, edit `~/.config/sway/config` with:
+
+```
+exec lxqt-policykit-agent
+```
+
+Ref: [polkit](https://wiki.archlinux.org/title/Polkit)
+
+## Input Method
+
+I use [Fcitx5](https://fcitx-im.org/wiki/Fcitx_5) and
+[RIME](https://rime.im) to input chinese characters.
+Here is my RIME config for Wubi86 : [rimerc](https://github.com/undus5/rimerc).
+
+```
+$ sudo pacman -S fcitx5 fcitx5-qt fcitx5-configtool fcitx5-rime
+```
+
+Edit `.bashrc` with:
+
+```
+export QT_IM_MODULE=fcitx
+export XMODIFIERS=@im=fcitx
+```
+
+Autostart with sway, edit `~/.config/sway/config` with:
+
+```
+exec fcitx5 -d -r
+```
+
+Fix fcitx5 not working for Chromium on wayland,
+enter `chrome://flags` from Chromium address bar, search for `wayland`, edit:
+
+```
+Preferred Ozone platform: Auto
+Wayland text-input-v3: Enabled
+```
+
+Ref: [Fcitx5](https://wiki.archlinux.org/title/Fcitx5)
+, [Using Fcitx 5 on Wayland](https://fcitx-im.org/wiki/Using_Fcitx_5_on_Wayland)
+
+## GPU Drivers
+
+For [AMDGPU#Installation](https://wiki.archlinux.org/title/AMDGPU#Installation)
 
 ```
 $ sudo pacman -S vulkan-radeon lib32-vulkan-radeon lib32-mesa
 ```
 
-Intel. Ref: [Intel graphics#Installation](https://wiki.archlinux.org/title/Intel_graphics#Installation)
+For [Intel graphics#Installation](https://wiki.archlinux.org/title/Intel_graphics#Installation)
 
 ```
 $ sudo pacman -S vulkan-intel lib32-vulkan-intel lib32-mesa
 ```
 
-Hardware Video Acceleration.
-Ref: [Hardware video acceleration](https://wiki.archlinux.org/title/Hardware_video_acceleration)
+For [Hardware video acceleration](https://wiki.archlinux.org/title/Hardware_video_acceleration)
 
-Alder Lake:
+Intel Alder Lake:
 
 ```
 $ sudo pacman -S intel-media-driver
 ```
 
-## Bluetooth
+## Peripheral Device
 
-Ref: [Bluetooth](https://wiki.archlinux.org/title/Bluetooth)
+### Bluetooth
 
 ```
 $ sudo pacman -S bluez bluez-utils
@@ -345,31 +309,33 @@ $ bluetoothctl
 [bluetoothctl]# pair <MAC_ADDRESS> (tab completion works)
 ```
 
-Troubleshooting:\
+Troubleshooting:
 Reboot computer when this error occurred:
 [bluetoothctl: No default controller available](https://wiki.archlinux.org/title/Bluetooth#bluetoothctl:_No_default_controller_available)
 
-## Printer
+Ref: [Bluetooth](https://wiki.archlinux.org/title/Bluetooth)
 
-Install cups packages:
+### Printer
 
 ```
 $ sudo pacman -S cups cups-pdf
 $ sudo systemctl enable --now cups
 ```
 
-Install printer driver if needed, for example:
-
-```
-$ yay -S brlaser
-```
-
-Ref: [AUR helpers](https://wiki.archlinux.org/title/AUR_helpers)
-, [yay](https://github.com/Jguer/yay)
-
 The CUPS server can be fully administered through the web interface, and there's
 documentation for adding printer
 [http://localhost:631/help/admin.html](http://localhost:631/help/admin.html).
 
 Ref: [CUPS](https://wiki.archlinux.org/title/CUPS)
+
+Install printer driver if needed, in my case is `brlaser` package from AUR:
+
+```
+$ sudo pacman -S base-devel
+$ git clone https://aur.archlinux.org/brlaser.git ~/
+$ cd ~/brlaser
+$ makepkg -sic
+```
+
+Ref: [Arch User Repository](https://wiki.archlinux.org/title/Arch_User_Repository)
 
