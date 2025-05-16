@@ -8,7 +8,7 @@ showTOC     = true
 weight      = 1000
 +++
 
-Joining in the "by the way" club, finally.
+Joining in the "btw" club, and stopped distro hopping finally.
 
 <!--more-->
 

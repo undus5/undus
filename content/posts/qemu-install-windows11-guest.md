@@ -7,7 +7,7 @@ showTOC     = true
 weight      = 1000
 +++
 
-Use the low level tools directly.
+Use the low level tools directly, get rid of complex middlewares.
 
 <!--more-->
 
