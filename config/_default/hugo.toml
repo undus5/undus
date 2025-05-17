@@ -56,8 +56,8 @@ weight      = 5
 targetBlank = true
 
 [[menus.footer]]
-identifier  = "drafts"
+identifier  = "d"
 name        = "Drafts"
-pageRef     = "/drafts"
+pageRef     = "/d"
 weight      = 7
 
