@@ -36,7 +36,7 @@ ArchWiki, you will get answers, this is my advice.
 [ventoy](https://www.ventoy.net/en/index.html) or [rufus](https://rufus.ie/en/),
 disable Secure Boot, boot ISO.
 
-Enlarge console font by running command `"setfont ter-132b"` if needed.
+Enlarge console font by running command `setfont ter-132b` if needed.
 
 The reflector didn't work well for me, I had to pick mirror servers manually
 then wrote to the mirrorlist:
@@ -163,7 +163,7 @@ Ref:
 
 ### Kernel
 
-CPU microcode updates `"amd-ucode"` or `"intel-ucode"` for hardware bug and security fixes:
+CPU microcode updates `amd-ucode` or `intel-ucode` for hardware bug and security fixes:
 
 ```
 # pacstrap -K /mnt \
@@ -171,7 +171,7 @@ CPU microcode updates `"amd-ucode"` or `"intel-ucode"` for hardware bug and secu
     amd-ucode neovim
 ```
 
-`"-K"` means to initialize an empty pacman keyring in the target, so only adding it at first running.\
+`-K` means to initialize an empty pacman keyring in the target, so only adding it at first running.\
 Ref: [pacstrap(8)](https://man.archlinux.org/man/pacstrap.8)
 
 The latest kernel sometimes may cause annoying bugs like [this](https://github.com/systemd/systemd/issues/33083),
@@ -185,7 +185,7 @@ Ref: [Zram#Using zram-generator](https://wiki.archlinux.org/title/Zram#Using_zra
 # pacstrap /mnt zram-generator
 ```
 
-Create `"/mnt/etc/systemd/zram-generator.conf"` with:
+Create `/mnt/etc/systemd/zram-generator.conf` with:
 
 ```
 [zram0]
@@ -203,7 +203,7 @@ Ref: [Sudo#Environment variables](https://wiki.archlinux.org/title/Sudo#Environm
 # pacstrap /mnt sudo bash-completion
 ```
 
-Create `"/mnt/etc/sudoers.d/sudoers"` with:
+Create `/mnt/etc/sudoers.d/sudoers` with:
 
 ```
 Defaults passwd_timeout = 0
@@ -268,7 +268,7 @@ Ref: [Persistent block device naming#by-uuid](https://wiki.archlinux.org/title/P
 as the subvolid may change when restoring snapshots, requiring a change of mount configuration."\
 Ref: [Btrfs#Mounting subvolumes](https://wiki.archlinux.org/title/Btrfs#Mounting_subvolumes)
 
-Since `"genfstab"` would generate subvolid and other redundant options, I choose to write fstab manually.
+Since `genfstab` would generate subvolid and other redundant options, I choose to write fstab manually.
 
 Save partitions UUID to temp files for later use:
 
@@ -277,7 +277,7 @@ Save partitions UUID to temp files for later use:
 # blkid -s UUID -o value /dev/mapper/root > /tmp/luksuuid
 ```
 
-Edit `"/mnt/etc/fstab"` with:
+Edit `/mnt/etc/fstab` with:
 
 ```
 UUID=XXXX-XXXX /efi vfat defaults 0 2
@@ -466,7 +466,7 @@ Create User:
 
 Ref: [dm-crypt/System configuration#mkinitcpio](https://wiki.archlinux.org/title/Dm-crypt/System_configuration#mkinitcpio)
 
-Edit `"/etc/mkinitcpio.conf"`:
+Edit `/etc/mkinitcpio.conf`:
 
 ```
 HOOKS=(base systemd autodetect microcode modconf kms keyboard sd-vconsole sd-encrypt block filesystems fsck)
@@ -506,7 +506,7 @@ Auto update boot files under ESP with systemd.\
 Ref: [EFI system partition#Using systemd](https://wiki.archlinux.org/title/EFI_system_partition#Using_systemd)
 , [systemd.path(5)](https://man.archlinux.org/man/systemd.path.5)
 
-Create `"/etc/systemd/system/efistub-update.path"`
+Create `/etc/systemd/system/efistub-update.path`
 
 ```
 [Unit]
@@ -518,7 +518,7 @@ WantedBy=multi-user.target
 WantedBy=system-update.target
 ```
 
-Create `"/etc/systemd/system/efistub-update.service"`
+Create `/etc/systemd/system/efistub-update.service`
 
 ```
 [Unit]
@@ -541,7 +541,7 @@ Enable systemd units:
 
 Ref: [Systemd-boot#Configuration](https://wiki.archlinux.org/title/Systemd-boot#Configuration)
 
-Edit `"/efi/loader/loader.conf"`:
+Edit `/efi/loader/loader.conf`:
 
 ```
 default arch.conf
@@ -550,9 +550,9 @@ console-mode max
 editor no
 ```
 
-`"timeout 0"` means not showing menu and boot immediately.
+`timeout 0` means not showing menu and boot immediately.
 
-Create `"/efi/loader/entries/arch.conf"`.
+Create `/efi/loader/entries/arch.conf`.
 
 ```
 title Arch Linux
@@ -565,7 +565,7 @@ To use a subvolume as the root mountpoint, specify the subvolume via a kernel pa
 using rootflags=subvol=@. Or you would get an error "Failed to start Switch Root" when booting.\
 Ref: [Btrfs#Mounting subvolume as root](https://wiki.archlinux.org/title/Btrfs#Mounting_subvolume_as_root)
 
-Create `"/efi/loader/entries/arch-lts.conf"`.
+Create `/efi/loader/entries/arch-lts.conf`.
 
 ```
 title Arch Linux LTS
@@ -577,7 +577,7 @@ options rootflags=subvol=@ quiet
 Note: If disk partitions were not following
 [Discoverable Partitions Specification](https://uapi-group.org/specifications/specs/discoverable_partitions_specification/)
 , which means root partition would not be discovered and auto mounted, booting system would stuck at
-`"a start job is running for /dev/gpt-auto-root"` and timeout. To fix this, specify root partition in kernel parameters.\
+`a start job is running for /dev/gpt-auto-root` and timeout. To fix this, specify root partition in kernel parameters.\
 Ref: [dm-crypt/Encrypting an entire system#Configuring the boot loader](https://wiki.archlinux.org/title/Dm-crypt/Encrypting_an_entire_system#Configuring_the_boot_loader),\
 [dm-crypt/System configuration#rd.luks.name](https://wiki.archlinux.org/title/Dm-crypt/System_configuration#rd.luks.name)
 

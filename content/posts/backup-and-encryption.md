@@ -30,10 +30,10 @@ Options description:
 -  `-P`  show progress during transfer.
 -  `--del`  &nbsp; remove files which are no longer exist in the sourse directory.
 
-If `"target_dir"` doesn't exists, it will be created automatically.
+If `target_dir` doesn't exists, it will be created automatically.
 
-There's difference about `"source_dir"` between "with trailing slash" and "without trailing slash".
-Without trailing slash, the result will be a subfolder like `"target_dir/source_dir"`.
+There's difference about `source_dir` between "with trailing slash" and "without trailing slash".
+Without trailing slash, the result will be a subfolder like `target_dir/source_dir`.
 
 To syncing data to other computers, use [Syncthing](https://syncthing.net/).
 
@@ -44,7 +44,7 @@ generate different random long passwords for each.
 If you use same password for all accounts, one account leaks, all other accounts would be at risks.
 
 [KeePass](https://keepass.info/) is an open source offline password manager,
-it's encrypted `"kdbx"` file becomes a sort of standard,
+it's encrypted `kdbx` file becomes a sort of standard,
 there are several third-party apps offer cross-platform support and useful features
 which better than the official one.
 
@@ -52,7 +52,7 @@ which better than the official one.
 , [KeePassDX](https://www.keepassdx.com/) (Android)
 , Strongbox (iOS)
 
-Backup the `".kdbx"` file with caution.
+Backup the `.kdbx` file with caution.
 
 ## SIM Lock
 

@@ -599,7 +599,7 @@ $ qemu-system-x86_64 \
 means specifing a unique socket file, and virtiofsd will be terminated automatically after shutting down the vm.
 
 On Windows guest, install virtio driver first (ref to section: [virtio-driver](#virtio-driver)),
-then download and install [winfsp](https://winfsp.dev/rel/), start `VirtIO-FS Service`, enable autostart if necessary.
+then download and install [WinFsp](https://winfsp.dev/rel/), start `VirtIO-FS Service`, enable autostart if necessary.
 After starting the service, go to Explorer -> This PC, you could see a `Z:` drive, which is the shared folder,
 if not showing, check virtiofsd options and errors.
 
