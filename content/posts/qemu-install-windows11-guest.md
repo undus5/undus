@@ -292,8 +292,6 @@ DHCP=yes
 IPv4Forwarding=yes
 [DHCPv4]
 RouteMetric=128
-[IPV6AcceptRA]
-RouteMetric=128
 ```
 
 ```
