@@ -603,6 +603,7 @@ mkdir -p ${_shotsdir}
 printf "=== Cleaning old snapshots ..."
 _shots=(${_shotsdir}/*)
 for ((i=${#_shots[@]}-2; i>=0; i--)); do
+    btrfs prop set -f -ts ${_shots[$i]} ro false
     rm -rf ${_shots[$i]}
 done
 printf " Done.\n"
