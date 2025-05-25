@@ -272,19 +272,22 @@ Ref: [QEMU#Networking](https://wiki.archlinux.org/title/QEMU#Networking)
 
 ### Create Bridge
 
+The following instructions setup a bridged network, which let virtual machines act
+like real computers under the LAN, obtain IP addresses dynamically from the gateway (home router).
+
 For systemd-networkd, suppose your network interface is enp0s1, create these files:
 
 ```
-# /etc/systemd/network/25-br0.netdev
+# /etc/systemd/network/25-brlan.netdev
 [NetDev]
-Name=br0
+Name=brlan
 Kind=bridge
 ```
 
 ```
-# /etc/systemd/network/25-br0.network
+# /etc/systemd/network/25-brlan.network
 [Match]
-Name=br0
+Name=brlan
 [Link]
 RequiredForOnline=routable
 [Network]
@@ -295,11 +298,11 @@ RouteMetric=128
 ```
 
 ```
-# /etc/systemd/network/25-br0-en.network
+# /etc/systemd/network/25-brlan-en.network
 [Match]
 Name=enp0s1
 [Network]
-Bridge=br0
+Bridge=brlan
 ```
 
 Systemd-networkd does not set per-interface-type default route metrics.
@@ -319,28 +322,37 @@ $ sudo systemctl restart systemd-networkd
 Ref: [Systemd-networkd#Configuration examples](https://wiki.archlinux.org/title/Systemd-networkd#Configuration_examples)
 , [Systemd-networkd#Network bridge with DHCP](https://wiki.archlinux.org/title/Systemd-networkd#Network_bridge_with_DHCP)
 
-The instructions above created a bridged network, which let virtual machines act
-like real computers under the LAN, obtain IP addresses dynamically from the gateway.
-If your network environment change frequently, for example you often move to different
-working postions, then you IP addresses may vary, which is annoying when communicating
-between the host and virtual machines.
+Since you don't want virtual machines exposed on the LAN, or you just want to
+use fixed IP addresses between host and virtual machines, you could setup a
+host only network:
 
-To solve the problem, you may create another bridge, make it a host-only network.
-The steps are similar, create `26-br1.netdev`, `26-br1.network`, exclude
-`26-br1-enp0s1.network`, then assign static IP address for `26-br1.network`,
-replace `DHCP=yes` with `Address=192.168.123.1/24` or whatever private IP adress
-you like. Then your virtual machine will have a second network interface card,
-assign an IP address manually under the same subnet of `br1`, done. Now you can
-communicate your host and virtual machines with these fixed IP address regardless
-your public network environment.
+```
+# /etc/systemd/network/26-brnat.netdev
+[NetDev]
+Name=brnat
+Kind=bridge
+```
 
-You may want to have a DHCP server running on the bridge interface to service the virtual network.
-Edit `26-br1.network`, append `DHCPServer=yes` to the [Network] section.
+```
+# /etc/systemd/network/26-brnat.network
+[Match]
+Name=brnat
+[Network]
+IPv4Forwarding=yes
+IPMasquerade=yes
+DHCPServer=true
+Address=10.9.8.7/24
+[DHCPServer]
+DNS=10.9.8.7
+[DHCPv4]
+RouteMetric=256
+```
 
 Ref:
 [QEMU#Host-only networking](https://wiki.archlinux.org/title/QEMU#Host-only_networking)
 , [Systemd-networkd#[DHCPServer]](https://wiki.archlinux.org/title/Systemd-networkd#[DHCPServer])
 , [systemd.network(5)](https://man.archlinux.org/man/systemd.network.5#%5BDHCPSERVER%5D_SECTION_OPTIONS)
+, [systemd.netdev(5)](https://man.archlinux.org/man/systemd.netdev.5)
 
 ### Tap Devices
 
@@ -365,8 +377,8 @@ bind them to bridge for VMs, via configuration:
 ```
 # /etc/qemu/bridge.conf
 
-allow br0
-allow br1
+allow brlan
+allow brnat
 ...
 ```
 
@@ -378,8 +390,8 @@ Ref: [QEMU#Tap networking with QEMU](https://wiki.archlinux.org/title/QEMU#Tap_n
 
 ```
 $ qemu-system-x86_64 \
-    -nic bridge,br=br0,model=virtio-net-pci,mac=52:54:xx:xx:xx:xx \
-    -nic bridge,br=br1,model=virtio-net-pci,mac=52:54:xx:xx:xx:xx
+    -nic bridge,br=brlan,model=virtio-net-pci,mac=52:54:xx:xx:xx:xx \
+    -nic bridge,br=brnat,model=virtio-net-pci,mac=52:54:xx:xx:xx:xx
 ```
 
 Ref: [qemu(1)#nic](https://man.archlinux.org/man/qemu.1#nic)
