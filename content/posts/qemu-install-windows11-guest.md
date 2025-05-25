@@ -290,18 +290,18 @@ RequiredForOnline=routable
 [Network]
 DHCP=yes
 IPv4Forwarding=yes
+[DHCPv4]
+RouteMetric=128
+[IPV6AcceptRA]
+RouteMetric=128
 ```
 
 ```
-# /etc/systemd/network/25-br0-enp0s1.network
+# /etc/systemd/network/25-br0-en.network
 [Match]
 Name=enp0s1
 [Network]
 Bridge=br0
-[DHCPv4]
-RouteMetric=100
-[IPV6AcceptRA]
-RouteMetric=100
 ```
 
 Systemd-networkd does not set per-interface-type default route metrics.
