@@ -34,7 +34,7 @@ weight      = 9200
 
 [Office 2016 Offline Installer](https://gravesoft.dev/office_c2r_links#chinese-simplified-zh-cn)
 ([Download](https://officecdn.microsoft.com/db/492350f6-3a01-4f97-b9c0-c7c6ddf67d60/media/zh-cn/ProPlusRetail.img))
-(Use 7-Zip to Unpack img file to install)
+(Use 7-Zip to unpack img file to install)
 
 [OfficeToolPlus](https://download.coolhub.top/Office_Tool_Plus/9.0.4.2/)
 ([Download](https://download.coolhub.top/Office_Tool_Plus/9.0.4.2/Office_Tool_with_runtime_v9.0.4.2_x86.7z)
@@ -60,8 +60,8 @@ weight      = 9200
 
 ## Video Player
 
-[PotPlayer](https://potplayer.daum.net/)
-([Download](https://t1.daumcdn.net/potplayer/PotPlayer/Version/Latest/PotPlayerSetup.exe))
+[MPC-HC](https://github.com/clsid2/mpc-hc)
+([Download](https://github.com/clsid2/mpc-hc/releases/latest))
 
 ## Text Editor
 

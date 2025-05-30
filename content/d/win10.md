@@ -97,9 +97,6 @@ setup.exe /configure Configuration.xml
 
 ## Video Player
 
-[PotPlayer](https://potplayer.daum.net/)
-([Download](https://t1.daumcdn.net/potplayer/PotPlayer/Version/Latest/PotPlayerSetup64.exe))
-
 [MPC-HC](https://github.com/clsid2/mpc-hc)
 ([Download](https://github.com/clsid2/mpc-hc/releases/latest))
 
