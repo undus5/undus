@@ -1,7 +1,7 @@
 +++
 title       = "Arch Linux Install: LUKS + Btrfs + Systemd-boot"
 aliases     = "/posts/archlinux-install-btrfs-luks-systemd-boot/"
-lastmod     = 2025-05-16
+lastmod     = 2025-05-30
 date        = 2024-10-28
 showSummary = true
 showTOC     = true

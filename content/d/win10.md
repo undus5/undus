@@ -77,10 +77,6 @@ setup.exe /configure Configuration.xml
 , [Installation Guide](https://www.coolhub.top/archives/11)
 , [Activation Guide](https://www.coolhub.top/archives/14))
 
-## Web Browser
-
-[Brave Browser](https://github.com/brave/brave-browser/releases/latest)
-
 ## Image Viewer
 
 [Honeyview](https://en.bandisoft.com/honeyview/)
@@ -105,7 +101,7 @@ setup.exe /configure Configuration.xml
 [EmEditor](https://www.emeditor.com/download/)
 ([Download](https://support.emeditor.com/en/downloads/latest/installer/64))
 
-[VSCodium](https://github.com/brave/brave-browser/releases)
+[VSCodium](https://vscodium.com/)
 ([Download](https://github.com/VSCodium/vscodium/releases/download/1.100.03093/VSCodiumSetup-x64-1.100.03093.exe))
 
 ## Screenshot
@@ -119,4 +115,29 @@ setup.exe /configure Configuration.xml
 ([CrystalMarkRetro](https://crystalmark.info/redirect.php?product=CrystalMarkRetro)
 , [CrystalDiskInfo](https://crystalmark.info/redirect.php?product=CrystalDiskInfo)
 , [CrystalDiskMark](https://crystalmark.info/redirect.php?product=CrystalDiskMark))
+
+## Web Browser
+
+[Brave Browser](https://brave.com/)
+([Download](https://github.com/brave/brave-browser/releases/latest))
+
+Disable Crypto and AI related components by default:
+
+> Download
+> [policy_templates.zip](https://brave-browser-downloads.s3.brave.com/latest/policy_templates.zip)
+> , copy files from `admx` into `C:\\Windows\\PolicyDefinitions`
+> 
+> Press `Win + r`, type and run `gpedit.msc`, will open "Local Group Policy Editor",
+> navigate to `Computer Configuration\Administrative Templates\Brave\Brave Software settings`,
+> enable whatever options you need.
+
+Visit `brave://policy` from address bar to check the effect.
+
+Ref: [Group Policy](https://support.brave.com/hc/en-us/articles/360039248271-Group-Policy)
+
+## Troubleshooting
+
+解决 Win10 自带输入法不显示选字框:
+
+> 语言设置 \ 中文-选项 \ 微软拼音-选项 \ 勾选"使用以前版本的输入法"
 

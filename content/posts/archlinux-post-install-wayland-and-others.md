@@ -1,7 +1,7 @@
 +++
 aliases     = ["/posts/archlinux-post-install-sway", "/posts/archlinux-post-install-based-on-sway"]
 title       = "Arch Linux Post Install: Wayland and Others"
-lastmod     = 2025-05-16
+lastmod     = 2025-05-31
 date        = 2024-11-24
 showSummary = true
 showTOC     = true
@@ -328,7 +328,8 @@ documentation for adding printer
 
 Ref: [CUPS](https://wiki.archlinux.org/title/CUPS)
 
-Install printer driver if needed, in my case is `brlaser` package from AUR:
+Install printer driver if needed, in my case is `brlaser` package from
+[AUR](https://aur.archlinux.org/packages/brlaser):
 
 ```
 $ sudo pacman -S base-devel
@@ -338,4 +339,26 @@ $ makepkg -sic
 ```
 
 Ref: [Arch User Repository](https://wiki.archlinux.org/title/Arch_User_Repository)
+
+## Web Browser
+
+[Brave Browser](https://brave.com/)
+([AUR](https://aur.archlinux.org/packages/brave-bin))
+
+Disable Crypto and AI related components by default:
+
+Create `/etc/brave/policies/managed/brave-policy.json` :
+
+```
+{
+  "BraveAIChatEnabled": true,
+  "BraveRewardsDisabled": true,
+  "BraveVPNDisabled": 1,
+  "BraveWalletDisabled": true
+}
+```
+
+Visit `brave://policy` from address bar to check the effect.
+
+Ref: [Group Policy](https://support.brave.com/hc/en-us/articles/360039248271-Group-Policy)
 
