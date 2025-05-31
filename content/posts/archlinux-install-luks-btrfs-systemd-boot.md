@@ -243,6 +243,17 @@ So, to keep /var as a separate btrfs subvolume, we need to move pacman database 
 # mv /var/lib/pacman /usr/pacmandb
 ```
 
+### Enable Multilib Repo
+
+```
+# cat >> /mnt/etc/pacman.conf << EOB
+[multilib]
+Include = /etc/pacman.d/mirrorlist
+EOB
+```
+
+Ref: [General recommendations#Repositories](https://wiki.archlinux.org/title/General_recommendations#Repositories)
+
 ### Disable Watchdogs
 
 ```
@@ -251,6 +262,23 @@ blacklist iTCO_wdt
 blacklist sp5100_tco
 EOB
 ```
+
+Ref: [Improving performance#Watchdogs](https://wiki.archlinux.org/title/Improving_performance#Watchdogs)
+, [Kernel module#Blacklisting](https://wiki.archlinux.org/title/Kernel_module#Blacklisting)
+
+### Caps to Ctrl (Console)
+
+Remap CapsLock to Control for console:
+
+```
+# _kmapdir=/mnt/usr/share/kbd/keymaps/i386/qwerty
+# gzip -dc < ${_kmapdir}/us.map.gz > ${_kmapdir}/usa.map
+# sed -i '/^keycode[[:space:]]58/c\keycode 58 = Control' \
+    ${_kmapdir}/usa.map
+# echo "KEYMAP=usa" >> /mnt/etc/vconsole.conf
+```
+
+Ref: [Linux console/Keyboard configuration#Creating a custom keymap](https://wiki.archlinux.org/title/Linux_console/Keyboard_configuration#Creating_a_custom_keymap)
 
 ## Fstab
 
@@ -429,27 +457,6 @@ Hostname:
 # echo "archlinux" > /etc/hostname
 ```
 
-Remap CapsLock to Control for console.\
-Ref: [Linux console/Keyboard configuration#Creating a custom keymap](https://wiki.archlinux.org/title/Linux_console/Keyboard_configuration#Creating_a_custom_keymap)
-
-```
-# _kmapdir=/mnt/usr/share/kbd/keymaps/i386/qwerty
-# gzip -dc < ${_kmapdir}/us.map.gz > ${_kmapdir}/usa.map
-# sed -i '/^keycode[[:space:]]58/c\keycode 58 = Control' \
-    ${_kmapdir}/usa.map
-# echo "KEYMAP=usa" >> /mnt/etc/vconsole.conf
-```
-
-Enable multilib repo.
-Ref: [General recommendations#Repositories](https://wiki.archlinux.org/title/General_recommendations#Repositories)
-
-```
-# cat >> /mnt/etc/pacman.conf << EOB
-[multilib]
-Include = /etc/pacman.d/mirrorlist
-EOB
-```
-
 Root Password:
 
 ```
@@ -464,13 +471,23 @@ Create User:
 
 ## Initramfs
 
+Create drop-in file `/etc/mkinitcpio.conf.d/hooks.conf` :
+
+```
+HOOKS=(systemd autodetect microcode modconf kms keyboard sd-vconsole sd-encrypt block filesystems fsck)
+```
+
 Ref: [dm-crypt/System configuration#mkinitcpio](https://wiki.archlinux.org/title/Dm-crypt/System_configuration#mkinitcpio)
+, [Mkinitcpio#Configuration](https://wiki.archlinux.org/title/Mkinitcpio#Configuration)
 
-Edit `/etc/mkinitcpio.conf`:
+Disable fallback initramfs:
 
 ```
-HOOKS=(base systemd autodetect microcode modconf kms keyboard sd-vconsole sd-encrypt block filesystems fsck)
+# sed -i "/^PRESETS=/c\PRESETS=('default')" /mnt/etc/mkinitcpio.d/linux.preset
+# sed -i "/^PRESETS=/c\PRESETS=('default')" /mnt/etc/mkinitcpio.d/linux-lts.preset
 ```
+
+Ref: [Mkinitcpio#Disabling fallback initramfs generation](https://wiki.archlinux.org/title/Mkinitcpio#Disabling_fallback_initramfs_generation)
 
 Recreate initramfs image:
 
@@ -512,7 +529,7 @@ Create `/etc/systemd/system/efistub-update.path`
 [Unit]
 Description=Copy EFISTUB Kernel to EFI system partition
 [Path]
-PathChanged=/boot/initramfs-linux-fallback.img
+PathChanged=/boot/initramfs-linux.img
 [Install]
 WantedBy=multi-user.target
 WantedBy=system-update.target
@@ -558,7 +575,7 @@ Create `/efi/loader/entries/arch.conf`.
 title Arch Linux
 linux /EFI/arch/vmlinuz-linux
 initrd /EFI/arch/initramfs-linux.img
-options rootflags=subvol=@ quiet
+options rootflags=subvol=@
 ```
 
 To use a subvolume as the root mountpoint, specify the subvolume via a kernel parameter
@@ -571,7 +588,7 @@ Create `/efi/loader/entries/arch-lts.conf`.
 title Arch Linux LTS
 linux /EFI/arch/vmlinuz-linux-lts
 initrd /EFI/arch/initramfs-linux-lts.img
-options rootflags=subvol=@ quiet
+options rootflags=subvol=@
 ```
 
 Note: If disk partitions were not following
@@ -582,11 +599,8 @@ Ref: [dm-crypt/Encrypting an entire system#Configuring the boot loader](https://
 [dm-crypt/System configuration#rd.luks.name](https://wiki.archlinux.org/title/Dm-crypt/System_configuration#rd.luks.name)
 
 ```
-options rd.luks.name=<UUID>=root root=/dev/mapper/root rootflags=subvol=@ quiet
+options rd.luks.name=<UUID>=root root=/dev/mapper/root rootflags=subvol=@
 ```
-
-Ref: [Improving performance#Watchdogs](https://wiki.archlinux.org/title/Improving_performance#Watchdogs)
-, [Kernel module#Blacklisting](https://wiki.archlinux.org/title/Kernel_module#Blacklisting)
 
 ## Snapshot
 
