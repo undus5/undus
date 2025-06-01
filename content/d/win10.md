@@ -61,16 +61,18 @@ irm https://get.activated.win | iex
 
 ## Office Suite
 
-[Office 365 Offline Installer](https://gravesoft.dev/office_c2r_links#chinese-simplified-zh-cn)
-([Download](https://officecdn.microsoft.com/db/492350f6-3a01-4f97-b9c0-c7c6ddf67d60/media/zh-cn/O365ProPlusRetail.img)
-, [Office Deployment Tool](https://officecdn.microsoft.com/pr/wsus/setup.exe)
-, [config.office.com](https://config.office.com/deploymentsettings))
+[Office 2024 Offline Installer](https://gravesoft.dev/office_c2r_links#chinese-simplified-zh-cn)
+([Download](https://officecdn.microsoft.com/db/492350f6-3a01-4f97-b9c0-c7c6ddf67d60/media/zh-cn/Home2024Retail.img))
 
-Office Installation ([Documentation](https://gravesoft.dev/office_c2r_custom)):
+Office Online Installer:
+[Office Deployment Tool](https://officecdn.microsoft.com/pr/wsus/setup.exe)
+, [config.office.com](https://config.office.com/deploymentsettings))
 
 ```
 setup.exe /configure Configuration.xml
 ```
+
+Ref: [Office C2R Custom Install](https://gravesoft.dev/office_c2r_custom)
 
 [OfficeToolPlus](https://otp.landian.vip/zh-cn/download.html)
 ([Download](https://otp.landian.vip/redirect/download.php?type=runtime&arch=x64&site=sdumirror)
@@ -117,6 +119,9 @@ setup.exe /configure Configuration.xml
 , [CrystalDiskMark](https://crystalmark.info/redirect.php?product=CrystalDiskMark))
 
 ## Web Browser
+
+[Chrome Enterprise]()(https://chromeenterprise.google)
+([Download](https://chromeenterprise.google/download/))
 
 [Brave Browser](https://brave.com/)
 ([Download](https://github.com/brave/brave-browser/releases/latest))
