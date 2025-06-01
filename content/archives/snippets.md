@@ -1,6 +1,6 @@
 +++
 title       = "Snippets"
-date        = 2014-11-25
+date        = 2024-11-25
 weight      = 9900
 hidden      = true
 +++

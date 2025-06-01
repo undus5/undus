@@ -2,13 +2,9 @@
 title       = "Resources"
 lastmod     = 2025-04-13T07:42:00+08:00
 date        = 2023-06-20
-showSummary = true
-weight      = 9000
+hidden      = true
+weight      = 9300
 +++
-
-Good stuff.
-
-<!--more-->
 
 [HBR1](http://www.hbr1.com/) Music Radio
 
