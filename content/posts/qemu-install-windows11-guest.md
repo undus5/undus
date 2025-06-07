@@ -653,13 +653,17 @@ If your CPU is Intel, also append "hv_evmcs".
 
 ## Windows VM Optimization
 
-Disable SuperFetch. Type "services" in search box and open, find "SysMain" service, disable it.
+Disable SuperFetch. Press `Win + r` type `services.msc` open Services, find "SysMain" service, disable it.
 
-Disable ScheduledDefrag. Type "task scheduler" in search box and open, find `Microsoft\Windows\Defrag`, disable it.
+Disable ScheduledDefrag. Press `Win + r` type `taskschd.msc` open Task Scheduler,
+find `Microsoft\Windows\Defrag`, disable it.
 
 Disable useplatformclock. Right click start menu, select Windows Powershell (Admin), run `bcdedit /set useplatformclock No`.
 
 Disable unnecessary startups from `Settings -> Apps -> Startup`.
+
+Disable window animations. Right click Start Menu -> System -> Advanced system settings
+-> Performance settings.
 
 Ref: [How To PROPERLY Install Windows 11 on KVM (2024)](https://www.youtube.com/watch?v=7tqKBy9r9b4)
 
