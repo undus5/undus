@@ -167,8 +167,7 @@ CPU microcode updates `amd-ucode` or `intel-ucode` for hardware bug and security
 
 ```
 # pacstrap -K /mnt \
-    base mkinitcpio linux linux-lts linux-firmware btrfs-progs iptables-nft \
-    amd-ucode neovim
+    base mkinitcpio linux linux-lts linux-firmware btrfs-progs iptables-nft amd-ucode
 ```
 
 `-K` means to initialize an empty pacman keyring in the target, so only adding it at first running.\
@@ -209,7 +208,6 @@ Create `/mnt/etc/sudoers.d/sudoers` with:
 Defaults passwd_timeout = 0
 Defaults timestamp_type = global
 Defaults timestamp_timeout = 15
-Defaults editor = /usr/bin/nvim
 %wheel ALL=(ALL:ALL) ALL
 ```
 
@@ -218,6 +216,15 @@ Defaults editor = /usr/bin/nvim
 ```
 # pacstrap /mnt terminus-font
 # echo "FONT=ter-132b" >> /mnt/etc/vconsole.conf
+```
+
+### Default Editor
+
+```
+# pacstrap /mnt neovim
+# cat > /mnt/etc/profile.d/editor.sh << EOB
+export EDITOR=/usr/bin/nvim
+EOB
 ```
 
 ### Utilities

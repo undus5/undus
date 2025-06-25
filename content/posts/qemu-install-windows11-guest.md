@@ -1,6 +1,6 @@
 +++
 title       = "QEMU Install Windows 11 Guest"
-lastmod     = 2025-05-14T22:12:00+08:00
+lastmod     = 2025-06-25
 date        = 2024-12-09
 showSummary = true
 showTOC     = true
@@ -546,7 +546,10 @@ $ echo "device_add usb-host,vendorid=0x0781,productid=0x5406,id=usb1" | \
     socat - UNIX-CONNECT:/tmp/monitor.sock
 ```
 
-`id` is required and can be arbitrary name, if missing , you will not able to detach the device.
+`id=` is required, if missing, you will not able to detach the device, it can not
+be arbitrary name according to my experiment (didn't find any description in documents),
+I guess it is limited to the form similar to a varible name,
+which is must started with letters, may have numbers followed.
 
 List attached devices:
 
