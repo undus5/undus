@@ -12,10 +12,10 @@ weight      = 9300
 
 [Hackaday](https://hackaday.com/)
 , [HackSpace](https://hackspace.raspberrypi.com/)
+, [CNX Software](https://www.cnx-software.com/)
 
 [Free Magazines Online](https://freemagazines.top/)
 , [awesome-english-ebooks](https://github.com/hehonghui/awesome-english-ebooks)
 
 [Anna’s Archive](https://annas-archive.org/)
 , [Z-Library](https://en.wikipedia.org/wiki/Z-Library)
-

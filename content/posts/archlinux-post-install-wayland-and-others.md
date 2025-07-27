@@ -207,7 +207,7 @@ Ref: [No sound in mpv vlc but works in web browser](https://wiki.archlinux.org/t
 $ sudo pacman -S \
     pcmanfm-qt lxqt-archiver p7zip libarchive \
     gvfs gvfs-mtp gvfs-afc \
-    zathura zathura-pdf-mupdf tesseract-data-eng \
+    zathura zathura-pdf-poppler tesseract-data-eng \
     imv mpv chromium
 ```
 
@@ -340,7 +340,9 @@ $ makepkg -sic
 
 Ref: [Arch User Repository](https://wiki.archlinux.org/title/Arch_User_Repository)
 
-## Web Browser
+## Other Softwares
+
+### Web Browser
 
 [Brave Browser](https://brave.com/)
 ([AUR](https://aur.archlinux.org/packages/brave-bin))
@@ -362,3 +364,8 @@ Visit `brave://policy` from address bar to check the effect.
 
 Ref: [Group Policy](https://support.brave.com/hc/en-us/articles/360039248271-Group-Policy)
 
+### QR Code
+
+[qrencode](https://archlinux.org/packages/?q=qrencode) text to QR code image
+
+[zbar](https://archlinux.org/packages/?q=zbar) QR code image to text

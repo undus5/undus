@@ -50,7 +50,7 @@ which better than the official one.
 
 [KeePassXC](https://keepassxc.org/download/) (Linux/Win/Mac)
 , [KeePassDX](https://www.keepassdx.com/) (Android)
-, Strongbox (iOS)
+, [KeePassium](https://keepassium.com/) (iOS)
 
 Backup the `.kdbx` file with caution.
 

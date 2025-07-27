@@ -192,25 +192,6 @@ zram-size = min(ram, 8192)
 compression-algorithm = zstd
 ```
 
-### Sudo
-
-Ref: [Sudo#Environment variables](https://wiki.archlinux.org/title/Sudo#Environment_variables)
-, [Sudo#Example entries](https://wiki.archlinux.org/title/Sudo#Example_entries)
-, [Sudo#Tips and tricks](https://wiki.archlinux.org/title/Sudo#Tips_and_tricks)
-
-```
-# pacstrap /mnt sudo bash-completion
-```
-
-Create `/mnt/etc/sudoers.d/sudoers` with:
-
-```
-Defaults passwd_timeout = 0
-Defaults timestamp_type = global
-Defaults timestamp_timeout = 15
-%wheel ALL=(ALL:ALL) ALL
-```
-
 ### Console Font
 
 ```
