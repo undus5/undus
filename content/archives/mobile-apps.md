@@ -12,7 +12,7 @@ weight      = 9300
 | Keepass | [KeePassDX](https://www.keepassdx.com/) | [KeePassium](https://apps.apple.com/us/app/keepassium-keepass-passwords/id1435127111) |
 | Audiobook Player | [Voice](https://voice.woitaschek.de/) | [BookPlayer](https://apps.apple.com/us/app/bookplayer/id1138219998) |
 | Ebook Reader | [Librera](https://librera.mobi/) | [eBoox](https://apps.apple.com/us/app/eboox-fb2-epub-book-reader/id1489172068) |
-| Podcast Player | [AntennaPod](https://antennapod.org/) | [Pocket Casts](https://apps.apple.com/us/app/pocket-casts-podcast-player/id414834813) |
+| Podcast Player | [AntennaPod](https://antennapod.org/) | [Castro](https://castro.fm/) |
 | QR Code | [SecScanQR](https://github.com/Fr4gorSoftware/SecScanQR) | [QR Pro](https://apps.apple.com/us/app/qr-pro-easy-qr-code-scanner/id1013912824) |
 | PDF Reader | [MJ PDF](https://gitlab.com/mudlej_android/mj_pdf_reader) , [Xodo](https://xodo.com/) | [PDF Viewer](https://apps.apple.com/us/app/pdf-viewer-by-nutrient/id1120099014) |
 | Video Player | [Just Player](https://github.com/eneim/exobase) | [KMPlayer](https://apps.apple.com/us/app/kmplayer/id835776444) |

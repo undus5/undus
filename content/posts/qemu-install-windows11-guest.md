@@ -177,7 +177,7 @@ and specify a decent resolution for it, since the default resolution is very low
 
 ```
 $ qemu-system-x86_64 \
-    -display gtk,gl=on,full-screen=on \
+    -display sdl,gl=on,full-screen=on \
     -device VGA,xres=1920,yres=1080
 ```
 
@@ -186,7 +186,7 @@ you can change to `qxl-vga` or `virtio-vga-gl`:
 
 ```
 $ qemu-system-x86_64 \
-    -display gtk,gl=on,full-screen=on \
+    -display sdl,gl=on,full-screen=on \
     -device virtio-vga-gl
 
 # or
@@ -199,6 +199,8 @@ it's a built-in emulation drive, no need extra settings to work.
 Ref: [QEMU#Graphics card](https://wiki.archlinux.org/title/QEMU#Graphics_card)
 
 ## Mouse Integration
+
+Display could be `sdl` or `gtk`.
 
 If use GTK based display, you may need to enable tablet mode for mouse to work:
 
@@ -653,22 +655,6 @@ $ qemu-system-x86_64 \
 ```
 
 If your CPU is Intel, also append "hv_evmcs".
-
-## Windows VM Optimization
-
-Disable SuperFetch. Press `Win + r` type `services.msc` open Services, find "SysMain" service, disable it.
-
-Disable ScheduledDefrag. Press `Win + r` type `taskschd.msc` open Task Scheduler,
-find `Microsoft\Windows\Defrag`, disable it.
-
-Disable useplatformclock. Right click start menu, select Windows Powershell (Admin), run `bcdedit /set useplatformclock No`.
-
-Disable unnecessary startups from `Settings -> Apps -> Startup`.
-
-Disable window animations. Right click Start Menu -> System -> Advanced system settings
--> Performance settings.
-
-Ref: [How To PROPERLY Install Windows 11 on KVM (2024)](https://www.youtube.com/watch?v=7tqKBy9r9b4)
 
 ## Boot From Physical Disk
 
