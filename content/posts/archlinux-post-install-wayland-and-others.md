@@ -213,7 +213,7 @@ Ref: [No sound in mpv vlc but works in web browser](https://wiki.archlinux.org/t
     nautilus nautilus-image-converter libarchive p7zip \
     gvfs gvfs-mtp gvfs-afc gvfs-gphoto2 ifuse \
     zathura zathura-pdf-poppler tesseract-data-eng \
-    imv mpv chromium
+    mpv chromium oculante
 ```
 
 [Nautilus (GNOME/Files)](https://wiki.archlinux.org/title/GNOME/Files) : file manager.\
@@ -222,7 +222,7 @@ Ref: [No sound in mpv vlc but works in web browser](https://wiki.archlinux.org/t
 provides mounting and trash functionality.\
 [Zathura](https://pwmt.org/projects/zathura/documentation/) : pdf/epub viewer.
 [Tesseract](https://tesseract-ocr.github.io/tessdoc/) : zathura dependency, OCR engine.\
-[imv](https://sr.ht/~exec64/imv/) : image viewer.\
+[oculante](https://github.com/woelper/oculante) : image viewer.\
 [mpv](https://mpv.io/) : video/audio player.\
 [Chromium](https://wiki.archlinux.org/title/Chromium) : web browser.
 
@@ -381,3 +381,5 @@ Ref: [Group Policy](https://support.brave.com/hc/en-us/articles/360039248271-Gro
 [qrencode](https://archlinux.org/packages/?q=qrencode) text to QR code image
 
 [zbar](https://archlinux.org/packages/?q=zbar) QR code image to text
+
+### [Useful add ons for sway](https://github.com/swaywm/sway/wiki/Useful-add-ons-for-sway)
