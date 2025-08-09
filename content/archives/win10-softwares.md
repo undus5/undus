@@ -142,7 +142,21 @@ Ref: [Group Policy](https://support.brave.com/hc/en-us/articles/360039248271-Gro
 
 ## Troubleshooting
 
-解决 Win10 自带输入法不显示选字框:
+修复 Win10 自带输入法不显示选字框:
 
 > 语言设置 \ 中文-选项 \ 微软拼音-选项 \ 勾选"使用以前版本的输入法"
+
+修复美版系统中文乱码:
+
+Windows 11:
+
+> Settings -> Time & language -> Language & region -> Administrative language settings\
+-> Change system locale (Language for non-Unicode programs)\
+-> Current system locale: Chinese (Simplified, Mainland China)
+
+Windows 10:
+
+> Control Panel -> Region -> Administrative\
+-> Change system locale (Language for non-Unicode programs)\
+-> Current system locale: Chinese (Simplified, Mainland China)
 

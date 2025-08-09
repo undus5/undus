@@ -1,7 +1,7 @@
 +++
 aliases     = ["/posts/archlinux-post-install-sway", "/posts/archlinux-post-install-based-on-sway"]
 title       = "Arch Linux Post Install: Wayland and Others"
-lastmod     = 2025-05-31
+lastmod     = 2025-08-09
 date        = 2024-11-24
 showSummary = true
 showTOC     = true
@@ -21,7 +21,7 @@ Upgrade system first before installing any packages.\
 Ref: [System maintenance#Avoid certain pacman commands](https://wiki.archlinux.org/title/System_maintenance#Avoid_certain_pacman_commands)
 
 ```
-$ sudo pacman -Syu
+#(root) pacman -Syu
 ```
 
 ## Wayland Compositor
@@ -34,14 +34,16 @@ for virtual machine.
 Packages for sway, labwc and other essential components:
 
 ```
-$ sudo pacman -S \
+#(root) pacman -S \
     sway swaylock swayidle swaybg labwc \
     xorg-xwayland wl-clipboard \
-    xdg-desktop-portal-gtk xdg-desktop-portal-wlr xdg-user-dirs \
+    xdg-desktop-portal-gtk xdg-desktop-portal-gnome \
+    xdg-desktop-portal-wlr xdg-user-dirs \
     wmenu alacritty mako wob grim sway-contrib kanshi wev
 ```
 
-xdg-desktop-portal-gtk : necessary component for e.g. file chooser.\
+xdg-desktop-portal-gtk : necessary component for e.g. file chooser (GTK3).\
+xdg-desktop-portal-gnome : necessary component for e.g. file chooser (GTK4).\
 xdg-desktop-portal-wlr : necessary component for e.g. screenshot.\
 [XDG user directories](https://wiki.archlinux.org/title/XDG_user_directories) :
 manage well known user directories e.g. Desktop, Documents, Downloads etc.\
@@ -69,7 +71,7 @@ Not ricing, but fixing some missing configurations.
 ### CJK Fonts
 
 ```
-$ sudo pacman -S noto-fonts noto-fonts-cjk noto-fonts-emoji
+#(root) pacman -S noto-fonts noto-fonts-cjk noto-fonts-emoji
 ```
 
 The default lookup order for CJK fonts has a little problem,
@@ -136,7 +138,7 @@ will deposit their icons in `/usr/share/icons/hicolor/` and most other icon them
 will inherit icons from the Hicolor icon theme"
 
 ```
-$ sudo pacman -S papirus-icon-theme hicolor-icon-theme
+#(root) pacman -S papirus-icon-theme hicolor-icon-theme
 ```
 
 Ref: [Icons](https://wiki.archlinux.org/title/Icons)
@@ -153,9 +155,12 @@ $ gsettings set org.gnome.desktop.interface icon-theme Papirus
 Set GTK dark theme
 
 ```
-$ sudo pacman -S gnome-themes-extra
+#(root) pacman -S gnome-themes-extra
 $ ls /usr/share/themes
+(GTK 3)
 $ gsettings set org.gnome.desktop.interface gtk-theme Adwaita-dark
+(GTK 4)
+$ gsettings set org.gnome.desktop.interface color-scheme prefer-dark
 ```
 
 Ref: [GTK#Basic theme configuration](https://wiki.archlinux.org/title/GTK#Basic_theme_configuration)
@@ -170,7 +175,7 @@ Without proper settings, Qt apps is not looking good, also may not showing icons
 Install `qt6ct` and set environment variables, then restart wayland compositor:
 
 ```
-$ sudo pacman -S qt6ct
+#(root) pacman -S qt6ct
 $ echo "export QT_QPA_PLATFORMTHEME=qt6ct" >> ~/.bashrc
 ```
 
@@ -186,7 +191,7 @@ Ref: [Configuration of Qt 5/6 applications under environments other than KDE Pla
 ### PipeWire
 
 ```
-$ sudo pacman -S alsa-utils \
+#(root) pacman -S alsa-utils \
     pipewire pipewire-alsa pipewire-pulse pipewire-jack wireplumber lib32-pipewire
 ```
 
@@ -196,7 +201,7 @@ Ref: [Advanced Linux Sound Architecture](https://wiki.archlinux.org/title/Advanc
 ### Volume Control
 
 ```
-$ sudo pacman -S pavucontrol
+#(root) pacman -S pavucontrol
 ```
 
 Ref: [No sound in mpv vlc but works in web browser](https://wiki.archlinux.org/title/PipeWire#No_sound_in_mpv,_vlc,_totem,_but_sound_works_in_web_browser_and_GNOME_speaker_test)
@@ -204,34 +209,40 @@ Ref: [No sound in mpv vlc but works in web browser](https://wiki.archlinux.org/t
 ## File Manager, Reader
 
 ```
-$ sudo pacman -S \
-    pcmanfm-qt lxqt-archiver p7zip libarchive \
-    gvfs gvfs-mtp gvfs-afc \
+#(root) pacman -S \
+    nautilus nautilus-image-converter libarchive p7zip \
+    gvfs gvfs-mtp gvfs-afc gvfs-gphoto2 ifuse \
     zathura zathura-pdf-poppler tesseract-data-eng \
     imv mpv chromium
 ```
 
-[PCManFM](https://wiki.archlinux.org/title/PCManFM) : file manager.\
-[GVFS](https://wiki.archlinux.org/title/File_manager_functionality#Mounting) :
+[Nautilus (GNOME/Files)](https://wiki.archlinux.org/title/GNOME/Files) : file manager.\
+[GVFS](https://wiki.archlinux.org/title/File_manager_functionality#Mounting)
+, [iOS](https://wiki.archlinux.org/title/IOS) :
 provides mounting and trash functionality.\
-[Zathura](https://pwmt.org/projects/zathura/documentation/) : pdf/epub viewer.\
+[Zathura](https://pwmt.org/projects/zathura/documentation/) : pdf/epub viewer.
 [Tesseract](https://tesseract-ocr.github.io/tessdoc/) : zathura dependency, OCR engine.\
 [imv](https://sr.ht/~exec64/imv/) : image viewer.\
 [mpv](https://mpv.io/) : video/audio player.\
 [Chromium](https://wiki.archlinux.org/title/Chromium) : web browser.
+
+For archive manager, I recommend [PeaZip](https://peazip.github.io/).\
+Download it manually and then configure desktop entry in order to open archives from file manager.
+
+Ref: [Desktop entries](https://wiki.archlinux.org/title/Desktop_entries)
 
 ## Polkit
 
 Tools like [Ventoy](https://www.ventoy.net/) need polkit to evaluate privilege.\
 
 ```
-$ sudo pacman -S polkit lxqt-policykit
+#(root) pacman -S polkit polkit-gnome
 ```
 
 Autostart with sway, edit `~/.config/sway/config` with:
 
 ```
-exec lxqt-policykit-agent
+exec /usr/lib/polkit-gnome/polkit-gnome-authentication-agent-1
 ```
 
 Ref: [polkit](https://wiki.archlinux.org/title/Polkit)
@@ -243,7 +254,7 @@ I use [Fcitx5](https://fcitx-im.org/wiki/Fcitx_5) and
 Here is my RIME config for Wubi86 : [rimerc](https://github.com/undus5/rimerc).
 
 ```
-$ sudo pacman -S fcitx5 fcitx5-qt fcitx5-configtool fcitx5-rime
+#(root) pacman -S fcitx5 fcitx5-qt fcitx5-configtool fcitx5-rime
 ```
 
 Edit `.bashrc` with:
@@ -275,13 +286,13 @@ Ref: [Fcitx5](https://wiki.archlinux.org/title/Fcitx5)
 For [AMDGPU#Installation](https://wiki.archlinux.org/title/AMDGPU#Installation)
 
 ```
-$ sudo pacman -S vulkan-radeon lib32-vulkan-radeon lib32-mesa
+#(root) pacman -S vulkan-radeon lib32-vulkan-radeon lib32-mesa
 ```
 
 For [Intel graphics#Installation](https://wiki.archlinux.org/title/Intel_graphics#Installation)
 
 ```
-$ sudo pacman -S vulkan-intel lib32-vulkan-intel lib32-mesa
+#(root) pacman -S vulkan-intel lib32-vulkan-intel lib32-mesa
 ```
 
 For [Hardware video acceleration](https://wiki.archlinux.org/title/Hardware_video_acceleration)
@@ -289,7 +300,7 @@ For [Hardware video acceleration](https://wiki.archlinux.org/title/Hardware_vide
 Intel Alder Lake:
 
 ```
-$ sudo pacman -S intel-media-driver
+#(root) pacman -S intel-media-driver
 ```
 
 ## Peripheral Device
@@ -297,8 +308,8 @@ $ sudo pacman -S intel-media-driver
 ### Bluetooth
 
 ```
-$ sudo pacman -S bluez bluez-utils
-$ sudo systemctl enable --now bluetooth
+#(root) pacman -S bluez bluez-utils
+#(root) systemctl enable --now bluetooth
 ```
 
 Pairing
@@ -318,8 +329,8 @@ Ref: [Bluetooth](https://wiki.archlinux.org/title/Bluetooth)
 ### Printer
 
 ```
-$ sudo pacman -S cups cups-pdf
-$ sudo systemctl enable --now cups
+#(root) pacman -S cups cups-pdf
+#(root) systemctl enable --now cups
 ```
 
 The CUPS server can be fully administered through the web interface, and there's
@@ -332,10 +343,11 @@ Install printer driver if needed, in my case is `brlaser` package from
 [AUR](https://aur.archlinux.org/packages/brlaser):
 
 ```
-$ sudo pacman -S base-devel
+#(root) pacman -S base-devel
 $ git clone https://aur.archlinux.org/brlaser.git ~/
 $ cd ~/brlaser
-$ makepkg -sic
+$ makepkg -sc
+#(root) pacman -U brlaser-xxx.zst
 ```
 
 Ref: [Arch User Repository](https://wiki.archlinux.org/title/Arch_User_Repository)
