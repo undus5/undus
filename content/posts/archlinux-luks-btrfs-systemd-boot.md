@@ -21,7 +21,7 @@ This is the most thing I learned after reading through the ArchWiki.
 It took me roughly a month searching and thinking about the wiki, when finished,
 I realized 2 things. One, I have designed my own workstation build during this process.
 Two, I could implement this build on top of nearly any distros now, distro is
-not a problem for me anymone.
+not a problem for me anymore.
 
 If you still do distro hopping and want to settle down, go reading through the
 ArchWiki, you will get answers, this is my advice.
