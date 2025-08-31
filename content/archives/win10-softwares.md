@@ -1,6 +1,6 @@
 +++
 title       = "Windows 10/11 Softwares"
-#lastmod     = 2025-04-23T14:06:00+08:00
+lastmod     = 2025-08-31
 date        = 2025-05-14
 showTOC     = true
 hidden      = true
@@ -152,11 +152,22 @@ Windows 11:
 
 > Settings -> Time & language -> Language & region -> Administrative language settings\
 -> Change system locale (Language for non-Unicode programs)\
--> Current system locale: Chinese (Simplified, Mainland China)
+-> Current system locale: Chinese (Simplified, Mainland China)\
+-> Uncheck Beta: Use Unicode UTF-8
 
 Windows 10:
 
-> Control Panel -> Region -> Administrative\
+> Settings -> Time & language -> Language -> Administrative language settings\
 -> Change system locale (Language for non-Unicode programs)\
--> Current system locale: Chinese (Simplified, Mainland China)
+-> Current system locale: Chinese (Simplified, Mainland China)\
+-> Uncheck Beta: Use Unicode UTF-8
+
+欢迎界面中文显示: Region -> Administrative -> Copy settings -> 打勾底部两选项
+
+LTSC disable auto updates:
+
+> `Win + r` -> `gpedit.msc`\
+-> `Computer Configuration\Administrative Templates\Windows Components\Windows Update`\
+-> disable `"Configure Automatic Updates"`\
+-> enable `Remove access to use all Windows update features`
 

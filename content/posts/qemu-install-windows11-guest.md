@@ -46,6 +46,10 @@ You can skip this section if you choose the
 [IoT version of Windows 11](https://massgrave.dev/windows_ltsc_links)
 , which does not require TPM, UEFI and Secure boot.
 
+![Fuck Microsoft from Space Force (2020)](/images/fuck-microsoft-from-space-force-2020.jpg)
+
+--- From the TV show "Space Force (2020)". :)
+
 "QEMU can emulate Trusted Platform Module, which is required by Windows 11 (which requires TPM 2.0)."
 
 Ref: [QEMU#Trusted Platform Module emulation](https://wiki.archlinux.org/title/QEMU#Trusted_Platform_Module_emulation)
@@ -75,10 +79,6 @@ $ qemu-system-x86_64 \
 
 "and TPM will be available inside the virtual machine.
 After shutting down the virtual machine, swtpm will be automatically terminated."
-
-...
-
-"Fuxk Microsoft !" --- A quote from the TV show "Space Force (2020)". ^_^
 
 ## UEFI
 
@@ -450,7 +450,7 @@ To list the available Intel HDA Audio devices:
 $ qemu-system-x86_64 -device help | grep hda
 $ qemu-system-x86_64 \
     -device ich9-intel-hda \
-    -device hda-duplex,audiodev=snd0
+    -device hda-output,audiodev=snd0
 ```
 
 Ref: [QEMU#Audio](https://wiki.archlinux.org/title/QEMU#Audio)

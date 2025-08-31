@@ -1,7 +1,7 @@
 +++
 title       = "Arch Linux Install: LUKS + Btrfs + Systemd-boot"
 aliases     = "/posts/archlinux-install-btrfs-luks-systemd-boot/"
-lastmod     = 2025-05-30
+lastmod     = 2025-08-30
 date        = 2024-10-28
 showSummary = true
 showTOC     = true
@@ -133,13 +133,9 @@ Create Btrfs filesystem:
 
 # btrfs subvolume create /mnt/@
 # btrfs subvolume create /mnt/@home
-# btrfs subvolume create /mnt/@var
 # btrfs subvolume create /mnt/@data
 # umount /mnt
 ```
-
-There's a bit extra work needed to let @var subvolume work without issue, demonstrated
-at section [Move PacmanDB](#move-pacmandb) of this post.
 
 ## Mount Filesystem
 
@@ -150,7 +146,6 @@ Ref:
 ```
 # mount -o subvol=@ /dev/mapper/root /mnt
 # mount -o subvol=@home --mkdir /dev/mapper/root /mnt/home
-# mount -o subvol=@var --mkdir /dev/mapper/root /mnt/var
 # mount -o subvol=@data --mkdir /dev/mapper/root /mnt/data
 
 # mount --mkdir /dev/disk/by-partlabel/efipart /mnt/efi
@@ -218,18 +213,6 @@ EOB
 ```
 
 [iwd](https://wiki.archlinux.org/title/Iwd) is a wireless network management tool.
-
-### Move PacmanDB
-
-The pacman database in /var/lib/pacman must stay on the root subvolume `@`.\
-Ref: [Snapper#Suggested filesystem layout](https://wiki.archlinux.org/title/Snapper#Suggested_filesystem_layout)
-
-So, to keep /var as a separate btrfs subvolume, we need to move pacman database out of /var:
-
-```
-# sed -i '/^#DBPath/a\DBPath=/usr/pacmandb' /etc/pacman.conf
-# mv /var/lib/pacman /usr/pacmandb
-```
 
 ### Enable Multilib Repo
 
@@ -299,7 +282,6 @@ Edit `/mnt/etc/fstab` with:
 UUID=XXXX-XXXX /efi vfat defaults 0 2
 UUID=xxxxxxxx-...-xxxxxxxxxxxx / btrfs compress=zstd,subvol=/@ 0 0
 UUID=xxxxxxxx-...-xxxxxxxxxxxx /home btrfs compress=zstd,subvol=/@home 0 0
-UUID=xxxxxxxx-...-xxxxxxxxxxxx /var btrfs compress=zstd,subvol=/@var 0 0
 UUID=xxxxxxxx-...-xxxxxxxxxxxx /data btrfs compress=zstd,subvol=/@data 0 0
 ```
 
@@ -500,11 +482,11 @@ Copy boot files to ESP.\
 Ref: [EFI system partition#Alternative mount points](https://wiki.archlinux.org/title/EFI_system_partition#Alternative_mount_points)
 
 ```
-# mkdir -p /efi/EFI/arch
-# cp -a /boot/vmlinuz-linux /efi/EFI/arch/
-# cp -a /boot/initramfs-linux.img /efi/EFI/arch/
-# cp -a /boot/vmlinuz-linux-lts /efi/EFI/arch/
-# cp -a /boot/initramfs-linux-lts.img /efi/EFI/arch/
+# mkdir -p /efi/boota
+# cp -a /boot/vmlinuz-linux /efi/boota/
+# cp -a /boot/initramfs-linux.img /efi/boota/
+# cp -a /boot/vmlinuz-linux-lts /efi/boota/
+# cp -a /boot/initramfs-linux-lts.img /efi/boota/
 ```
 
 Auto update boot files under ESP with systemd.\
@@ -530,10 +512,10 @@ Create `/etc/systemd/system/efistub-update.service`
 Description=Copy EFISTUB Kernel to EFI system partition
 [Service]
 Type=oneshot
-ExecStart=/usr/bin/cp -af /boot/vmlinuz-linux /efi/EFI/arch/
-ExecStart=/usr/bin/cp -af /boot/initramfs-linux.img /efi/EFI/arch/
-ExecStart=/usr/bin/cp -af /boot/vmlinuz-linux-lts /efi/EFI/arch/
-ExecStart=/usr/bin/cp -af /boot/initramfs-linux-lts.img /efi/EFI/arch/
+ExecStart=/usr/bin/cp -af /boot/vmlinuz-linux /efi/boota/
+ExecStart=/usr/bin/cp -af /boot/initramfs-linux.img /efi/boota/
+ExecStart=/usr/bin/cp -af /boot/vmlinuz-linux-lts /efi/boota/
+ExecStart=/usr/bin/cp -af /boot/initramfs-linux-lts.img /efi/boota/
 ```
 
 Enable systemd units:
@@ -549,20 +531,24 @@ Ref: [Systemd-boot#Configuration](https://wiki.archlinux.org/title/Systemd-boot#
 Edit `/efi/loader/loader.conf`:
 
 ```
-default arch.conf
+default boota.conf
 timeout 0
-console-mode max
 editor no
 ```
 
-`timeout 0` means not showing menu and boot immediately.
+`timeout 0` means the boot menu will not be displayed by default,
+and the system will immediately boot into the default entry.
+To reveal the boot menu in this scenario, a key needs to be pressed and
+held down during the boot process, before systemd-boot initializes.
+The recommended key for this action is the space bar.
+Other keys may also work, but space bar is widely suggested.
 
-Create `/efi/loader/entries/arch.conf`.
+Create `/efi/loader/entries/boota.conf`.
 
 ```
 title Arch Linux
-linux /EFI/arch/vmlinuz-linux
-initrd /EFI/arch/initramfs-linux.img
+linux /boota/vmlinuz-linux
+initrd /boota/initramfs-linux.img
 options rootflags=subvol=@
 ```
 
@@ -570,12 +556,12 @@ To use a subvolume as the root mountpoint, specify the subvolume via a kernel pa
 using rootflags=subvol=@. Or you would get an error "Failed to start Switch Root" when booting.\
 Ref: [Btrfs#Mounting subvolume as root](https://wiki.archlinux.org/title/Btrfs#Mounting_subvolume_as_root)
 
-Create `/efi/loader/entries/arch-lts.conf`.
+Create `/efi/loader/entries/boota-lts.conf`.
 
 ```
 title Arch Linux LTS
-linux /EFI/arch/vmlinuz-linux-lts
-initrd /EFI/arch/initramfs-linux-lts.img
+linux /boota/vmlinuz-linux-lts
+initrd /boota/initramfs-linux-lts.img
 options rootflags=subvol=@
 ```
 
@@ -589,53 +575,6 @@ Ref: [dm-crypt/Encrypting an entire system#Configuring the boot loader](https://
 ```
 options rd.luks.name=<UUID>=root root=/dev/mapper/root rootflags=subvol=@
 ```
-
-## Snapshot
-
-We can use pacman hooks to automatically create backup when upgrading system.
-
-Create `/usr/local/bin/snapshot.sh` which do the job:
-
-```
-#!/usr/bin/bash
-set -e
-[[ ${EUID} == 0 ]] || (echo "run as root" && exit 1)
-_shotsdir=/home/snapshots
-mkdir -p ${_shotsdir}
-printf "=== Cleaning old snapshots ..."
-_shots=(${_shotsdir}/*)
-for ((i=${#_shots[@]}-2; i>=0; i--)); do
-    btrfs prop set -f -ts ${_shots[$i]} ro false
-    rm -rf ${_shots[$i]}
-done
-printf " Done.\n"
-btrfs subvolume snapshot -r / ${_shotsdir}/@$(date +%Y%m%d%H%M%S)$(date +%N|cut -c1)
-```
-
-Make it executable:
-
-```
-# chmod +x /usr/local/bin/snapshot.sh
-```
-
-Create `/etc/pacman.d/hooks/snapshot-before-upgrade.hook`,
-(create hooks directory manually if necessary):
-
-```
-[Trigger]
-Operation = Upgrade
-Type = Package
-Target = linux
-[Action]
-Depends = btrfs-progs
-When = PreTransaction
-Exec = /usr/local/bin/snapshot.sh
-```
-
-This hook will be triggerd when the kernel package `linux` being upgraded.
-
-Ref: [Btrfs#Snapshots](https://wiki.archlinux.org/title/Btrfs#Snapshots)
-, [alpm-hooks(5)](https://man.archlinux.org/man/alpm-hooks.5)
 
 ## Reboot
 
@@ -655,4 +594,3 @@ Ref: [dm-crypt/Drive preparation#Wipe LUKS header](https://wiki.archlinux.org/ti
 # cryptsetup erase /dev/vda2
 # wipefs -a /dev/vda
 ```
-
