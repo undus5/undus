@@ -7,7 +7,7 @@ showTOC     = true
 weight      = 1000
 +++
 
-Build a minimal workstation with essential components, no ricing.
+Build a compact workstation with essential components, no ricing.
 
 <!--more-->
 
@@ -120,7 +120,7 @@ Ref: [Font configuration#Fontconfig configuration](https://wiki.archlinux.org/ti
 
 ## Appearance Fix
 
-Not ricing, but fixing some missing configurations.
+There are some configurations need to be fixed for GUI apps.
 
 ### Icon Theme
 
@@ -173,10 +173,6 @@ Install `qt6ct` and set environment variables, then restart wayland compositor:
 #(root) pacman -S qt6ct
 $ echo "export QT_QPA_PLATFORMTHEME=qt6ct" >> ~/.bashrc
 ```
-
-Not recommending the `breeze` theme, the package is highly dependent on the KDE framework, 
-would install lots of irrelevant KDE components, which is annoying,
-this is the most reason I don't like KDE stuff.
 
 Ref: [Configuration of Qt 5/6 applications under environments other than KDE Plasma](https://wiki.archlinux.org/title/Qt#Configuration_of_Qt_5/6_applications_under_environments_other_than_KDE_Plasma)
 , [Not showing functional icons](https://github.com/lxqt/pavucontrol-qt/issues/126)
