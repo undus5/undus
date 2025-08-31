@@ -1,7 +1,6 @@
 +++
-aliases     = ["/posts/archlinux-post-install-sway", "/posts/archlinux-post-install-based-on-sway"]
-title       = "Arch Linux Post Install: Wayland and Others"
-lastmod     = 2025-08-09
+title       = "Arch Linux Install: Wayland Tiling Workstation"
+lastmod     = 2025-08-31
 date        = 2024-11-24
 showSummary = true
 showTOC     = true
@@ -24,32 +23,33 @@ Ref: [System maintenance#Avoid certain pacman commands](https://wiki.archlinux.o
 #(root) pacman -Syu
 ```
 
-## Wayland Compositor
+## Wayland
 
 I prefer wayland GUI environment since its ecosystem is mature enough.\
 I prefer wayland compositors since I'm an experienced user who thinks desktop environments are bloat.\
 I use [sway](https://swaywm.org) on my host machine, and use [labwc](labwc.github.io)
 for virtual machine.
 
-Packages for sway, labwc and other essential components:
+### Sway & Labwc
+
+Packages for [Sway](https://wiki.archlinux.org/title/Sway),
+[Labwc](https://wiki.archlinux.org/title/Labwc) and other essential components:
 
 ```
 #(root) pacman -S \
     sway swaylock swayidle swaybg labwc \
     xorg-xwayland wl-clipboard \
-    xdg-desktop-portal-gtk xdg-desktop-portal-gnome \
-    xdg-desktop-portal-wlr xdg-user-dirs \
-    wmenu alacritty mako wob grim sway-contrib kanshi wev
+    xdg-desktop-portal-wlr xdg-desktop-portal-gtk xdg-user-dirs \
+    wmenu mako wob grim sway-contrib kanshi wev
 ```
 
-xdg-desktop-portal-gtk : necessary component for e.g. file chooser (GTK3).\
-xdg-desktop-portal-gnome : necessary component for e.g. file chooser (GTK4).\
+[xdg-desktop-portal](https://wiki.archlinux.org/title/XDG_Desktop_Portal):\
+xdg-desktop-portal-gtk : necessary component for e.g. file chooser.\
 xdg-desktop-portal-wlr : necessary component for e.g. screenshot.\
-[XDG user directories](https://wiki.archlinux.org/title/XDG_user_directories) :
+[xdg-user-dirs](https://wiki.archlinux.org/title/XDG_user_directories):
 manage well known user directories e.g. Desktop, Documents, Downloads etc.\
-[wl-clipboard](https://github.com/bugaevc/wl-clipboard) : wayland clipboard utilities.\
-[wmenu](https://codeberg.org/adnano/wmenu) : menu for running commands, launching apps.\
-[alacritty](https://alacritty.org) : terminal emulator.\
+[wl-clipboard](https://github.com/bugaevc/wl-clipboard) : necessary for ctrl-c ctrl-v function.\
+[wmenu](https://codeberg.org/adnano/wmenu) : menu for launching apps and running commands.\
 [mako](https://github.com/emersion/mako) : desktop notification.\
 [wob](https://github.com/francma/wob) : indicator bar for volume or brightness.\
 [grim](https://gitlab.freedesktop.org/emersion/grim) screenshot tool for wayland.\
@@ -57,18 +57,9 @@ manage well known user directories e.g. Desktop, Documents, Downloads etc.\
 [kanshi](https://gitlab.freedesktop.org/emersion/kanshi): dynamic output configuration.\
 [wev](https://git.sr.ht/~sircmpwn/wev) : detect key name, for configuring keybindings.
 
-Ref: [Sway](https://wiki.archlinux.org/title/Sway)
-, [Labwc](https://wiki.archlinux.org/title/Labwc)
-, [XDG Desktop Portal](https://wiki.archlinux.org/title/XDG_Desktop_Portal)
+Here is my configurations for sway and labwc: [wlrc](https://github.com/undus5/wlrc).
 
-Here is my configurations for sway and labwc: [wlrc](https://github.com/undus5/wlrc)
-, feel free to download and test.
-
-## Appearance
-
-Not ricing, but fixing some missing configurations.
-
-### CJK Fonts
+## CJK Fonts Fix
 
 ```
 #(root) pacman -S noto-fonts noto-fonts-cjk noto-fonts-emoji
@@ -126,6 +117,10 @@ for example.
 
 Ref: [Font configuration#Fontconfig configuration](https://wiki.archlinux.org/title/Font_configuration#Fontconfig_configuration)
 , [Font configuration#Alias](https://wiki.archlinux.org/title/Font_configuration#Alias)
+
+## Appearance Fix
+
+Not ricing, but fixing some missing configurations.
 
 ### Icon Theme
 
@@ -186,50 +181,125 @@ this is the most reason I don't like KDE stuff.
 Ref: [Configuration of Qt 5/6 applications under environments other than KDE Plasma](https://wiki.archlinux.org/title/Qt#Configuration_of_Qt_5/6_applications_under_environments_other_than_KDE_Plasma)
 , [Not showing functional icons](https://github.com/lxqt/pavucontrol-qt/issues/126)
 
-## Sound System
-
-### PipeWire
-
-```
-#(root) pacman -S alsa-utils \
-    pipewire pipewire-alsa pipewire-pulse pipewire-jack wireplumber lib32-pipewire
-```
-
-Ref: [Advanced Linux Sound Architecture](https://wiki.archlinux.org/title/Advanced_Linux_Sound_Architecture)
-, [PipeWire](https://wiki.archlinux.org/title/PipeWire)
-
-### Volume Control
-
-```
-#(root) pacman -S pavucontrol
-```
-
 Ref: [No sound in mpv vlc but works in web browser](https://wiki.archlinux.org/title/PipeWire#No_sound_in_mpv,_vlc,_totem,_but_sound_works_in_web_browser_and_GNOME_speaker_test)
 
-## File Manager, Reader
+## Terminal
+
+[Alacritty](https://alacritty.org) is a modern terminal emulator that comes with sensible defaults.
+
+```
+#(root) pacman -S alacritty
+```
+
+## File Manager
+
+### Nautilus
+
+Nautilus also known as [GNOME/Files](https://wiki.archlinux.org/title/GNOME/Files).
+
 
 ```
 #(root) pacman -S \
-    nautilus nautilus-image-converter libarchive p7zip \
-    gvfs gvfs-mtp gvfs-afc gvfs-gphoto2 ifuse \
-    zathura zathura-pdf-poppler tesseract-data-eng \
-    mpv chromium oculante
+    nautilus nautilus-image-converter gvfs gvfs-mtp gvfs-gphoto2 gvfs-afc
 ```
 
-[Nautilus (GNOME/Files)](https://wiki.archlinux.org/title/GNOME/Files) : file manager.\
-[GVFS](https://wiki.archlinux.org/title/File_manager_functionality#Mounting)
-, [iOS](https://wiki.archlinux.org/title/IOS) :
-provides mounting and trash functionality.\
-[Zathura](https://pwmt.org/projects/zathura/documentation/) : pdf/epub viewer.
-[Tesseract](https://tesseract-ocr.github.io/tessdoc/) : zathura dependency, OCR engine.\
-[oculante](https://github.com/woelper/oculante) : image viewer.\
-[mpv](https://mpv.io/) : video/audio player.\
-[Chromium](https://wiki.archlinux.org/title/Chromium) : web browser.
+[GVFS](https://wiki.archlinux.org/title/File_manager_functionality#Mounting):
+for auto mounting usb drives, mobile devices and trash functionality.\
 
-For archive manager, I recommend [PeaZip](https://peazip.github.io/).\
-Download it manually and then configure desktop entry in order to open archives from file manager.
+### Dolphin
+
+[Dolphin](https://wiki.archlinux.org/title/Dolphin) is the default file manager of KDE.
+
+```
+#(root) pacman -S dolphin
+```
+
+Change default terminal, edit `~/.config/kdeglobals` with:
+
+```
+[General]
+TerminalApplication=alacritty
+TerminalService=Alacritty.desktop
+```
+
+Ref: [Dolphin change default terminal](https://wiki.archlinux.org/title/Dolphin#Change_the_default_terminal_emulator)
+
+Fix empty appliction list when right click open with:
+
+```
+#(root) pacman -S archlinux-xdg-menu
+
+$(user) echo 'XDG_MENU_PREFIX=arch-' >> ~/.bashrc
+```
+
+When application desktop entries changed, run `kbuildsycoca6 --noincremental`.
+
+Ref: [Dolphin cannot find applications](https://wiki.archlinux.org/title/Dolphin#Dolphin_cannot_find_applications_(when_running_under_another_window_manager))
+
+### iOS Support
+
+For [iOS](https://wiki.archlinux.org/title/IOS) device support, you need to install `ifuse`:
+
+```
+#(root) pacman -S ifuse
+```
+
+### Disable recent files
+
+```
+$(user) rm ~/.local/share/recently-used.xbel
+$(user) ln -s /dev/null ~/.local/share/recently-used.xbel
+```
+
+## File Readers
+
+### PDF
+
+```
+#(root) pacman -S zathura zathura-pdf-poppler tesseract-data-eng
+```
+
+[zathura](https://pwmt.org/projects/zathura/documentation/) : pdf viewer.
+[tesseract](https://tesseract-ocr.github.io/tessdoc/) : zathura dependency, OCR engine.\
+
+### Image
+
+```
+#(root) pacman -S oculante
+```
+
+[oculante](https://github.com/woelper/oculante) : image viewer.
+
+### Video
+
+```
+#(root) pacman -S mpv
+```
+
+[mpv](https://mpv.io/) : video/audio player.
+
+### Compression
+
+I recommend [PeaZip](https://peazip.github.io/) as archive manager.
+
+Install dependency first:
+
+```
+#(root) pacman -S qt6pas
+```
+
+Download peazip tarball and extract to e.g. `/data/apps/peazip`,
+copy `/data/apps/peazip/res/share/batch/freedesktop_integration/peazip.desktop`
+to `~/.local/share/applications/` then edit `Exec` and `Icon` path:
+
+```
+Exec=/data/apps/peazip/peazip %F
+Icon=/data/apps/peazip/res/icons/peazip
+```
 
 Ref: [Desktop entries](https://wiki.archlinux.org/title/Desktop_entries)
+
+Also recommend installing `7zip` package for file compression in command line.
 
 ## Polkit
 
@@ -280,6 +350,28 @@ Wayland text-input-v3: Enabled
 
 Ref: [Fcitx5](https://wiki.archlinux.org/title/Fcitx5)
 , [Using Fcitx 5 on Wayland](https://fcitx-im.org/wiki/Using_Fcitx_5_on_Wayland)
+
+## Sound System
+
+### PipeWire
+
+```
+#(root) pacman -S \
+    alsa-utils \
+    pipewire pipewire-alsa pipewire-pulse pipewire-jack lib32-pipewire \
+    wireplumber
+```
+
+Ref: [Advanced Linux Sound Architecture](https://wiki.archlinux.org/title/Advanced_Linux_Sound_Architecture)
+, [PipeWire](https://wiki.archlinux.org/title/PipeWire)
+
+### Pavucontrol
+
+Volume control tool, for switching output sound device.
+
+```
+#(root) pacman -S pavucontrol
+```
 
 ## GPU Drivers
 
@@ -352,9 +444,13 @@ $ makepkg -sc
 
 Ref: [Arch User Repository](https://wiki.archlinux.org/title/Arch_User_Repository)
 
-## Other Softwares
+## Web Browser
 
-### Web Browser
+### Chromium
+
+[Chromium](https://wiki.archlinux.org/title/Chromium) : web browser.
+
+### Brave
 
 [Brave Browser](https://brave.com/)
 ([AUR](https://aur.archlinux.org/packages/brave-bin))
@@ -376,10 +472,11 @@ Visit `brave://policy` from address bar to check the effect.
 
 Ref: [Group Policy](https://support.brave.com/hc/en-us/articles/360039248271-Group-Policy)
 
-### QR Code
+## QR Code
 
 [qrencode](https://archlinux.org/packages/?q=qrencode) text to QR code image
 
 [zbar](https://archlinux.org/packages/?q=zbar) QR code image to text
 
-### [Useful add ons for sway](https://github.com/swaywm/sway/wiki/Useful-add-ons-for-sway)
+## [Useful add ons for sway](https://github.com/swaywm/sway/wiki/Useful-add-ons-for-sway)
+
