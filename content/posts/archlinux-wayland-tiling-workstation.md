@@ -1,5 +1,5 @@
 +++
-title       = "Arch Linux Install: Wayland Tiling Workstation"
+title       = "Arch Linux: Wayland Tiling Workstation"
 lastmod     = 2025-08-31
 date        = 2024-11-24
 showSummary = true
