@@ -155,13 +155,11 @@ $ ls /usr/share/themes
 (GTK 3)
 $ gsettings set org.gnome.desktop.interface gtk-theme Adwaita-dark
 (GTK 4)
-$ gsettings set org.gnome.desktop.interface color-scheme prefer-dark
+$ gsettings set org.gnome.desktop.interface color-scheme prefer-dark/default
 ```
 
 Ref: [GTK#Basic theme configuration](https://wiki.archlinux.org/title/GTK#Basic_theme_configuration)
 , [GTK 3 settings on Wayland](https://github.com/swaywm/sway/wiki/GTK-3-settings-on-Wayland)
-
-For Qt settings check following section [Qt Theme](#qt-theme).
 
 ### Qt Theme
 
@@ -247,34 +245,7 @@ $(user) rm ~/.local/share/recently-used.xbel
 $(user) ln -s /dev/null ~/.local/share/recently-used.xbel
 ```
 
-## File Readers
-
-### PDF
-
-```
-#(root) pacman -S zathura zathura-pdf-poppler tesseract-data-eng
-```
-
-[zathura](https://pwmt.org/projects/zathura/documentation/) : pdf viewer.
-[tesseract](https://tesseract-ocr.github.io/tessdoc/) : zathura dependency, OCR engine.\
-
-### Image
-
-```
-#(root) pacman -S oculante
-```
-
-[oculante](https://github.com/woelper/oculante) : image viewer.
-
-### Video
-
-```
-#(root) pacman -S mpv
-```
-
-[mpv](https://mpv.io/) : video/audio player.
-
-### Compression
+### PeaZip
 
 I recommend [PeaZip](https://peazip.github.io/) as archive manager.
 
@@ -296,56 +267,6 @@ Icon=/data/apps/peazip/res/icons/peazip
 Ref: [Desktop entries](https://wiki.archlinux.org/title/Desktop_entries)
 
 Also recommend installing `7zip` package for file compression in command line.
-
-## Polkit
-
-Tools like [Ventoy](https://www.ventoy.net/) need polkit to evaluate privilege.\
-
-```
-#(root) pacman -S polkit polkit-gnome
-```
-
-Autostart with sway, edit `~/.config/sway/config` with:
-
-```
-exec /usr/lib/polkit-gnome/polkit-gnome-authentication-agent-1
-```
-
-Ref: [polkit](https://wiki.archlinux.org/title/Polkit)
-
-## Input Method
-
-I use [Fcitx5](https://fcitx-im.org/wiki/Fcitx_5) and
-[RIME](https://rime.im) to input chinese characters.
-Here is my RIME config for Wubi86 : [rimerc](https://github.com/undus5/rimerc).
-
-```
-#(root) pacman -S fcitx5 fcitx5-qt fcitx5-configtool fcitx5-rime
-```
-
-Edit `.bashrc` with:
-
-```
-export QT_IM_MODULE=fcitx
-export XMODIFIERS=@im=fcitx
-```
-
-Autostart with sway, edit `~/.config/sway/config` with:
-
-```
-exec fcitx5 -d -r
-```
-
-Fix fcitx5 not working for Chromium on wayland,
-enter `chrome://flags` from Chromium address bar, search for `wayland`, edit:
-
-```
-Preferred Ozone platform: Auto
-Wayland text-input-v3: Enabled
-```
-
-Ref: [Fcitx5](https://wiki.archlinux.org/title/Fcitx5)
-, [Using Fcitx 5 on Wayland](https://fcitx-im.org/wiki/Using_Fcitx_5_on_Wayland)
 
 ## Sound System
 
@@ -390,6 +311,97 @@ Intel Alder Lake:
 ```
 #(root) pacman -S intel-media-driver
 ```
+
+## Polkit
+
+Tools like [Ventoy](https://www.ventoy.net/) need polkit to evaluate privilege.\
+
+```
+#(root) pacman -S polkit polkit-gnome
+```
+
+Autostart with sway, edit `~/.config/sway/config` with:
+
+```
+exec /usr/lib/polkit-gnome/polkit-gnome-authentication-agent-1
+```
+
+Ref: [polkit](https://wiki.archlinux.org/title/Polkit)
+
+## PDF, Image, Video
+
+```
+#(root) pacman -S \
+    zathura zathura-pdf-poppler tesseract-data-eng \
+    oculante mpv
+```
+
+[zathura](https://pwmt.org/projects/zathura/documentation/) : pdf viewer.
+[tesseract](https://tesseract-ocr.github.io/tessdoc/) : zathura dependency, OCR engine.\
+[oculante](https://github.com/woelper/oculante) : image viewer.
+[mpv](https://mpv.io/) : video/audio player.
+
+## Web Browser
+
+### Chromium
+
+[Chromium](https://wiki.archlinux.org/title/Chromium) : web browser.
+
+### Brave (AUR)
+
+[Brave Browser](https://brave.com/)
+([AUR](https://aur.archlinux.org/packages/brave-bin))
+
+Disable Crypto and AI related components by default:
+
+Create `/etc/brave/policies/managed/brave-policy.json` :
+
+```
+{
+  "BraveAIChatEnabled": true,
+  "BraveRewardsDisabled": true,
+  "BraveVPNDisabled": 1,
+  "BraveWalletDisabled": true
+}
+```
+
+Visit `brave://policy` from address bar to check the effect.
+
+Ref: [Group Policy](https://support.brave.com/hc/en-us/articles/360039248271-Group-Policy)
+
+## Input Method
+
+I use [Fcitx5](https://fcitx-im.org/wiki/Fcitx_5) and
+[RIME](https://rime.im) to input chinese characters.
+Here is my RIME config for Wubi86 : [rimerc](https://github.com/undus5/rimerc).
+
+```
+#(root) pacman -S fcitx5 fcitx5-qt fcitx5-configtool fcitx5-rime
+```
+
+Edit `.bashrc` with:
+
+```
+export QT_IM_MODULE=fcitx
+export XMODIFIERS=@im=fcitx
+```
+
+Autostart with sway, edit `~/.config/sway/config` with:
+
+```
+exec fcitx5 -d -r
+```
+
+Fix fcitx5 not working for Chromium on wayland,
+enter `chrome://flags` from Chromium address bar, search for `wayland`, edit:
+
+```
+Preferred Ozone platform: Auto
+Wayland text-input-v3: Enabled
+```
+
+Ref: [Fcitx5](https://wiki.archlinux.org/title/Fcitx5)
+, [Using Fcitx 5 on Wayland](https://fcitx-im.org/wiki/Using_Fcitx_5_on_Wayland)
 
 ## Peripheral Device
 
@@ -440,39 +452,13 @@ $ makepkg -sc
 
 Ref: [Arch User Repository](https://wiki.archlinux.org/title/Arch_User_Repository)
 
-## Web Browser
+## Miscellaneous
 
-### Chromium
+[foliate](https://johnfactotum.github.io/foliate/) e-book reader\
+[cozy](https://cozy.sh/) audiobook player
 
-[Chromium](https://wiki.archlinux.org/title/Chromium) : web browser.
-
-### Brave
-
-[Brave Browser](https://brave.com/)
-([AUR](https://aur.archlinux.org/packages/brave-bin))
-
-Disable Crypto and AI related components by default:
-
-Create `/etc/brave/policies/managed/brave-policy.json` :
-
-```
-{
-  "BraveAIChatEnabled": true,
-  "BraveRewardsDisabled": true,
-  "BraveVPNDisabled": 1,
-  "BraveWalletDisabled": true
-}
-```
-
-Visit `brave://policy` from address bar to check the effect.
-
-Ref: [Group Policy](https://support.brave.com/hc/en-us/articles/360039248271-Group-Policy)
-
-## QR Code
-
-[qrencode](https://archlinux.org/packages/?q=qrencode) text to QR code image
-
+[qrencode](https://archlinux.org/packages/?q=qrencode) text to QR code image\
 [zbar](https://archlinux.org/packages/?q=zbar) QR code image to text
 
-## [Useful add ons for sway](https://github.com/swaywm/sway/wiki/Useful-add-ons-for-sway)
+[Useful add ons for sway](https://github.com/swaywm/sway/wiki/Useful-add-ons-for-sway)
 
