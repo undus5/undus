@@ -2,9 +2,10 @@
 title       = "Backup and Encryption"
 lastmod     = 2024-11-24T17:11:00+08:00
 date        = 2023-04-14
-showSummary = true
 showTOC     = true
 weight      = 1000
+showSummary = false
+hidden      = true
 +++
 
 Data is priceless, pay more attention.

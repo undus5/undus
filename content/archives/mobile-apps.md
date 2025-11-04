@@ -4,7 +4,7 @@ lastmod     = 2025-07-26
 date        = 2025-06-02
 showTOC     = true
 hidden      = true
-weight      = 9300
+weight      = 9050
 +++
 
 | Category | Android | iOS |
@@ -16,7 +16,7 @@ weight      = 9300
 | QR Code | [SecScanQR](https://github.com/Fr4gorSoftware/SecScanQR) | [QR Pro](https://apps.apple.com/us/app/qr-pro-easy-qr-code-scanner/id1013912824) |
 | PDF Reader | [MJ PDF](https://gitlab.com/mudlej_android/mj_pdf_reader) , [Xodo](https://xodo.com/) | [PDF Viewer](https://apps.apple.com/us/app/pdf-viewer-by-nutrient/id1120099014) |
 | Video Player | [Just Player](https://github.com/eneim/exobase) | [KMPlayer](https://apps.apple.com/us/app/kmplayer/id835776444) |
-| Document Scanner | [Genius Scan](https://thegrizzlylabs.com/genius-scan/) | - |
+| Document Scanner | [Genius Scan](https://thegrizzlylabs.com/genius-scan/) | Genius Scan |
 | File Transfer | [LocalSend](https://localsend.org/) | LocalSend |
 | Text Editor | [Markor](https://github.com/gsantner/markor) | [Paper](https://apps.apple.com/us/app/paper-writing-app-notes/id1476984841) |
 | Compass | [Compass](https://github.com/Kr0oked/Compass) |

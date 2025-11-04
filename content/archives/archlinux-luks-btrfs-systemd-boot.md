@@ -3,9 +3,10 @@ title       = "Arch Linux: LUKS + BTRFS + Systemd-Boot/Net"
 aliases     = "/posts/archlinux-install-btrfs-luks-systemd-boot/"
 lastmod     = 2025-08-30
 date        = 2024-10-28
-showSummary = true
 showTOC     = true
 weight      = 1000
+showSummary = false
+hidden      = true
 +++
 
 Joining in the "btw" club, and stopped distro hopping finally.
@@ -76,11 +77,11 @@ Ref: [Parted#Alignment](https://wiki.archlinux.org/title/Parted#Alignment)
 Ref: [Device file#Block devices](https://wiki.archlinux.org/title/Device_file#Block_devices)
 
 ```
-# parted /dev/vda
+# parted /dev/nvme0n1
 (parted) mklabel gpt
-(parted) mkpart efipart fat32 1MiB 1025MiB
+(parted) mkpart EFIPART fat32 1MiB 1025MiB
 (parted) set 1 esp on
-(parted) mkpart cryptpart ext4 1025MiB 100%
+(parted) mkpart ROOTPART ext4 1025MiB 100%
 (parted) type 2 4f68bce3-e8cd-4db1-96e7-fbcaf984b709
 (parted) quit
 ```
@@ -91,8 +92,8 @@ Ref: [Persistent block device naming#by-partlabel](https://wiki.archlinux.org/ti
 ```
 # ls -l /dev/disk/by-partlabel
 total 0
-lrwxrwxrwx 1 root root ... efipart -> ../../vda1
-lrwxrwxrwx 1 root root ... rootpart -> ../../vda2
+lrwxrwxrwx 1 root root ... EFIPART -> ../../nvme0n1p1
+lrwxrwxrwx 1 root root ... ROOTPART -> ../../nvme0n1p2
 ```
 
 ## EFI Partition
@@ -101,7 +102,7 @@ Ref:
 [EFI system partition#Format the partition](https://wiki.archlinux.org/title/EFI_system_partition#Format_the_partition)
 
 ```
-# mkfs.fat -F32 /dev/disk/by-partlabel/efipart
+# mkfs.fat -F32 /dev/disk/by-partlabel/EFIPART
 ```
 
 ## LUKS
@@ -113,8 +114,8 @@ Ref:
 Format LUKS partition and open:
 
 ```
-# cryptsetup luksFormat /dev/disk/by-partlabel/rootpart
-# cryptsetup open /dev/disk/by-partlabel/rootpart root
+# cryptsetup luksFormat /dev/disk/by-partlabel/ROOTPART
+# cryptsetup open /dev/disk/by-partlabel/ROOTPART root
 # ls /dev/mapper/root
 ```
 
@@ -148,7 +149,7 @@ Ref:
 # mount -o subvol=@home --mkdir /dev/mapper/root /mnt/home
 # mount -o subvol=@data --mkdir /dev/mapper/root /mnt/data
 
-# mount --mkdir /dev/disk/by-partlabel/efipart /mnt/efi
+# mount --mkdir /dev/disk/by-partlabel/EFIPART /mnt/efi
 ```
 
 ## Base Pkgs Configs
@@ -227,10 +228,19 @@ Ref: [General recommendations#Repositories](https://wiki.archlinux.org/title/Gen
 
 ### Disable Watchdogs
 
+Check for a hardware watchdog module:
+
+```
+$ lsmod | grep wdt
+```
+
+Add to blacklist:
+
 ```
 # cat > /mnt/etc/modprobe.d/nowatchdogs.conf << EOB
 blacklist iTCO_wdt
 blacklist sp5100_tco
+blacklist intel_oc_wdt
 EOB
 ```
 
@@ -444,7 +454,7 @@ Create User:
 Create drop-in file `/etc/mkinitcpio.conf.d/hooks.conf` :
 
 ```
-HOOKS=(systemd autodetect microcode modconf kms keyboard sd-vconsole sd-encrypt block filesystems fsck)
+HOOKS=(base systemd autodetect microcode modconf kms keyboard sd-vconsole sd-encrypt block filesystems fsck)
 ```
 
 Ref: [dm-crypt/System configuration#mkinitcpio](https://wiki.archlinux.org/title/Dm-crypt/System_configuration#mkinitcpio)
@@ -549,7 +559,7 @@ Create `/efi/loader/entries/boota.conf`.
 title Arch Linux
 linux /boota/vmlinuz-linux
 initrd /boota/initramfs-linux.img
-options rootflags=subvol=@
+options rootflags=subvol=@ quiet
 ```
 
 To use a subvolume as the root mountpoint, specify the subvolume via a kernel parameter
@@ -562,7 +572,7 @@ Create `/efi/loader/entries/boota-lts.conf`.
 title Arch Linux LTS
 linux /boota/vmlinuz-linux-lts
 initrd /boota/initramfs-linux-lts.img
-options rootflags=subvol=@
+options rootflags=subvol=@ quiet
 ```
 
 Note: If disk partitions were not following
