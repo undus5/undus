@@ -27,7 +27,7 @@ then built my own configurations.
 In fact, you can install nearly all the linux distros manually in a similar way,
 aka "the arch way", since the installers they offered are doing the same job
 under the hood, but with less flexibility and more bloat. So if you want to
-settle down, go read the wiki, learn the basics, then your can pick up whatever
+settle down, go read the wiki, learn the basics, then you can pick up whatever
 distros you like and tweaking them to the shape you want, the only differences
 are just package management system, release model and community support.
 
