@@ -136,7 +136,7 @@ Copy on Write (CoW) nature, useful for creating backup against system crash.
 Check the [mirrorlist](https://archlinux.org/mirrorlist/) from official website,
 then edit `/etc/pacman.d/mirrorlist`.
 
-For Debian/Ubuntu and Fedora, refer to [Debian Fedora](#debian-fedora) section.
+> For Debian/Ubuntu and Fedora, refer to [Debian Fedora](#debian-fedora) section.
 
 ## Base System
 
@@ -214,13 +214,6 @@ Mount virtual filesystems to `/mnt` then chroot into it :
 
 ```
 # passwd
-```
-
-Also create a normal user.
-
-```
-# useradd -m -G wheel -s /bin/bash user1
-# passwd user1
 ```
 
 ## Systemd-Networkd
@@ -308,7 +301,14 @@ We use [dracut](https://wiki.archlinux.org/title/Dracut) to generate
 [initramfs](https://wiki.archlinux.org/title/Arch_boot_process#initramfs) image,
 and pack the
 [key file](https://wiki.archlinux.org/title/Dm-crypt/Device_encryption#Types_of_keyfiles)
-`/etc/cryptsetup-keys.d/root.key` into it.
+into it.
+
+[Apply key file](https://wiki.archlinux.org/title/Dm-crypt/Device_encryption#Adding_LUKS_keys)
+to encrypted partition.
+
+```
+cryptsetup luksAddKey /dev/disk/by-partlabel/ROOTPART /etc/cryptsetup-keys.d/root.key
+```
 
 Create `/etc/dracut.conf.d/dracut.conf`.
 
@@ -330,8 +330,8 @@ bootctl install
 systemctl enable systemd-boot-update.service
 ```
 
-> For Debian/Ubuntu and Fedora you can skip the following part of this section and
-> refer to [Debian Fedora](#debian-fedora) section.
+> Note: Debian/Ubuntu and Fedora need some extra work to continue, refer to
+> [Debian Fedora](#debian-fedora) section then jump back.
 
 Since the kernel and initramfs image will be installed to `/boot/` by default,
 we need to copy them to our
@@ -417,55 +417,6 @@ using [rd.luks.name](https://wiki.archlinux.org/title/Dm-crypt/System_configurat
 options rd.luks.name=<UUID>=root root=/dev/mapper/root rootflags=subvol=@
 ```
 
-## Trival Configs
-
-(~) Global Default Editor.
-
-Create `/etc/profile.d/editor.sh`.
-
-```
-export EDITOR=/usr/bin/nvim
-```
-
-(~) [Console Fonts](https://wiki.archlinux.org/title/Linux_console#Fonts).
-
-Install [kbd](https://archlinux.org/packages/?q=kbd) package, fonts are located
-in `/usr/share/kbd/consolefonts/`, use `setfont ter-132b` command in console
-environment to test. To persistent, wirte `FONT=ter-132b` to `/etc/vconsole.conf`.
-
-(~) Remap `Caps` to `Ctrl` for
-[Console](https://wiki.archlinux.org/title/Linux_console/Keyboard_configuration).
-
-Extract `/usr/share/kbd/keymaps/i386/qwerty/us.map.gz`, rename to `usa.map`.
-
-```
-# cd /usr/share/kbd/keymaps/i386/qwerty/
-# gzip -dc < us.map.gz > usa.map
-```
-
-Edit `usa.map`, search and replace with `keycode 58 = Control`.
-Write `KEYMAP=usa` to `/etc/vconsole.conf`.
-
-(~) Disable 
-[Watchdogs](https://wiki.archlinux.org/title/Improving_performance#Watchdogs).
-
-Check for a hardware watchdog module.
-
-```
-$ lsmod | grep wdt
-```
-
-Add to
-[kernel module blacklist](https://wiki.archlinux.org/title/Kernel_module#Blacklisting)
-`/etc/modprobe.d/nowatchdogs.conf`.
-
-```
-blacklist iTCO_wdt
-blacklist sp5100_tco
-blacklist intel_oc_wdt
-EOB
-```
-
 ## Debian Fedora
 
 <-> [Live ISO](#live-iso)
@@ -509,21 +460,36 @@ Fedora: DNF:
 
 <-> [Systemd-Boot](#systemd-boot)
 
-After installing the UEFI boot manager:
-
-For Debian and Fedora,
-add BTRFS subvolume kernel parameters to
-[kernel-install config](https://man.archlinux.org/man/kernel-install.8).
-
-```
-echo "rootflags=subvol=@" > /etc/kernel/cmdline
-```
-
-Since our EFI partition is `/efi`, but Fedora's default is `/boot/efi`,
-we need to change the kernel-install config in `/etc/kernel/install.conf`.
+Unlike Arch Linux, Debian and Fedora will trigger systemd's
+[kernel-install(8)](https://man.archlinux.org/man/kernel-install.8)
+to copy initramfs and kernel images to ESP partition and generate boot entry
+automatically when using dracut and systemd-boot. Since we want to maintain
+this process in our own way for the flexibility, we need to disable their
+kernel-install plugins and write our own.
 
 ```
-BOOT_ROOT=/efi
+# ln -s /dev/null /etc/kernel/install.d/50-dracut.install
+# ln -s /dev/null /etc/kernel/install.d/90-loaderentry.install
+```
+
+Create `/etc/kernel/install.d/60-bootstub.install`, make it executable.
+
+```
+#!/bin/bash
+set -e
+[[ ${#} == 4 ]] || exit 0
+_command="${1}"
+_kernel_verion="${2}"
+_dest_dir="/boot"
+_kernel_image="${4}"
+[[ "${_command}" == "add" ]] || exit 0
+[[ -f "${_kernel_image}" ]] || exit 1
+cp -f "${_kernel_image}" "${_dest_dir}/vmlinuz-linux"
+dracut -f \
+    --kver "${_kernel_verion}" \
+    --kernel-image "${_kernel_image}" \
+    "${_dest_dir}/initramfs-linux.img"
+chmod 600 "${_dest_dir}/initramfs-linux.img"
 ```
 
 <-> [Systemd-Networkd](#systemd-networkd)
@@ -534,7 +500,5 @@ For Debian you need to move out `/etc/network/interfaces` according to
 ```
 # mv /etc/network/interfaces /etc/network/interfaces.old
 ```
-
-That's all, enjoy.
 
 ## Reboot
