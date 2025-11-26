@@ -13,6 +13,11 @@ Joining in the "btw" club, and stopped distro hopping finally.
 
 <!--more-->
 
+## Updates
+
+This article is no longer maintained, please refer to
+[Bootstrap Install Any Linux Distro](/posts/bootstrap-install-any-linux-distro/).
+
 ## Background
 
 The reason someone always do distro hopping is they actually don't know what options
