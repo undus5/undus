@@ -26,7 +26,7 @@ I was just using following basic commands to create and remove snapshots manuall
 
 ## Principle
 
-The core idea of this A/B solutions is, there are 2 subvolumes for root partition,
+The core idea of this A/B solutions is there are 2 subvolumes for root partition,
 `@a` and `@b`, they are mutually to be the snapshot of each other.
 And we maintain 2 bootloader entries for them respectively.
 The tricky part is you need to alter the `fstab` to make
@@ -214,7 +214,7 @@ printf "${_time}\n" > ${_timetxt}
 printf "Saved ${_timetxt}\n"
 ```
 
-## Trivial
+## Cache Clean
 
 You may want to clean cache files before creating snapshot to save storage.
 
