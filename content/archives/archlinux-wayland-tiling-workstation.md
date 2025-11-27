@@ -1,15 +1,22 @@
 +++
 title       = "Arch Linux: Wayland Tiling Workstation"
+aliases     = "/posts/archlinux-wayland-tiling-workstation/"
 lastmod     = 2025-08-31
 date        = 2024-11-24
 showSummary = true
 showTOC     = true
 weight      = 1000
+hidden      = true
 +++
 
 Build a compact workstation with essential components, no ricing.
 
 <!--more-->
+
+## Updates
+
+This article is no longer maintained, please refer to
+[Linux Desktop: Preparation](/posts/linux-desktop-preparation/).
 
 ## Prerequisite
 

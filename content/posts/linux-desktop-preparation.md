@@ -251,6 +251,7 @@ To fix this, install package `qt6ct` and set environment variables:
 
 Then restart wayland compositor.
 
-Ref: [Configuration of Qt 5/6 applications under environments other than KDE Plasma](https://wiki.archlinux.org/title/Qt#Configuration_of_Qt_5/6_applications_under_environments_other_than_KDE_Plasma)
-, [Not showing functional icons](https://github.com/lxqt/pavucontrol-qt/issues/126)
+Ref:\
+[Configuration of Qt 5/6 applications under environments other than KDE Plasma](https://wiki.archlinux.org/title/Qt#Configuration_of_Qt_5/6_applications_under_environments_other_than_KDE_Plasma)\
+[Github Issue: pavucontrol-qt not showing functional icons](https://github.com/lxqt/pavucontrol-qt/issues/126)
 
