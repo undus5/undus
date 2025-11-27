@@ -14,7 +14,7 @@ Build a compact workstation with essential components, no ricing.
 ## Prerequisite
 
 For basic system installation, refer to my prev post:
-[Arch Linux Install: LUKS + Btrfs + Systemd-boot](/posts/archlinux-install-luks-btrfs-systemd-boot/)
+[Arch Linux: LUKS + Btrfs + Systemd-boot](/archives/archlinux-luks-btrfs-systemd-boot/)
 
 Upgrade system first before installing any packages.\
 Ref: [System maintenance#Avoid certain pacman commands](https://wiki.archlinux.org/title/System_maintenance#Avoid_certain_pacman_commands)
@@ -205,8 +205,10 @@ for auto mounting usb drives, mobile devices and trash functionality.\
 [Dolphin](https://wiki.archlinux.org/title/Dolphin) is the default file manager of KDE.
 
 ```
-#(root) pacman -S dolphin
+#(root) pacman -S dolphin qt6-imageformats
 ```
+
+`qt6-imageformats` is for webp thumbnail support.
 
 Change default terminal, edit `~/.config/kdeglobals` with:
 
@@ -222,13 +224,23 @@ Fix empty appliction list when right click open with:
 
 ```
 #(root) pacman -S archlinux-xdg-menu
-
 $(user) echo 'XDG_MENU_PREFIX=arch-' >> ~/.bashrc
 ```
 
 When application desktop entries changed, run `kbuildsycoca6 --noincremental`.
 
 Ref: [Dolphin cannot find applications](https://wiki.archlinux.org/title/Dolphin#Dolphin_cannot_find_applications_(when_running_under_another_window_manager))
+
+Disable KDE Wallet, since it would cause web browsers losing login sessions:
+
+```
+$(user) cat > ~/.config/kwalletrc << EOB
+[Wallet]
+Enable=false
+EOB
+```
+
+Ref: [Disable KDE Wallet](https://wiki.archlinux.org/title/KDE_Wallet#Disable_KWallet)
 
 ### iOS Support
 

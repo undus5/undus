@@ -20,8 +20,8 @@ directly. And before this A/B solution coming to my mind,
 I was just using following basic commands to create and remove snapshots manually.
 
 ```
-# btrfs subvolume snapshot / <destination>
-# btrfs subvolume delete <destination>
+(root)# btrfs subvolume snapshot / <destination>
+(root)# btrfs subvolume delete <destination>
 ```
 
 ## Principle
@@ -39,12 +39,12 @@ Let's begin with subvolume overview. You need entrering a live system environmen
 to create subvolumes.
 
 ```
-# mount /dev/disk/by-partlabel/ROOTPART /mnt
-# btrfs subvolume create /mnt/@a
-# btrfs subvolume create /mnt/@a/@
-# btrfs subvolume create /mnt/@b
-# btrfs subvolume create /mnt/@b/@
-# btrfs subvolume create /mnt/@home
+(root)# mount /dev/disk/by-partlabel/ROOTPART /mnt
+(root)# btrfs subvolume create /mnt/@a
+(root)# btrfs subvolume create /mnt/@a/@
+(root)# btrfs subvolume create /mnt/@b
+(root)# btrfs subvolume create /mnt/@b/@
+(root)# btrfs subvolume create /mnt/@home
 ```
 
 If you feel strange about this `ROOTPART` label, you may read the basic

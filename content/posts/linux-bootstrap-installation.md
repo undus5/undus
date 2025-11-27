@@ -1,5 +1,6 @@
 +++
-title       = 'Bootstrap Install Any Linux Distro'
+title       = 'Linux Bootstrap Installation'
+aliases     = ["/posts/bootstrap-install-any-linux-distro/"]
 date        = '2025-10-19'
 lastmod     = '2025-11-04'
 tags        = []
@@ -56,7 +57,7 @@ based on GPT (GUID Partition Tables), by specifying dedicated UUIDs to partition
 Using [Parted](https://wiki.archlinux.org/title/Parted) to do the job:
 
 ```
-# parted /dev/nvme0n1
+(root)# parted /dev/nvme0n1
 (parted) mklabel gpt
 (parted) mkpart EFIPART fat32 1MiB 1025MiB
 (parted) set 1 esp on
@@ -93,9 +94,9 @@ save it carefully, may be use a password manager to store it,
 After partitioning, you can locate partitions via their labels:
 
 ```
-# cryptsetup luksFormat /dev/disk/by-partlabel/ROOTPART
-# cryptsetup open /dev/disk/by-partlabel/ROOTPART root
-# ls /dev/mapper/root
+(root)# cryptsetup luksFormat /dev/disk/by-partlabel/ROOTPART
+(root)# cryptsetup open /dev/disk/by-partlabel/ROOTPART root
+(root)# ls /dev/mapper/root
 ```
 
 Now the `ROOTPART` is encrypted, and must be decrypted via `cryptsetup open`
@@ -115,21 +116,25 @@ for whatever directories you want to separate, they will share the whole storage
 of the root partition, just like normal folders do.
 
 ```
-# mkfs.btrfs /dev/mapper/root
-# mount /dev/mapper/root /mnt
-# btrfs subvolume create /mnt/@
-# btrfs subvolume create /mnt/@home
-# btrfs subvolume create /mnt/@data
-# umount /mnt
+(root)# mkfs.btrfs /dev/mapper/root
+(root)# mount /dev/mapper/root /mnt
+(root)# btrfs subvolume create /mnt/@
+(root)# btrfs subvolume create /mnt/@home
+(root)# btrfs subvolume create /mnt/@data
+(root)# umount /mnt
 
-# mount -o subvol=@ /dev/mapper/root /mnt
-# mount -o subvol=@home --mkdir /dev/mapper/root /mnt/home
-# mount -o subvol=@data --mkdir /dev/mapper/root /mnt/data
-# mount --mkdir /dev/disk/by-partlabel/EFIPART /mnt/efi
+(root)# mount -o subvol=@ /dev/mapper/root /mnt
+(root)# mount -o subvol=@home --mkdir /dev/mapper/root /mnt/home
+(root)# mount -o subvol=@data --mkdir /dev/mapper/root /mnt/data
+(root)# mount --mkdir /dev/disk/by-partlabel/EFIPART /mnt/efi
 ```
 
 Another great BTRFS feature is it's easy to create snapshots by its
 Copy on Write (CoW) nature, useful for creating backup against system crash.
+
+## WiFi
+
+Use [iwd](https://wiki.archlinux.org/title/Iwd) to connect to WiFi.
 
 ## Repo Mirror
 
@@ -147,8 +152,8 @@ For Arch it's
 [Pacstrap](https://wiki.archlinux.org/title/Installation_guide#Install_essential_packages):
 
 ```
-# pacstrap -K /mnt \
-    base linux linux-firmware btrfs-progs dracut zram-generator neovim
+(root)# pacstrap -K /mnt \
+    base linux linux-firmware btrfs-progs dracut zram-generator neovim iwd
 ```
 
 Also install `amd-ucode` or `intel-ucode` for CPU microcode updates.
@@ -165,8 +170,8 @@ manually is annoying and error prone, note the UUID for the root partition must
 be the decrypted one, which is `/dev/mapper/root`, not the `ROOTPART`.
 
 ```
-# blkid -s UUID -o value /dev/mapper/root > /tmp/rootuuid.txt
-# blkid -s UUID -o value /dev/disk/by-partlabel/EFIPART > /tmp/efiuuid.txt
+(root)# blkid -s UUID -o value /dev/mapper/root > /tmp/rootuuid.txt
+(root)# blkid -s UUID -o value /dev/disk/by-partlabel/EFIPART > /tmp/efiuuid.txt
 ```
 
 Then we edit `/mnt/etc/fstab`. If you use `nano` text editor, you can press
@@ -185,35 +190,35 @@ UUID=XXXX-XXXX /efi vfat defaults 0 0
 Mount virtual filesystems to `/mnt` then chroot into it :
 
 ```
-# for dir in dev proc run sys; do mount --rbind --make-rslave /$dir /mnt/$dir; done
-# chroot /mnt /bin/bash
+(root)# for dir in dev proc run sys; do mount --rbind --make-rslave /$dir /mnt/$dir; done
+(root)# chroot /mnt /bin/bash
 ```
 
 ## Timezone
 
 ```
-# ln -sf /usr/share/zoneinfo/Asia/Shanghai /etc/localtime
+(root)# ln -sf /usr/share/zoneinfo/Asia/Shanghai /etc/localtime
 ```
 
 ## Localization
 
 ```
-# echo "en_US.UTF-8 UTF-8" >> /etc/locale.gen
-# echo "zh_CN.UTF-8 UTF-8" >> /etc/locale.gen
-# locale-gen
-# echo "LANG=en_US.UTF-8" >> /etc/locale.conf
+(root)# echo "en_US.UTF-8 UTF-8" >> /etc/locale.gen
+(root)# echo "zh_CN.UTF-8 UTF-8" >> /etc/locale.gen
+(root)# locale-gen
+(root)# echo "LANG=en_US.UTF-8" >> /etc/locale.conf
 ```
 
 ## Hostname
 
 ```
-# echo "archlinux" > /etc/hostname
+(root)# echo "archlinux" > /etc/hostname
 ```
 
 ## Root Password
 
 ```
-# passwd
+(root)# passwd
 ```
 
 ## Systemd-Networkd
@@ -277,8 +282,8 @@ ManageForeignRoutingPolicyRules=no
 Enable the services.
 
 ```
-# systemctl enable systemd-networkd.service
-# systemctl enable systemd-resolved.service
+(root)# systemctl enable systemd-networkd.service
+(root)# systemctl enable systemd-resolved.service
 ```
 
 ## Zram
@@ -318,7 +323,6 @@ enhanced_cpio="yes"
 compress="cat"
 do_strip="no"
 install_optional_items+=" /etc/cryptsetup-keys.d/root.key "
-omit_dracutmodules+=" brltty watchdog watchdog-modules bluetooth "
 ```
 
 ## Systemd-Boot
@@ -341,9 +345,9 @@ manually and create
 to update them automatically.
 
 ```
-# mkdir -p /efi/boota
-# cp -a /boot/vmlinuz-linux /efi/boota/
-# cp -a /boot/initramfs-linux.img /efi/boota/
+(root)# mkdir -p /efi/boota
+(root)# cp -a /boot/vmlinuz-linux /efi/boota/
+(root)# cp -a /boot/initramfs-linux.img /efi/boota/
 ```
 
 Create `/etc/systemd/system/efistub-update.path`.
@@ -372,7 +376,7 @@ ExecStart=/usr/bin/cp -af /boot/initramfs-linux.img /efi/boota/
 Enable the units.
 
 ```
-# systemctl enable efistub-update.{path,service}
+(root)# systemctl enable efistub-update.{path,service}
 ```
 
 Create bootloader entry `/efi/loader/entries/boota.conf`.
@@ -442,9 +446,9 @@ Debian/Ubuntu:
 [Debootstrap](https://wiki.debian.org/Debootstrap):
 
 ```
-# debootstrap --include=\
+(root)# debootstrap --include=\
     linux-image-amd64,non-free-firmware,btrfs-progs,dracut,\
-    systemd-zram-generator,systemd-boot,neovim \
+    systemd-zram-generator,systemd-boot,neovim,iwd \
     stable /mnt http://deb.debian.org/debian/
 ```
 
@@ -453,10 +457,15 @@ The Repo URL for Ubuntu is http://archive.ubuntu.com/ubuntu/
 Fedora: DNF:
 
 ```
-# dnf --use-host-config --releasever=43 --installroot=/mnt group install core
-# dnf --use-host-config --releasever=43 --installroot=/mnt install \
-    kernel linux-firmware btrfs-progs dracut zram-generator systemd-boot neovim
+(root)# dnf --use-host-config --releasever=43 --installroot=/mnt group install core
+(root)# dnf --use-host-config --releasever=43 --installroot=/mnt install \
+    kernel linux-firmware btrfs-progs dracut zram-generator systemd-boot neovim iwd
 ```
+
+Microcode packages:
+
+Fedora: AMD `amd-ucode-firmware`, Intel `microcode_ctl`\
+Debian: AMD `amd64-microcode`, Intel `intel-microcode`
 
 <-> [Systemd-Boot](#systemd-boot)
 
@@ -468,8 +477,8 @@ this process in our own way for the flexibility, we need to disable their
 kernel-install plugins and write our own.
 
 ```
-# ln -s /dev/null /etc/kernel/install.d/50-dracut.install
-# ln -s /dev/null /etc/kernel/install.d/90-loaderentry.install
+(root)# ln -s /dev/null /etc/kernel/install.d/50-dracut.install
+(root)# ln -s /dev/null /etc/kernel/install.d/90-loaderentry.install
 ```
 
 Create `/etc/kernel/install.d/60-bootstub.install`, make it executable.
@@ -498,7 +507,7 @@ For Debian you need to move out `/etc/network/interfaces` according to
 [SystemdNetworkd - Debian Wiki](https://wiki.debian.org/SystemdNetworkd)
 
 ```
-# mv /etc/network/interfaces /etc/network/interfaces.old
+(root)# mv /etc/network/interfaces /etc/network/interfaces.old
 ```
 
 ## Reboot
