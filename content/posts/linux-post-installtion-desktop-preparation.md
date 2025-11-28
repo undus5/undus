@@ -1,5 +1,5 @@
 +++
-title       = 'Linux Desktop: Preparation'
+title       = 'Linux Post Installation: Desktop Preparation'
 subtitle    = ''
 date        = '2025-11-26'
 lastmod     = '2025-11-27'
@@ -9,13 +9,13 @@ showTOC     = true
 weight      = 1000
 +++
 
-Linux post installation before desktop components getting involved.
+Essential preparation before desktop components getting involved.
 
 <!--more-->
 
 ## Background
 
-This guide is about post installation after
+For basic linux system installation, refer to:
 [Linux Bootstrap Installation](/posts/linux-bootstrap-installation/).
 
 This guide is based on Arch Linux, but could also works for Fedora and
@@ -131,6 +131,13 @@ Fedora, Debian AMD: `mesa mesa-vulkan-drivers`\
 Fedora Intel: `mesa mesa-vulkan-drivers libva-intel-media-driver`\
 Debian Intel: `mesa mesa-vulkan-drivers intel-media-va-driver`
 
+## Normal User
+
+```
+(root)# useradd -m -G wheel -s /bin/bash user1
+(root)# passwd user1
+```
+
 ## GUI Fonts
 
 Install Noto fonts related packages:
@@ -194,19 +201,12 @@ To fix this, adjust fallback font order by creating `/etc/fonts/local.conf` with
 </fontconfig>
 ```
 
-Later you could create `~/.config/fontconfig/fonts.conf` with same format to
-overwrite this configuration, replace with custom fonts under `~/.local/share/fonts`
-for example.
+Later you could create `~/.config/fontconfig/fonts.conf` with same format under
+your user home directory to overwrite this configuration,
+replace with custom fonts under `~/.local/share/fonts`.
 
 Ref: [Font configuration#Fontconfig configuration](https://wiki.archlinux.org/title/Font_configuration#Fontconfig_configuration)
 , [Font configuration#Alias](https://wiki.archlinux.org/title/Font_configuration#Alias)
-
-## Normal User
-
-```
-(root)# useradd -m -G wheel -s /bin/bash user1
-(root)# passwd user1
-```
 
 ## Icon Theme
 
@@ -249,7 +249,10 @@ To fix this, install package `qt6ct` and set environment variables:
 (user)$ echo "export QT_QPA_PLATFORMTHEME=qt6ct" >> ~/.bashrc
 ```
 
-Then restart wayland compositor.
+Relogin user session to apply the change, then you can run `qt6ct` to set Qt theme.
+
+`qt6ct` is a GUI app, you need to run it under graphic environment, which we will
+discuss in the next guide.
 
 Ref:\
 [Configuration of Qt 5/6 applications under environments other than KDE Plasma](https://wiki.archlinux.org/title/Qt#Configuration_of_Qt_5/6_applications_under_environments_other_than_KDE_Plasma)\
