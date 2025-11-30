@@ -1,8 +1,8 @@
 +++
 title       = 'Linux Post Installation: Desktop Preparation'
 subtitle    = ''
+lastmod     = '2025-11-30'
 date        = '2025-11-26'
-lastmod     = '2025-11-27'
 tags        = []
 showSummary = true
 showTOC     = true
