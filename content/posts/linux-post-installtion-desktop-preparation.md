@@ -18,8 +18,10 @@ Essential preparation before desktop components getting involved.
 For basic linux system installation, refer to:
 [Linux Bootstrap Installation](/posts/linux-bootstrap-installation/).
 
-This guide is based on Arch Linux, but could also works for Fedora and
+This guide is based on Arch Linux, but also works for Fedora and
 Debian/Ubuntu, I've listed counterpart packages for these distros.
+I always avoid using distro specific tools as much as I can, such as mkinitcpio,
+pacman hooks, etc.
 
 ## Package Search
 
@@ -241,15 +243,15 @@ Ref: [GTK#Basic theme configuration](https://wiki.archlinux.org/title/GTK#Basic_
 
 ## Qt Theme
 
+IMHO, if you're not intend to use KDE desktop environment, then avoid choosing
+KDE apps, since they are tightly coupled with the KDE suite, heavily
+rely on KDE's components, lots of dependencies would be installed even
+for a very simple app, which is annoying. LXQt apps are in a similar situation.
+
 The original
 [qt6ct](https://github.com/trialuser02/qt6ct)
 is archived, although there is a
 [successor](https://www.opencode.net/trialuser/qt6ct), I decided not dealing with
-KDE apps and other Qt based apps anymore, if they worked by default, then good,
-if not, then I will search for alternatives or maybe create my own.
-
-IMHO, if you're not intend to use KDE desktop environment, then avoid choosing
-KDE apps either, since they are tightly coupled with the KDE suite, heavily
-rely on KDE's components, lots of dependencies would be installed even
-for a very simple app, which is annoying. LXQt apps are in a similar situation too.
+KDE apps anymore. For other independent Qt apps, they usually work well by default,
+no need tools like qt65ct/qt6ct get involved.
 

@@ -34,6 +34,8 @@ are just package management system, release model and community support.
 
 This guide is based on Arch Linux, but also works for Debian/Ubutnu and Fedora,
 the differences are minor, demonstrated in [Debian Fedora](#debian-fedora) section.
+I always avoid using distro specific tools as much as I can, such as mkinitcpio,
+pacman hooks, etc.
 
 ## Live ISO
 
