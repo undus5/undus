@@ -243,7 +243,7 @@ Ref: [GTK#Basic theme configuration](https://wiki.archlinux.org/title/GTK#Basic_
 
 ## Qt Theme
 
-IMHO, if you're not intend to use KDE desktop environment, then avoid choosing
+IMHO, if you're not intended to use KDE desktop environment, then avoid choosing
 KDE apps, since they are tightly coupled with the KDE suite, heavily
 rely on KDE's components, lots of dependencies would be installed even
 for a very simple app, which is annoying. LXQt apps are in a similar situation.
