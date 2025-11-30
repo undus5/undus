@@ -385,7 +385,7 @@ Create bootloader entry `/efi/loader/entries/boota.conf`.
 title Arch Linux
 linux /boota/vmlinuz-linux
 initrd /boota/initramfs-linux.img
-options rootflags=subvol=@ quiet
+options rootflags=subvol=@ quiet splash
 ```
 
 To use

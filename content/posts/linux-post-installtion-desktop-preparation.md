@@ -241,20 +241,15 @@ Ref: [GTK#Basic theme configuration](https://wiki.archlinux.org/title/GTK#Basic_
 
 ## Qt Theme
 
-Without proper settings, Qt apps would fallback to the very poor basic theme,
-may not showing icons correctly either.
-To fix this, install package `qt6ct` and set environment variables:
+The original
+[qt6ct](https://github.com/trialuser02/qt6ct)
+is archived, although there is a
+[successor](https://www.opencode.net/trialuser/qt6ct), I decided not dealing with
+KDE apps and other Qt based apps anymore, if they worked by default, then good,
+if not, then I will search for alternatives or maybe create my own.
 
-```
-(user)$ echo "export QT_QPA_PLATFORMTHEME=qt6ct" >> ~/.bashrc
-```
-
-Relogin user session to apply the change, then you can run `qt6ct` to set Qt theme.
-
-`qt6ct` is a GUI app, you need to run it under graphic environment, which we will
-discuss in the next guide.
-
-Ref:\
-[Configuration of Qt 5/6 applications under environments other than KDE Plasma](https://wiki.archlinux.org/title/Qt#Configuration_of_Qt_5/6_applications_under_environments_other_than_KDE_Plasma)\
-[Github Issue: pavucontrol-qt not showing functional icons](https://github.com/lxqt/pavucontrol-qt/issues/126)
+IMHO, if you're not intend to use KDE desktop environment, then avoid choosing
+KDE apps either, since they are tightly coupled with the KDE suite, heavily
+rely on KDE's components, lots of dependencies would be installed even
+for a very simple app, which is annoying. LXQt apps are in a similar situation too.
 
