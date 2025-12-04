@@ -27,7 +27,8 @@ your job done, less components, less bugs, more efficient.
 If you prefer keyboard navigation, then choose Sway,
 if you prefer using mouse to point and click, then choose Labwc.
 
-This guide is based on Arch, but could also work for Debian/Ubuntu and Fedora.
+This guide is based on Arch, but could also work for Debian/Ubuntu and Fedora,
+I'm trying my best to make it distro irrelevant.
 
 ## Sway Labwc
 

@@ -23,6 +23,7 @@ Essential preparation before desktop components getting involved.
 ## Preface
 
 This guide is based on Arch, but could also work for Debian/Ubuntu and Fedora.
+I'm trying my best to make it distro irrelevant.
 
 ## Default Editor
 
