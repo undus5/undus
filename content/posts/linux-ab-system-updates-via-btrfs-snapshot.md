@@ -12,6 +12,17 @@ Inspired from Android A/B system updates mechanism.
 
 <!--more-->
 
+## Series Index
+
+1. [Linux Bootstrap Installation](/posts/linux-bootstrap-installation/)
+2. Linux A/B System Updates via BTRFS Snapshot
+3. [Linux Post Installation: Desktop Preparation](/posts/linux-post-installtion-desktop-preparation/)
+4. [Linux Desktop: Sway, Labwc, GUI Apps](/posts/linux-desktop-sway-labwc-gui-apps/)
+
+## Preface
+
+This guide is distro irrelevant, could work on any distros.
+
 ## Background
 
 Things started when I was intrigued by some discussions about booting from

@@ -13,6 +13,13 @@ Distro is trival, just learn the basics and build your own.
 
 <!--more-->
 
+## Series Index
+
+1. Linux Bootstrap Installation
+2. [Linux A/B System Updates via BTRFS Snapshot](/posts/linux-ab-system-updates-via-btrfs-snapshot/)
+3. [Linux Post Installation: Desktop Preparation](/posts/linux-post-installtion-desktop-preparation/)
+4. [Linux Desktop: Sway, Labwc, GUI Apps](/posts/linux-desktop-sway-labwc-gui-apps/)
+
 ## Preface
 
 Want to stop distro hopping? Sure, just go read through the

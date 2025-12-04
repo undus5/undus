@@ -13,22 +13,16 @@ Essential preparation before desktop components getting involved.
 
 <!--more-->
 
-## Background
+## Series Index
 
-For basic linux system installation, refer to:
-[Linux Bootstrap Installation](/posts/linux-bootstrap-installation/).
+1. [Linux Bootstrap Installation](/posts/linux-bootstrap-installation/)
+2. [Linux A/B System Updates via BTRFS Snapshot](/posts/linux-ab-system-updates-via-btrfs-snapshot/)
+3. Linux Post Installation: Desktop Preparation
+4. [Linux Desktop: Sway, Labwc, GUI Apps](/posts/linux-desktop-sway-labwc-gui-apps/)
 
-This guide is based on Arch Linux, but also works for Fedora and
-Debian/Ubuntu, I've listed counterpart packages for these distros.
-I always avoid using distro specific tools as much as I can, such as mkinitcpio,
-pacman hooks, etc.
+## Preface
 
-## Package Search
-
-Arch: https://archlinux.org/packages/\
-Fedora: https://packages.fedoraproject.org/search\
-Debian: https://packages.debian.org/search\
-Ubuntu: https://packages.ubuntu.com/search
+This guide is based on Arch, but could also work for Debian/Ubuntu and Fedora.
 
 ## Default Editor
 
@@ -128,12 +122,19 @@ on Linux for the well known reasons.
 Install `mesa` and `vulkan` related packages:
 
 Arch AMD: `mesa lib32-mesa vulkan-radeon lib32-vulkan-radeon`\
+Debian, Fedora AMD: `mesa mesa-vulkan-drivers`
+
 Arch Intel: `mesa lib32-mesa vulkan-intel lib32-vulkan-intel intel-media-driver`\
-Fedora, Debian AMD: `mesa mesa-vulkan-drivers`\
-Fedora Intel: `mesa mesa-vulkan-drivers libva-intel-media-driver`\
-Debian Intel: `mesa mesa-vulkan-drivers intel-media-va-driver`
+Debian Intel: `mesa mesa-vulkan-drivers intel-media-va-driver`\
+Fedora Intel: `mesa mesa-vulkan-drivers libva-intel-media-driver`
 
 ## Normal User
+
+Install [xdg-user-dirs](https://wiki.archlinux.org/title/XDG_user_directories)
+package, it's for managing well known user directories
+e.g. Desktop, Documents, Downloads etc.
+
+Create normal user:
 
 ```
 (root)# useradd -m -G wheel -s /bin/bash user1
@@ -145,18 +146,18 @@ Debian Intel: `mesa mesa-vulkan-drivers intel-media-va-driver`
 Install Noto fonts related packages:
 
 Arch: `noto-fonts noto-fonts-cjk noto-fonts-emoji`\
-Fedora:
-```
-google-noto-fonts-all
-google-noto-sans-cjk-fonts google-noto-serif-cjk-fonts
-google-noto-emoji-fonts
-```
 Debian:
 ```
 fonts-noto fonts-noto-extra fonts-noto-mono
 fonts-noto-cjk fonts-noto-cjk-extra
 fonts-noto-color-emoji
 fonts-noto-ui-core fonts-noto-ui-extra fonts-noto-unhinted
+```
+Fedora:
+```
+google-noto-fonts-all
+google-noto-sans-cjk-fonts google-noto-serif-cjk-fonts
+google-noto-emoji-fonts
 ```
 
 The default lookup order for CJK fonts would pick wrong characters in some cases,
@@ -253,5 +254,5 @@ The original
 is archived, although there is a
 [successor](https://www.opencode.net/trialuser/qt6ct), I decided not dealing with
 KDE apps anymore. For other independent Qt apps, they usually work well by default,
-no need tools like qt65ct/qt6ct get involved.
+no need tools like qt5ct/qt6ct get involved.
 
