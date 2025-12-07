@@ -79,9 +79,8 @@ For Labwc, there isn't much to say, all the actions can be invoked from the
 right-click context menu. Since it's mouse driven and floating, single workspace
 is enough, you just use `Alt + Tab` to switch between windows.
 
-Every time I saw some cosmetic showing offs about tiling window manager from the
-internet, I don't feel they are cool or beautiful, I think the real elegant one
-is a clean and empty one.
+So basically my desktops are empty, no fancy cosmetic decorations. I believe
+simple and clean make things elegant, this is the way.
 
 ## Terminal
 
@@ -279,7 +278,7 @@ Ref: [Fcitx5 - ArchWiki](https://wiki.archlinux.org/title/Fcitx5)
 | --- | --- | --- | --- |
 | Audio Control | pavucontrol | - | - |
 | PDF | zathura zathura-pdf-poppler | - | - |
-| Image Viewer | oculante | [oculante](https://github.com/woelper/oculante) | - |
+| Image Viewer | swayimg | - | - |
 | Video Player | mpv | - | - |
 | Ebook Reader | foliate | - | - |
 | Audiobook Player | [cozy](https://cozy.sh/) | - | - |
