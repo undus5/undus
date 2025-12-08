@@ -479,9 +479,10 @@ Useful qemu monitor commands to send:
 Ref: [QEMU#Sending keyboard presses](https://wiki.archlinux.org/title/QEMU#Sending_keyboard_presses_to_the_virtual_machine_using_the_monitor_console)
 , [QEMU#Power options](https://wiki.archlinux.org/title/QEMU#Pause_and_power_options_via_the_monitor_console)
 
-## USB Redirect
+## USB Passthrough
 
-First enable USB controller support, refer to section [USB Support](#usb-support).
+First enable USB controller support for virtual machine,
+refer to section [USB Support](#usb-support).
 
 List host USB devices:
 
