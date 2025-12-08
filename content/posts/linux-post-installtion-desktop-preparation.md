@@ -129,13 +129,13 @@ Arch Intel: `mesa lib32-mesa vulkan-intel lib32-vulkan-intel intel-media-driver`
 Debian Intel: `mesa mesa-vulkan-drivers intel-media-va-driver`\
 Fedora Intel: `mesa mesa-vulkan-drivers libva-intel-media-driver`
 
-## Normal User
+## Regular User
 
 Install [xdg-user-dirs](https://wiki.archlinux.org/title/XDG_user_directories)
 package, it's for managing well known user directories
 e.g. Desktop, Documents, Downloads etc.
 
-Create normal user:
+Create regular user:
 
 ```
 (root)# useradd -m -G wheel -s /bin/bash user1

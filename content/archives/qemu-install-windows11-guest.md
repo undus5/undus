@@ -1,34 +1,36 @@
 +++
-title       = "QEMU Install Windows 11 Guest"
-lastmod     = 2025-06-25
+title       = "QEMU/KVM: Windows 11 Guest"
+lastmod     = 2025-10-21
 date        = 2024-12-09
-showSummary = true
+showSummary = false
 showTOC     = true
 weight      = 1000
+hidden = true
 +++
 
-Use the low level tools directly, get rid of complex middlewares.
+Use low level tools directly, get rid of complex middlewares.
 
 <!--more-->
 
 ## Background
 
-Libvirt is overkill for personal use, you could just start a virtual machine via
-the `qemu-system-*` command with proper options.
-However, using the low level tool directly is not easy.
-Normally I would go to the official website reading the documentation when trying
-to learn some new tools, but this approach is not working well on QEMU, it's
+Libvirt is overkill for personal use, you could just run `qemu-system-x86_64`
+command with proper options to start a virtual machine.
+However, using low level tools directly is not always easy.
+Normally I would read documentations from official websites of these tools
+to learn how to, but this approach is not working well for QEMU, its
 [documentation](https://www.qemu.org/documentation/) is not friendly for beginners,
 there's no "Getting Started" or "Tutorial", I didn't know where to start.
-[Arch wiki](https://wiki.archlinux.org/title/QEMU) is better, but still not specific for me.
+[Arch wiki](https://wiki.archlinux.org/title/QEMU) is better, but still not
+friendly enough if you are totaly newbie in this area.
 Google search, no luck either, everyone is using libvirt.
 
 Then I asked ChatGPT for help with a simple phrase "qemu command for windows guest",
 and it gave me a really good example with explaination, just one problem, it will
 make things up when you trying to dig deeper by asking more details.
 At the end, you always go back to the human written documentations for real study.
-But it still finished a good job, let me understand what is network bridge
-and TAP device, which I can't get from Wikipedia,
+But it still finished a good job, let me understand e.g. what is network bridge
+and TAP device, which I can't understand from Wikipedia,
 the contents for technologis on Wikipedia are hard to read, often lacking subjects.
 
 This guide also works for other versions of Windows and Linux systems,
@@ -46,9 +48,23 @@ You can skip this section if you choose the
 [IoT version of Windows 11](https://massgrave.dev/windows_ltsc_links)
 , which does not require TPM, UEFI and Secure boot.
 
-![Fuck Microsoft from Space Force (2020)](/images/fuck-microsoft-from-space-force-2020.jpg)
+![Fuck Microsoft from Space Force (2020)](/images/fuck-microsoft-from-space-force-2020.webp)
 
---- From the TV show "Space Force (2020)". :)
+--- From the TV show "Space Force (2020)" :)
+
+Install `swtpm` package, which is a
+[TPM emulator](https://wiki.archlinux.org/title/QEMU#Trusted_Platform_Module_emulation).
+
+Start TPM emulator, let's say you want to put your virtual machine files into
+`/data/vms/win11`, then:
+
+```
+$ swtpm socket --tpm2 \
+    --tpmstate dir=/data/vms/win11 \
+    --ctrl type=unixio,path=/data/vms/win11/swtpm.sock
+```
+
+`.sock` file will be created automatically.
 
 "QEMU can emulate Trusted Platform Module, which is required by Windows 11 (which requires TPM 2.0)."
 
@@ -58,10 +74,6 @@ Ref: [QEMU#Trusted Platform Module emulation](https://wiki.archlinux.org/title/Q
 Create some directory for storing TPM data (`/path/to/mytpm` for example).
 Run this command to start the emulator:"
 
-```
-$ swtpm socket --tpm2 --tpmstate dir=/path/to/mytpm \
-    --ctrl type=unixio,path=/path/to/mytpm/swtpm-sock
-```
 
 "`/path/to/mytpm/swtpm-sock` will be created by swtpm: this is a UNIX socket to which QEMU will connect.
 You can put it in any directory."
@@ -139,9 +151,9 @@ disabling Copy-on-Write for the directory before creating any images.
 Can be specified in option nocow for qcow2 format when creating image:"
 
 ```
-$ qemu-img create -f qcow2 win11.qcow2 -o nocow=on 120G
+$ qemu-img create -f qcow2 disk.qcow2 -o nocow=on 120G
 $ qemu-system-x86_64 \
-    -drive file=/path/to/win11.qcow2,if=none,id=disk0,format=qcow2 \
+    -drive file=/path/to/disk.qcow2,if=none,id=disk0,format=qcow2 \
     -device virtio-blk-pci,drive=disk0,bootindex=1
 ```
 
@@ -153,7 +165,7 @@ it's a built-in emulation drive, no need extra settings to work:
 
 ```
 $ qemu-system-x86_64 \
-    -drive file=/path/to/win11.qcow2,if=none,id=disk0 \
+    -drive file=/path/to/disk.qcow2,if=none,id=disk0 \
     -device achi,id=achi0
     -device ide-hd,drive=disk0,bootindex=1,bus=achi0.0
 ```
@@ -524,6 +536,17 @@ $ echo "help" | socat - UNIX-CONNECT:/tmp/monitor.sock
 Ref: [QEMU#UNIX socket](https://wiki.archlinux.org/title/QEMU#UNIX_socket)
 , [Connect to running qemu instance with qemu monitor](https://unix.stackexchange.com/questions/426652/connect-to-running-qemu-instance-with-qemu-monitor)
 
+Useful qemu monitor commands to send:
+
+```
+(qemu) sendkey ctrl-alt-f2
+(qemu) system_reset
+(qemu) system_powerdown
+```
+
+Ref: [QEMU#Sending keyboard presses](https://wiki.archlinux.org/title/QEMU#Sending_keyboard_presses_to_the_virtual_machine_using_the_monitor_console)
+, [QEMU#Power options](https://wiki.archlinux.org/title/QEMU#Pause_and_power_options_via_the_monitor_console)
+
 ### Passthrough
 
 Start QEMU with XHCI USB controller support:
@@ -540,6 +563,8 @@ $ lsusb
 ...
 Bus 003 Device 007: ID 0781:5406 SanDisk Corp. Cruzer Micro U3
 ```
+
+If command not found, install package [usbutils](https://archlinux.org/packages/?q=usbutils).
 
 Remeber device ID, use monitor socket to passthrough:
 
@@ -656,6 +681,16 @@ $ qemu-system-x86_64 \
 
 If your CPU is Intel, also append "hv_evmcs".
 
+## Windows Localtime
+
+"By default, Windows assumes the firmware clock is set to local time,
+but this is usually not the case when using QEMU. To remedy this you can
+[configure Windows to use UTC](https://wiki.archlinux.org/title/System_time#UTC_in_Microsoft_Windows)
+after the installation, or you can set the virtual clock to
+localtime by adding -rtc base=localtime to your command line."
+
+Ref: [QEMU#Time_standard](https://wiki.archlinux.org/title/QEMU#Time_standard)
+
 ## Boot From Physical Disk
 
 To boot from physical disk, only one thing need to do, which is configuring udev rules
@@ -710,3 +745,6 @@ $ qemu-system-x86_64 \
 
 Ref: [Udev#udev rule example](https://wiki.archlinux.org/title/Udev#udev_rule_example)
 
+## Trouble
+
+failed to setup container for group 20: memory listener initialization failed: Region mem: vfio_container_dma_map
