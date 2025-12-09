@@ -1,7 +1,7 @@
 +++
 aliases     = "/posts/qemu-install-windows11-guest/"
 title       = "QEMU/KVM: Windows 11 Guest"
-lastmod     = 2025-12-08
+lastmod     = 2025-12-09
 date        = 2024-12-09
 showSummary = true
 showTOC     = true
@@ -189,6 +189,45 @@ you could use the following options instead, and skip the rest of this section:
     -nic user,model=e1000
 ```
 
+### Network Interface
+
+```
+(user)$ qemu-system-x86_64 \
+    ... \
+    -nic bridge,br=brlan,model=virtio-net-pci,mac=52:54:xx:xx:xx:xx \
+    -nic bridge,br=brnat,model=virtio-net-pci,mac=52:54:xx:xx:xx:xx
+```
+
+Ref: [qemu(1)#nic](https://man.archlinux.org/man/qemu.1#nic)
+
+Since QEMU by default will assign MAC addresses start from the same value
+for every virtual machine's first NIC, which is 52:54:00:12:34:56,
+then :57, :58 for the second and third NIC, it will cause conflict when
+using bridged networking with multiple virtual machines. Their addresses
+should be unique and consistent.
+
+To solve this problem, you can use the following bash script
+to generate unique but fixed MAC address. Save it as `gen-mac-addr.sh`:
+
+```
+#!/bin/bash
+_niclabel="${1}"
+_hash=$(printf "${_niclabel}" | sha256sum)
+echo "52:54:${_hash:0:2}:${_hash:2:2}:${_hash:4:2}:${_hash:6:2}"
+```
+
+Next, give your virtual machine nic a unique name, say "vm1:brlan", then run:
+
+```
+(user)$ ./gen-mac-addr.sh vm1:brlan
+(user)$ ./gen-mac-addr.sh vm1:brnat
+(user)$ ./gen-mac-addr.sh vm2:brlan
+```
+
+Ref: [QEMU#Link-level address caveat](https://wiki.archlinux.org/title/QEMU#Link-level_address_caveat)
+
+### Bridged Network
+
 There're several types of network adapter in VirtualBox: NAT, Bridged, Host Only, Internal,
 and I didn't know much about how they work in details back then.
 After reading the arch wiki, I learned they are all bridged network in some ways.
@@ -231,11 +270,14 @@ Kind=bridge
 # /etc/systemd/network/25-brlan.network
 [Match]
 Name=brlan
+
 [Link]
 RequiredForOnline=routable
+
 [Network]
 DHCP=yes
 IPv4Forwarding=yes
+
 [DHCPv4]
 RouteMetric=128
 ```
@@ -244,6 +286,7 @@ RouteMetric=128
 # /etc/systemd/network/25-brlan-en.network
 [Match]
 Name=enp0s1
+
 [Network]
 Bridge=brlan
 ```
@@ -280,15 +323,34 @@ Kind=bridge
 # /etc/systemd/network/26-brnat.network
 [Match]
 Name=brnat
+
 [Network]
 IPv4Forwarding=yes
 IPMasquerade=yes
 DHCPServer=true
 Address=10.9.8.7/24
+
 [DHCPServer]
 DNS=10.9.8.7
+PoolOffset=100
+PoolSize=100
+
 [DHCPv4]
 RouteMetric=256
+```
+
+Since our virtual machines now have pretty consistent MAC addresses, we can give
+them static IP addresses via `26-brnat.network`:
+
+```
+...
+[DHCPServerStaticLease]
+MACAddress=52:54:00:12:34:56
+Address=10.9.8.256
+[DHCPServerStaticLease]
+MACAddress=52:54:00:12:34:78
+Address=10.9.8.278
+...
 ```
 
 Ref:
@@ -320,44 +382,6 @@ allow brnat
 
 Ref: [QEMU#Tap networking with QEMU](https://wiki.archlinux.org/title/QEMU#Tap_networking_with_QEMU)
 , [QEMU#Bridged networking using qemu-bridge-helper](https://wiki.archlinux.org/title/QEMU#Bridged_networking_using_qemu-bridge-helper)
-
-
-### Network Interface
-
-```
-(user)$ qemu-system-x86_64 \
-    ... \
-    -nic bridge,br=brlan,model=virtio-net-pci,mac=52:54:xx:xx:xx:xx \
-    -nic bridge,br=brnat,model=virtio-net-pci,mac=52:54:xx:xx:xx:xx
-```
-
-Ref: [qemu(1)#nic](https://man.archlinux.org/man/qemu.1#nic)
-
-Since QEMU by default will assign MAC addresses start from the same value
-for every virtual machine's first NIC, which is 52:54:00:12:34:56,
-then :57, :58 for the second and third NIC, it will cause conflict when
-using bridged networking with multiple virtual machines. Their addresses
-should be unique and consistent.
-
-To solve this problem, you can use the following bash script
-to generate unique but fixed MAC address. Save it as `gen-mac-addr.sh`:
-
-```
-#!/bin/bash
-_niclabel="${1}"
-_hash=$(printf "${_niclabel}" | sha256sum)
-echo "52:54:${_hash:0:2}:${_hash:2:2}:${_hash:4:2}:${_hash:6:2}"
-```
-
-Next, give your virtual machine nic a unique name, say "vm1nic1", then run:
-
-```
-(user)$ ./gen-mac-addr.sh vm1nic1
-(user)$ ./gen-mac-addr.sh vm1nic2
-(user)$ ./gen-mac-addr.sh vm2nic1
-```
-
-Ref: [QEMU#Link-level address caveat](https://wiki.archlinux.org/title/QEMU#Link-level_address_caveat)
 
 ## Graphics Card
 
@@ -473,7 +497,6 @@ Useful qemu monitor commands to send:
 ```
 (qemu) sendkey ctrl-alt-f2
 (qemu) system_reset
-(qemu) system_powerdown
 ```
 
 Ref: [QEMU#Sending keyboard presses](https://wiki.archlinux.org/title/QEMU#Sending_keyboard_presses_to_the_virtual_machine_using_the_monitor_console)
@@ -522,7 +545,7 @@ Ref: [QEMU#Pass-through host USB device](https://wiki.archlinux.org/title/QEMU#P
 , [USB Emulation](https://www.qemu.org/docs/master/system/devices/usb.html)
 , [QemuDiskHotplug](https://wiki.ubuntu.com/QemuDiskHotplug)
 
-## File Sharing
+## File Sharing (Virtiofs)
 
 virtiofsd is a modern and high-performance way to share files between host and guest,
 it has nearly naive performance, way faster than the traditional ways based on
@@ -545,6 +568,26 @@ $ /usr/lib/virtiofsd \
     --translate-gid host:100:1000:1 \
     --translate-uid squash-guest:0:1000:4294967295 \
     --translate-gid squash-guest:0:1000:4294967295 \
+```
+
+You may get warning message:
+
+> Failure when trying to set the limit to 1000000, the hard limit (524288) of open file descriptors is used instead.
+
+To fix it, remove open file descriptors limit for regular user via
+`/etc/security/limits.conf`:
+
+```
+user1 - nofile unlimited
+```
+
+Replace `user1` with your regular user's name.
+Ref: [limit.conf(5)](https://man.archlinux.org/man/limits.conf.5).
+
+Check whether new memlock limit configuration is applied:
+
+```
+(user)$ ulimit -Hn
 ```
 
 Corresponding QEMU options:
@@ -580,45 +623,9 @@ Ref: [QEMU#Host file sharing with virtiofsd](https://wiki.archlinux.org/title/QE
 , [virtiofsd README](https://gitlab.com/virtio-fs/virtiofsd/-/blob/main/README.md?ref_type=heads)
 , [virtiofs](https://virtio-fs.gitlab.io/)
 
-## Hyper-V Enlightenments
-
-"In some cases when implementing a hardware interface in software is slow,
-KVM implements its own paravirtualized interfaces. This works well for Linux as
-guest support for such features is added simultaneously with the feature itself.
-It may, however, be hard-to-impossible to add support for these interfaces to
-proprietary OSes, namely, Microsoft Windows."
-
-"KVM on x86 implements Hyper-V Enlightenments for Windows guests.
-These features make Windows and Hyper-V guests think they’re running on top of a
-Hyper-V compatible hypervisor and use Hyper-V specific features."
-
-```
-$ opts="hv_relaxed,hv_vapic,hv_spinlocks=0xfff"
-$ opts="${opts},hv_relaxed,hv_vapic,hv_spinlocks=0xfff"
-$ opts="${opts},hv_vpindex,hv_synic,hv_time,hv_stimer"
-$ opts="${opts},hv_tlbflush,hv_tlbflush_ext,hv_ipi,hv_stimer_direct"
-$ opts="${opts},hv_runtime,hv_frequencies,hv_reenlightenment"
-$ opts="${opts},hv_avic,hv_xmm_input"
-$ qemu-system-x86_64 \
-    -cpu host,${opts}
-```
-
-If your CPU is Intel, also append "hv_evmcs".
-
-Ref: [QEMU#Improve virtual machine performance](https://wiki.archlinux.org/title/QEMU#Improve_virtual_machine_performance)
-, [Hyper-V Enlightenments](https://www.qemu.org/docs/master/system/i386/hyperv.html)
-
-## Windows Localtime
-
-"By default, Windows assumes the firmware clock is set to local time,
-but this is usually not the case when using QEMU. To remedy this you can
-[configure Windows to use UTC](https://wiki.archlinux.org/title/System_time#UTC_in_Microsoft_Windows)
-after the installation, or you can set the virtual clock to
-localtime by adding -rtc base=localtime to your command line."
-
-Ref: [QEMU#Time_standard](https://wiki.archlinux.org/title/QEMU#Time_standard)
-
 ## GPU Passthrough
+
+For GPU Passthrough, avoid AMD GPU because of the "reset bug".
 
 First enable IOMMU in BIOS.
 For Intel CPU, add kernel parameter `intel_iommu=on`.
@@ -689,7 +696,7 @@ Apply new rules:
 (root)# udevadm control -R && udevadm trigger
 ```
 
-If you feel not familiar with this, refer to section [Udev Rules](#udev-rules).
+Ref: [Udev Rules](#udev-rules)
 
 Second, remove `memlock` limit for regular user via `/etc/security/limits.conf`:
 
@@ -698,7 +705,6 @@ user1 - memlock unlimited
 ```
 
 Replace `user1` with your regular user's name.
-
 Ref: [limit.conf(5)](https://man.archlinux.org/man/limits.conf.5).
 
 Check whether new memlock limit configuration is applied:
@@ -729,6 +735,68 @@ Ref:\
 [PCI_passthrough_via_OVMF - ArchWiki](https://wiki.archlinux.org/title/PCI_passthrough_via_OVMF)\
 [vfio_dma_map error when passthrough GPU using libvirt - StackOverflow](https://stackoverflow.com/questions/39187619/vfio-dma-map-error-when-passthrough-gpu-using-libvirt)\
 [Non-root GPU passthrough setup](https://www.evonide.com/non-root-gpu-passthrough-setup/)
+
+## Looking Glass
+
+[Looking Glass](https://looking-glass.io/) offers a nearly native performance
+display screen for virtual machine with GPU passthrouth.
+
+For the most part of installation and configuration, you can refer to the
+[official documentation](https://looking-glass.io/docs/), I will only fill
+some gaps in this section.
+
+Give regular user permission to access KVMFR device via
+`/etc/udev/rules.d/50-uaccess.rules`:
+
+```
+SUBSYSTEM=="kvmfr", MODE="0660", TAG+="uaccess"
+```
+
+Ref: [Udev Rules](#udev-rules)
+
+If you want to create multiple KVMFR devices for multiple virtual machines,
+then assign multiple values for the kernel module parameter, seperated with comma,
+in `/etc/modprobe.d/kvmfr.conf`:
+
+```
+options kvmfr static_size_mb=32,32,32
+```
+
+The result will be `/dev/kvmfr0`, `/dev/kvmfr1`, `/dev/kvmfr2`.
+
+Load KVMFR module automatically at boot via systemd:
+
+```
+(root)# echo "kvmfr" > /etc/modules-load.d/kvmfr.conf
+```
+
+Ref: [Kernel_module#systemd](https://wiki.archlinux.org/title/Kernel_module#systemd)
+
+When enabling SPICE, it is recommended to use UNIX socket instead of TCP port,
+since it's better for script automation, no need to maintain unique port for every
+virtual machine specifically:
+
+```
+(user)$ qemu-system-x86 \
+    ... \
+    -spice unix=on,addr=/data/vms/win11/spice.sock,disable-ticketing=on
+```
+
+Ref: [Spice User Manual](https://www.spice-space.org/spice-user-manual.html)
+
+VirtIO input devices for keyboard and mouse:
+
+```
+(user)$ qemu-system-x86 \
+    ... \
+    -device virtio-keyboard -device virtio-mouse
+```
+
+Start `looking-glass-client` with SPICE UNIX socket file:
+
+```
+(user)$ looking-glass-client -f /dev/kvmfr0 -c /data/vms/win11/spice.sock -p 0
+```
 
 ## Udev Rules
 
@@ -761,6 +829,44 @@ Apply new rules:
 
 Ref: [Udev#Allowing regular users to use devices](https://wiki.archlinux.org/title/Udev#Allowing_regular_users_to_use_devices)
 , [Udev#Loading new rules](https://wiki.archlinux.org/title/Udev#Loading_new_rules)
+
+## Hyper-V Enlightenments
+
+"In some cases when implementing a hardware interface in software is slow,
+KVM implements its own paravirtualized interfaces. This works well for Linux as
+guest support for such features is added simultaneously with the feature itself.
+It may, however, be hard-to-impossible to add support for these interfaces to
+proprietary OSes, namely, Microsoft Windows."
+
+"KVM on x86 implements Hyper-V Enlightenments for Windows guests.
+These features make Windows and Hyper-V guests think they’re running on top of a
+Hyper-V compatible hypervisor and use Hyper-V specific features."
+
+```
+$ opts="hv_relaxed,hv_vapic,hv_spinlocks=0xfff"
+$ opts="${opts},hv_relaxed,hv_vapic,hv_spinlocks=0xfff"
+$ opts="${opts},hv_vpindex,hv_synic,hv_time,hv_stimer"
+$ opts="${opts},hv_tlbflush,hv_tlbflush_ext,hv_ipi,hv_stimer_direct"
+$ opts="${opts},hv_runtime,hv_frequencies,hv_reenlightenment"
+$ opts="${opts},hv_avic,hv_xmm_input"
+$ qemu-system-x86_64 \
+    -cpu host,${opts}
+```
+
+If your CPU is Intel, also append "hv_evmcs".
+
+Ref: [QEMU#Improve virtual machine performance](https://wiki.archlinux.org/title/QEMU#Improve_virtual_machine_performance)
+, [Hyper-V Enlightenments](https://www.qemu.org/docs/master/system/i386/hyperv.html)
+
+## Windows Localtime
+
+"By default, Windows assumes the firmware clock is set to local time,
+but this is usually not the case when using QEMU. To remedy this you can
+[configure Windows to use UTC](https://wiki.archlinux.org/title/System_time#UTC_in_Microsoft_Windows)
+after the installation, or you can set the virtual clock to
+localtime by adding -rtc base=localtime to your command line."
+
+Ref: [QEMU#Time_standard](https://wiki.archlinux.org/title/QEMU#Time_standard)
 
 ## Boot From Physical Disk
 
