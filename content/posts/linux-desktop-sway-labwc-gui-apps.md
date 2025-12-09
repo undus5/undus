@@ -79,8 +79,7 @@ For Labwc, there isn't much to say, all the actions can be invoked from the
 right-click context menu. Since it's mouse driven and floating, single workspace
 is enough, you just use `Alt + Tab` to switch between windows.
 
-So basically my desktops are empty, no fancy cosmetic decorations. I believe
-simple and clean make things elegant, this is the way.
+No fancy cosmetic decorations, just simple and clean, this is the way.
 
 ## Terminal
 
