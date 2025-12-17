@@ -1,5 +1,5 @@
 +++
-title       = "QEMU/KVM: Windows 11 Guest"
+title       = "QEMU Install Windows 11 Guest"
 lastmod     = 2025-10-21
 date        = 2024-12-09
 showSummary = false
@@ -11,6 +11,11 @@ hidden = true
 Use low level tools directly, get rid of complex middlewares.
 
 <!--more-->
+
+## Update
+
+This post is no longer maintained, please refer to the new one:
+[QEMU/KVM: Windows 11 Guest](/posts/qemu-kvm-win11-guest/).
 
 ## Background
 

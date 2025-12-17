@@ -13,10 +13,10 @@ Joining in the "btw" club, and stopped distro hopping finally.
 
 <!--more-->
 
-## Updates
+## Update
 
-This article is no longer maintained, please refer to
-[Bootstrap Install Any Linux Distro](/posts/bootstrap-install-any-linux-distro/).
+This article is no longer maintained, please refer to the new one:
+[Linux Bootstrap Installation](/posts/linux-bootstrap-installation/).
 
 ## Background
 

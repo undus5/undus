@@ -13,10 +13,10 @@ Build a compact workstation with essential components, no ricing.
 
 <!--more-->
 
-## Updates
+## Update
 
-This article is no longer maintained, please refer to
-[Linux Desktop: Preparation](/posts/linux-desktop-preparation/).
+This article is no longer maintained, please refer to the new one:
+[Linux Post Installation: Desktop Preparation](/posts/linux-post-installtion-desktop-preparation/).
 
 ## Prerequisite
 
