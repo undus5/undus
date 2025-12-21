@@ -192,8 +192,6 @@ Apply change:
 You may also want to disable "Recent Files":
 
 ```
-(user)$ rm ~/.local/share/recently-used.xbel
-(user)$ ln -s /dev/null ~/.local/share/recently-used.xbel
 (user)$ gsettings set org.gnome.desktop.privacy remember-recent-files false
 ```
 

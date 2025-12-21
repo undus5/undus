@@ -1,8 +1,8 @@
 +++
 title       = 'Linux Bootstrap Installation'
 aliases     = ["/posts/bootstrap-install-any-linux-distro/"]
-date        = '2025-10-19'
 lastmod     = '2025-11-04'
+date        = '2025-10-19'
 tags        = []
 showTOC     = true
 showSummary = true
@@ -67,15 +67,15 @@ Using [Parted](https://wiki.archlinux.org/title/Parted) to do the job:
 ```
 (root)# parted /dev/nvme0n1
 (parted) mklabel gpt
-(parted) mkpart EFIPART fat32 1MiB 1025MiB
+(parted) mkpart EFIPART fat32 1MiB 2049MiB
 (parted) set 1 esp on
-(parted) mkpart ROOTPART btrfs 1025MiB 100%
+(parted) mkpart ROOTPART btrfs 2049MiB 100%
 (parted) type 2 4f68bce3-e8cd-4db1-96e7-fbcaf984b709
 (parted) quit
 ```
 
 Partitions need to be aligned to specific size for LUKS working correctly,
-a typical practice is 1MiB. In our example, we assigned 1GB to the EFI partition,
+a typical practice is 1MiB. In our example, we assigned 2GB to the EFI partition,
 the rest to the root partition, and aligned them to 1MiB.
 
 Note that we specified the discoverable UUID for the root partition, but not for
@@ -276,6 +276,18 @@ connections.
 
 `RequiredForOnline=routable` is necessary to prevent
 `systemd-networkd-wait-online.service` hanging the systemd boot process.
+
+By default systemd would wait for all the network interfaces online,
+if your computer have multiple network interfaces, it will be a problem.
+To fix this, alter the `systemd-networkd-wait-online.service` by creating
+`/etc/systemd/system/systemd-networkd-wait-online.service.d/override.conf` manually
+or run `systemctl edit systemd-networkd-wait-online.service`:
+
+```
+[Service]
+ExecStart=
+ExecStart=/usr/lib/systemd/systemd-networkd-wait-online --any
+```
 
 You may need to disable `ManageForeignRoutingPolicyRules` option in
 `/etc/systemd/networkd.conf`, since it will flush all your custom

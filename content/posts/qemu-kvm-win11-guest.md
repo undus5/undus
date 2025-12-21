@@ -1,7 +1,7 @@
 +++
 aliases     = "/posts/qemu-install-windows11-guest/"
 title       = "QEMU/KVM: Windows 11 Guest"
-lastmod     = 2025-12-09
+lastmod     = 2025-12-21
 date        = 2024-12-09
 showSummary = true
 showTOC     = true
@@ -207,7 +207,7 @@ using bridged networking with multiple virtual machines. Their addresses
 should be unique and consistent.
 
 To solve this problem, you can use the following bash script
-to generate unique but fixed MAC address. Save it as `gen-mac-addr.sh`:
+to generate unique but fixed MAC address. Save it as `gen-mac.sh`:
 
 ```
 #!/bin/bash
@@ -219,9 +219,9 @@ echo "52:54:${_hash:0:2}:${_hash:2:2}:${_hash:4:2}:${_hash:6:2}"
 Next, give your virtual machine nic a unique name, say "vm1:brlan", then run:
 
 ```
-(user)$ ./gen-mac-addr.sh vm1:brlan
-(user)$ ./gen-mac-addr.sh vm1:brnat
-(user)$ ./gen-mac-addr.sh vm2:brlan
+(user)$ ./gen-mac.sh vm1:brlan
+(user)$ ./gen-mac.sh vm1:brnat
+(user)$ ./gen-mac.sh vm2:brlan
 ```
 
 Ref: [QEMU#Link-level address caveat](https://wiki.archlinux.org/title/QEMU#Link-level_address_caveat)
@@ -305,8 +305,33 @@ Restart `systemd-networkd.service`:
 (root)# systemctl restart systemd-networkd
 ```
 
-Ref: [Systemd-networkd#Configuration examples](https://wiki.archlinux.org/title/Systemd-networkd#Configuration_examples)
-, [Systemd-networkd#Network bridge with DHCP](https://wiki.archlinux.org/title/Systemd-networkd#Network_bridge_with_DHCP)
+Ref:
+[Systemd-networkd#Network bridge with DHCP](https://wiki.archlinux.org/title/Systemd-networkd#Network_bridge_with_DHCP)
+
+---
+
+You can let the bridge inherit MAC address from the bridged physical interfaces:
+
+```
+# /etc/systemd/network/25-brlan.netdev
+[NetDev]
+Name=brlan
+Kind=bridge
+MACAddress=none
+```
+
+```
+# /etc/systemd/network/25-brlan.link
+[Match]
+OriginalName=brlan
+[Link]
+MACAddressPolicy=none
+```
+
+Ref:
+[Systemd-networkd#Inherit_MAC_address](https://wiki.archlinux.org/title/Systemd-networkd#Inherit_MAC_address_(optional))
+
+---
 
 If you don't want virtual machines exposed on the LAN, or you just want to
 use fixed IP addresses between host and virtual machines, you could setup a
@@ -351,6 +376,14 @@ Address=10.9.8.256
 MACAddress=52:54:00:12:34:78
 Address=10.9.8.278
 ...
+```
+
+There's a more flexible way to keep track of virtual machines' IP addresses
+even they are dynamic, which is using network scanning tools to search,
+e.g. `arp-scan`:
+
+```
+(user)$ arp-scan -x -l -I brnat | grep 52:54:00:12:34:56
 ```
 
 Ref:
