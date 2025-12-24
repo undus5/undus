@@ -1,7 +1,7 @@
 +++
 aliases     = "/posts/qemu-install-windows11-guest/"
 title       = "QEMU/KVM: Windows 11 Guest"
-lastmod     = 2025-12-21
+lastmod     = 2025-12-24
 date        = 2024-12-09
 showSummary = true
 showTOC     = true
@@ -177,6 +177,27 @@ How to resize disk image:
 ```
 
 Ref: [QEMU#Resizing an image](https://wiki.archlinux.org/title/QEMU#Resizing_an_image)
+
+After enlarging the disk image, you may want to boot into the virtual machine and
+extend the main partition, but when you open the disk management tool, you may
+find there is a recovery partition sitting between the main volume and
+unallocated space, here's how to delete it: right click the start menu,
+select "Windows Powershell (Admin)", type:
+
+```
+C:\...> diskpart
+DISKPART> list disk
+DISKPART> select disk 0
+DISKPART> list partition
+DISKPART> select partition 4
+DISKPART> delete partition override
+DISKPART> list volume
+DISKPART> select volume 1
+DISKPART> extend
+DISKPART> exit
+```
+
+Replace the numbers with your own, type `help` to list available commands.
 
 ## Networking
 
