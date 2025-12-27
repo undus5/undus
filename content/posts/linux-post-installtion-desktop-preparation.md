@@ -23,7 +23,8 @@ Essential preparation before desktop components getting involved.
 ## Preface
 
 This guide is based on Arch, but could also work for Debian/Ubuntu and Fedora.
-I'm trying my best to make it distro irrelevant.
+I'm trying my best to make it distro irrelevant, since I don't like to be bound
+to a specific platform in any form, always maintaining the ability for transition.
 
 ## Default Editor
 
