@@ -1,7 +1,7 @@
 +++
 aliases     = "/posts/qemu-install-windows11-guest/"
 title       = "QEMU/KVM: Windows 11 Guest"
-lastmod     = 2025-12-24
+lastmod     = 2025-12-27
 date        = 2024-12-09
 showSummary = true
 showTOC     = true
@@ -169,14 +169,13 @@ no need extra settings to work:
 
 Ref: [QEMU#Creating a hard disk image](https://wiki.archlinux.org/title/QEMU#Creating_a_hard_disk_image)
 
-How to resize disk image:
+---
+
+How to enlarge disk image:
 
 ```
 (user)$ qemu-img resize disk.qcow2 +10G
-(user)$ qemu-img resize --shrink disk.qcow2 -10G
 ```
-
-Ref: [QEMU#Resizing an image](https://wiki.archlinux.org/title/QEMU#Resizing_an_image)
 
 After enlarging the disk image, you may want to boot into the virtual machine and
 extend the main partition, but when you open the disk management tool, you may
@@ -198,6 +197,20 @@ DISKPART> exit
 ```
 
 Replace the numbers with your own, type `help` to list available commands.
+
+---
+
+Before shrinking disk image, you need to do some work inside the Windows
+virtual machine first, using
+[sdelete](https://learn.microsoft.com/en-us/sysinternals/downloads/sdelete)
+to zero out free space: `sdelete -z C:`, then shrink volume via disk management
+tool, and last, shutdown the virtual machine and shrink the disk image:
+
+```
+(user)$ qemu-img resize --shrink disk.qcow2 -10G
+```
+
+Ref: [QEMU#Resizing an image](https://wiki.archlinux.org/title/QEMU#Resizing_an_image)
 
 ## Networking
 
@@ -345,6 +358,7 @@ MACAddress=none
 # /etc/systemd/network/25-brlan.link
 [Match]
 OriginalName=brlan
+
 [Link]
 MACAddressPolicy=none
 ```
@@ -385,6 +399,8 @@ PoolSize=100
 RouteMetric=256
 ```
 
+---
+
 Since our virtual machines now have pretty consistent MAC addresses, we can give
 them static IP addresses via `26-brnat.network`:
 
@@ -405,6 +421,31 @@ e.g. `arp-scan`:
 
 ```
 (user)$ arp-scan -x -l -I brnat | grep 52:54:00:12:34:56
+```
+
+---
+
+If you've cloned your virtual machine, you may find they were getting the same
+IP addresse even we gave them unique MAC address, this is because the default DHCP
+client identifier using by systemd is DUID, which is `/etc/machine-id`.
+There're two methods to solve this:
+
+1, Change identifier type, edit `/etc/systemd/network/26-brnat.network`:
+
+```
+...
+[DHCPv4]
+ClientIdentifier=mac
+...
+```
+
+2, Reset machine-id, then reboot:
+
+```
+(root)# rm /etc/machine-id
+(root)# dbus-uuidgen --ensure=/etc/machine-id
+(root)# rm /var/lib/dbus/machine-id
+(root)# dbus-uuidgen --ensure
 ```
 
 Ref:
@@ -789,6 +830,18 @@ Ref:\
 [PCI_passthrough_via_OVMF - ArchWiki](https://wiki.archlinux.org/title/PCI_passthrough_via_OVMF)\
 [vfio_dma_map error when passthrough GPU using libvirt - StackOverflow](https://stackoverflow.com/questions/39187619/vfio-dma-map-error-when-passthrough-gpu-using-libvirt)\
 [Non-root GPU passthrough setup](https://www.evonide.com/non-root-gpu-passthrough-setup/)
+
+---
+
+If you've bound the GPU to vfio-pci but not yet attached it to virtual machine
+and boot, you may find the GPU's fans are always spinning, this is because
+vfio-pci is lacking the ability of precise fan control, normally this work is
+leaving to ventor's driver to handle, which need you to keep the virtual machine
+running. If you don't want the Windows VM to occupy resources all
+the time, you could create another lightweight linux virtual machine with GPU
+driver installed, attach the GPU to it, and keep it running.
+
+Ref: [GPU fans are always spinning even VM is not running - Reddit](https://www.reddit.com/r/VFIO/comments/1ik8f6z/gpu_blasting_fan_and_heating_up_even_when_vm_is/)
 
 ## Looking Glass
 
