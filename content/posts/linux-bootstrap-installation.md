@@ -142,10 +142,6 @@ of the root partition, just like normal folders do.
 Another great BTRFS feature is it's easy to create snapshots by its
 Copy on Write (CoW) nature, useful for creating backup against system crash.
 
-## WiFi
-
-Use [iwd](https://wiki.archlinux.org/title/Iwd) to connect to WiFi.
-
 ## Repo Mirror
 
 Check the [mirrorlist](https://archlinux.org/mirrorlist/) from official website,
@@ -163,7 +159,7 @@ For Arch it's
 
 ```
 (root)# pacstrap -K /mnt \
-    base linux linux-firmware btrfs-progs dracut zram-generator neovim iwd
+    base linux linux-firmware btrfs-progs dracut zram-generator neovim
 ```
 
 Also install `amd-ucode` or `intel-ucode` for CPU microcode updates.
