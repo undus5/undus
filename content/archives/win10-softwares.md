@@ -19,29 +19,15 @@ weight      = 9100
 | Office Suite | [Office 2024 Offline Installer](https://gravesoft.dev/office_c2r_links) |
 | Office Suite | [Office Deployment Tool (Online)](https://officecdn.microsoft.com/pr/wsus/setup.exe) , [config.office.com](https://config.office.com/deploymentsettings) |
 | Office Suite | [Office C2R Custom Install](https://gravesoft.dev/office_c2r_custom) : \`setup.exe /configure Configuration.xml\` |
-| OfficeToolPlus | [OfficeToolPlus](https://otp.landian.vip/zh-cn/download.html) , [Installation Guide](https://www.coolhub.top/archives/11) , [Activation Guide](https://www.coolhub.top/archives/14)) |
+| OfficeToolPlus | [OfficeToolPlus](https://otp.landian.vip/zh-cn/download.html) , [Installation Guide](https://www.coolhub.top/archives/11) , [Activation Guide](https://www.coolhub.top/archives/14) |
 | Image Viewer | [Honeyview](https://en.bandisoft.com/honeyview/) |
 | Image Editor | [Paint.NET](https://github.com/paintdotnet/release/releases) |
 | PDF Viewer | [Sumatra PDF](https://www.sumatrapdfreader.org/free-pdf-reader) |
 | Video Player | [MPC-HC](https://github.com/clsid2/mpc-hc) |
-| Notepad Alternativj | [EmEditor](https://www.emeditor.com/download/) |
+| Notepad Alternative | [EmEditor](https://www.emeditor.com/download/) |
 | Screenshot | [Snipaste](https://www.snipaste.com/) |
 | Disk Info | [Crystal Disk](https://crystalmark.info/en/download) |
-| Web Browser | [Brave Browser](https://brave.com/) , [Chrome Enterprise](https://chromeenterprise.google) |
-
-Brave Browser disable Crypto and AI related components via
-[Group Policy](https://support.brave.com/hc/en-us/articles/360039248271-Group-Policy):
-
-1. Download
-[policy_templates.zip](https://brave-browser-downloads.s3.brave.com/latest/policy_templates.zip)
-, copy files from `admx` into `C:\\Windows\\PolicyDefinitions`
-
-2. Press `Win + r`, type and run `gpedit.msc`, will open "Local Group Policy Editor",
-navigate to `Computer Configuration\Administrative Templates\Brave\Brave Software settings`,
-enable whatever options you need.
-
-3. Visit `brave://policy` from address bar to check the effect.
-
+| Web Browser | [Ungoogled Chromium](https://ungoogled-software.github.io/ungoogled-chromium-binaries/) , [Brave Browser](https://brave.com/) , [Chrome Enterprise](https://chromeenterprise.google) |
 
 
 修复 Win10 自带输入法不显示选字框:
