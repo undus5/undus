@@ -134,6 +134,7 @@ of the root partition, just like normal folders do.
 (root)# mount -o subvol=@ /dev/mapper/root /mnt
 (root)# mount -o subvol=@home --mkdir /dev/mapper/root /mnt/home
 (root)# mount -o subvol=@data --mkdir /dev/mapper/root /mnt/data
+(root)# mkfs.fat -F32 /dev/disk/by-partlabel/EFIPART
 (root)# mount --mkdir /dev/disk/by-partlabel/EFIPART /mnt/efi
 ```
 
@@ -244,12 +245,16 @@ For wired network interface, create `/etc/systemd/network/23-lan.network`.
 ```
 [Match]
 Name=enp0s1
+
 [Link]
 RequiredForOnline=routable
+
 [Network]
 DHCP=yes
+
 [DHCPv4]
 RouteMetric=100
+
 [IPV6AcceptRA]
 RouteMetric=100
 ```
@@ -259,13 +264,17 @@ For wireless network interface, create `/etc/systemd/network/25-wlan.network`.
 ```
 [Match]
 Name=wlan0
+
 [Link]
 RequiredForOnline=routable
+
 [Network]
 DHCP=yes
 IgnoreCarrierLoss=3s
+
 [DHCPv4]
 RouteMetric=600
+
 [IPV6AcceptRA]
 RouteMetric=600
 ```
@@ -373,10 +382,9 @@ to update them automatically.
 Create `/etc/systemd/system/efistub-update.path`.
 
 ```
-[Unit]
-Description=Copy EFISTUB Kernel to EFI system partition
 [Path]
 PathChanged=/boot/initramfs-linux.img
+
 [Install]
 WantedBy=multi-user.target
 WantedBy=system-update.target
@@ -385,8 +393,6 @@ WantedBy=system-update.target
 Create `/etc/systemd/system/efistub-update.service`.
 
 ```
-[Unit]
-Description=Copy EFISTUB Kernel to EFI system partition
 [Service]
 Type=oneshot
 ExecStart=/usr/bin/cp -af /boot/vmlinuz-linux /efi/boota/
