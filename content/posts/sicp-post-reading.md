@@ -18,7 +18,7 @@ and those outdated jargons, so I switched to the JS Edition since the middle par
 it's much easier to read, although I don't kinda like JavaScript.
 
 So what did I learn? Can't say there's a lot tbh, because I didn't remember much
-about the examples from the book, but truly get something. I'm being more familiar
+about the examples from the book, but truly got something. I'm being more familiar
 with recursion, and programming language is no longer a mystery black box
 to me after finishing the first three chapters. In the last two chapters,
 it give me a chance to glance at inside of interpreter and compiler, even hardware.

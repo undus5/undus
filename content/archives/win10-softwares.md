@@ -29,33 +29,3 @@ weight      = 9100
 | Disk Info | [Crystal Disk](https://crystalmark.info/en/download) |
 | Web Browser | [Ungoogled Chromium](https://ungoogled-software.github.io/ungoogled-chromium-binaries/) , [Brave Browser](https://brave.com/) , [Chrome Enterprise](https://chromeenterprise.google) |
 
-
-修复 Win10 自带输入法不显示选字框:
-
-> 语言设置 \ 中文-选项 \ 微软拼音-选项 \ 勾选"使用以前版本的输入法"
-
-修复美版系统中文乱码:
-
-Windows 11:
-
-> Settings -> Time & language -> Language & region -> Administrative language settings\
--> Change system locale (Language for non-Unicode programs)\
--> Current system locale: Chinese (Simplified, Mainland China)\
--> Uncheck Beta: Use Unicode UTF-8
-
-Windows 10:
-
-> Settings -> Time & language -> Language -> Administrative language settings\
--> Change system locale (Language for non-Unicode programs)\
--> Current system locale: Chinese (Simplified, Mainland China)\
--> Uncheck Beta: Use Unicode UTF-8
-
-欢迎界面中文显示: Region -> Administrative -> Copy settings -> 打勾底部两选项
-
-LTSC disable auto updates:
-
-> `Win + r` -> `gpedit.msc`\
--> `Computer Configuration\Administrative Templates\Windows Components\Windows Update`\
--> disable `"Configure Automatic Updates"`\
--> enable `Remove access to use all Windows update features`
-
