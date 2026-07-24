@@ -474,6 +474,7 @@ Ref: [Fcitx5 - ArchWiki](https://wiki.archlinux.org/title/Fcitx5)
 | Audio Control | pavucontrol | - |
 | PDF | zathura zathura-pdf-poppler | - |
 | Image Viewer | swayimg | - |
+| Image Editor | [photoflare](https://github.com/PhotoFlare/photoflare) | - |
 | Video Player | mpv | - |
 | Ebook Reader | [KOReader](https://koreader.rocks/) | - |
 | Audiobook Player | - | - |
