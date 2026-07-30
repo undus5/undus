@@ -40,9 +40,8 @@ since Windows 11 is the most requirements needed OS, it can cover all the situat
 ## Repository
 
 I put the commands from this guide into a bash script, then I realized that
-I just implemented my own version of "libvirt", so I call it
-[bashvirt](https://github.com/undus5/bashvirt), it's the prototype, now
-deprecated. I recreate it with lua, called
+I just implemented my own version of "libvirt", so I call it "bashvirt",
+it's the prototype, now deprecated, and I recreated it with lua, called
 [uvirt](https://github.com/undus5/uvirt).
 
 ## Convention
