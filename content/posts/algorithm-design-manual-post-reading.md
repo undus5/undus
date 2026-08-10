@@ -31,10 +31,10 @@ programming with fibonacci numbers as examples. The rest parts, like chapter 9
 combinatorial search, is so tricky, chapter 11, NP-completeness, what's that?
 Hehe ...
 
-I did some research after this disaster, found two books maybe more proper to
-me, "A Common-Sense Guide to Data Structures and Algorithms" by Jay Wengrow and
-"Grokking Algorithms" by Aditya Y. Bhargava, but that might be stories on
-another days. I believe I've gathered enough basic knowledge to guide myself to
-do whatever I want, and I'm gonna take a break, tinkering with some side
-projects. That's it, to be continued.
+I did some research after this disaster, many recommended
+"A Common-Sense Guide to Data Structures and Algorithms" by Jay Wengrow, maybe
+it's a better choice for me , but that might be some story on another days.
+Right now I believe I've gathered enough basic knowledge to guide myself to do
+whatever I want, and I'm gonna take a break, tinkering with some side projects.
+That's it, to be continued.
 
