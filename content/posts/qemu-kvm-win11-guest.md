@@ -17,32 +17,22 @@ Use low level tools directly, get rid of complex middlewares.
 
 Libvirt is overkill for personal use, you could just run `qemu-system-x86_64`
 command with proper options to start a virtual machine.
-However, using low level tools directly is not always easy.
-Normally I would read documentations from official websites of these tools
-to learn how to, but this approach is not working well for QEMU, its
-[documentation](https://www.qemu.org/documentation/) is not friendly for beginners,
-there's no "Getting Started" or "Tutorial", I didn't know where to start.
-[Arch wiki](https://wiki.archlinux.org/title/QEMU) is better, but still not
-friendly enough if you are totaly newbie in this area.
-Google search, no luck either, everyone is using libvirt.
-
-Then I asked ChatGPT for help with a simple phrase "qemu command for windows guest",
-and it gave me a really good example with explaination, just one problem, it will
-make things up when you trying to dig deeper by asking more details.
-At the end, you always go back to the human written documentations for real study.
-But it still finished a good job, let me understand e.g. what is network bridge
-and TAP device, which I can't understand from Wikipedia,
-the contents for technologis on Wikipedia are hard to read, often lacking subjects.
+However, using low level tools directly is not always easy, the official
+[documentation](https://www.qemu.org/documentation/) of QEMU is not beginner
+friendly, but thanks to those AI chat bots, with their help, I can finally
+get started. Although, they would made things up sometimes when you trying to
+dig deeper, they still made things more easier.
 
 This guide also works for other versions of Windows and Linux systems,
-since Windows 11 is the most requirements needed OS, it can cover all the situations.
+since Windows 11 is the most requirements needed OS, it can cover all the
+situations.
 
 ## Repository
 
-I put the commands from this guide into a bash script, then I realized that
-I just implemented my own version of "libvirt", so I call it "bashvirt",
-it's the prototype, now deprecated, and I recreated it with lua, called
-[uvirt](https://github.com/undus5/uvirt).
+I put the commands from this guide into a bash script, then realized that
+I just implemented my own version of "libvirt", so called it "bashvirt",
+as the script growing, it became harder to maintain, therefore I rewrote it in
+lua, renamed the project to [uvirt](https://github.com/undus5/uvirt).
 
 ## Convention
 
