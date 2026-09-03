@@ -7,6 +7,8 @@ hidden      = true
 
 SVG to PNG
 
+Fedora package: `librsvg2-tools`
+
 ```
 (user)$ rsvg-convert -w 800 input.svg > output.png
 ```
