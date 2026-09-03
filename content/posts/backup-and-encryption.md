@@ -4,7 +4,7 @@ lastmod     = 2024-11-24T17:11:00+08:00
 date        = 2023-04-14
 showTOC     = true
 weight      = 1000
-showSummary = false
+showSummary = true
 #hidden      = true
 +++
 
