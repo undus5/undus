@@ -19,6 +19,7 @@ Distro is trival, just learn the basics and build your own.
 2. [Linux A/B System Updates via BTRFS Snapshot](/posts/linux-ab-system-updates-via-btrfs-snapshot/)
 3. [Linux Post Installation](/posts/linux-post-installtion/)
 4. [Linux Desktop: Sway, Labwc, GUI Apps](/posts/linux-desktop-sway-labwc-gui-apps/)
+5. [Linux Live ISO Packaging](/posts/linux-live-iso-packaging/)
 
 ## Preface
 

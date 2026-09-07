@@ -18,6 +18,7 @@ Inspired from Android A/B system updates mechanism.
 2. Linux A/B System Updates via BTRFS Snapshot
 3. [Linux Post Installation](/posts/linux-post-installtion/)
 4. [Linux Desktop: Sway, Labwc, GUI Apps](/posts/linux-desktop-sway-labwc-gui-apps/)
+5. [Linux Live ISO Packaging](/posts/linux-live-iso-packaging/)
 
 ## Preface
 
