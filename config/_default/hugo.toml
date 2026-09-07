@@ -1,10 +1,12 @@
 title   = "Undus' Blog"
 baseURL = "https://undus.net/"
 theme   = "hugo-pure"
-paginatation.pagerSize = 6
 enableEmoji = true
 ignoreLogs = ['warning-goldmark-raw-html']
 #enableRobotsTXT = true
+
+[pagination]
+pagerSize = 10
 
 [markup]
 [markup.highlight]
